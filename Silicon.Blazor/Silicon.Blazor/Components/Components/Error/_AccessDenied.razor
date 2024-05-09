@@ -1,0 +1,17 @@
+﻿@* ﻿@model PageNotFoundViewModel
+
+@{
+    ViewData["Title"] = "Access Denied";
+} *@
+
+<section id="not-found">
+    <div class="container">
+        <div class="image">
+        </div>
+        <div class="text">
+            <h2>Access denied</h2>
+            <p>"Ooops! You don't have authorization to visit this page...</p>
+            <NavLink class="btn-theme-s" asp-controller="Home" asp-action="Index"><i class="fa-regular fa-home"></i>Back to home page</NavLink>
+        </div>
+    </div>
+</section>

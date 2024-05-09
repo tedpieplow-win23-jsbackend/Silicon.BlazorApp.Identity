@@ -1,0 +1,69 @@
+.tools {
+    .container {
+        h1 {
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--color-gray-900);
+        }
+
+        p {
+            @include text-lg;
+            text-align: center;
+            padding: 0 2rem 0 2rem;
+            margin-left: 2rem;
+            margin-right: 2rem;
+            color: var(--color-gray-600);
+
+
+            @include xl {
+                margin-left: 15rem;
+                margin-right: 15rem;
+            }
+        }
+
+        .tool-boxes {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+
+            @include lg {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            @include xl {
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+            }
+
+            .box {
+                padding: 2rem 9rem 2rem 9rem;
+
+                &:hover {
+                    box-shadow: 2px 2px 5px 1px var(--color-gray-300);
+                    border-radius: 3%;
+                    background-color: var(--color-gray-200)
+                }
+
+                @include lg {
+                    padding: 2rem 2rem 2rem 2rem;
+                }
+
+                @include xl {
+                    padding: 2rem 0.5rem 2rem 0.5rem;
+                }
+
+                img {
+                    margin-bottom: 1rem;
+                    margin-left: 1.7rem;
+                }
+
+                p {
+                    text-align: left;
+                    margin-left: 0;
+                    margin-right: 0;
+                    @include text-m;
+                    color: var(--color-gray-700);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,23 @@
+﻿@page "/account"
+<PageTitle>Account</PageTitle>
+<section id="details">
+    <div class="container">
+       
+        <div class="menu-bar">
+            <NavBar />
+        </div>
+
+        <div class="account-details">
+
+            <AddressInfo />
+
+            <div class="divider"></div>
+            <ContactInfo />
+        </div>
+    </div>
+</section>
+
+
+@code {
+    private AccountDetailsVM model { get; set; }
+}

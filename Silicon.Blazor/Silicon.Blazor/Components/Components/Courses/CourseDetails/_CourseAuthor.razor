@@ -1,0 +1,29 @@
+﻿@using Silicon.Blazor.ViewModels.Courses
+
+<section id="course-author" class="container">
+    <div class="author-content">
+        <img class="squiggly" src="~/images/background-squiggly-pattern.svg" alt="background-design" />
+        <div class="author-image">
+            <img src="~/images/@Model.AuthorImage" alt="" />
+        </div>
+        <div class="author-box">
+            <div class="author-info">
+                <span class="learn-from"> Learn from the best</span>
+                <span class="author-name">@Model.AuthorName</span>
+                <span class="author-description">@Model.AutherBio</span>
+
+                <div class="social">
+                    <div class="youtube-btn">
+                        <a class="btn-theme"><i class="fa-brands fa-youtube"></i> @Model.YouTubeSubscribers subscribers</a>
+                    </div>
+                    <div class="fb-btn">
+                        <a class="btn-theme"><i class="fa-brands fa-square-facebook"></i> @Model.FaceBookFollowers followers</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@code {
+    Course Model { get; set; } = new Course();
+}

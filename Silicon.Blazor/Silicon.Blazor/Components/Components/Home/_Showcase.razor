@@ -1,0 +1,26 @@
+﻿@using Silicon.Blazor.ViewModels.Home
+
+<section id="#overview" class="showcase">
+    <div class="container">
+        <div class="content">
+            <p class="d4">@Showcase.Title</p>
+            <p>@Showcase.Text</p>
+            <NavLink class="btn-theme-s" href="@Showcase.Link.NavLink">@Showcase.Link.Text</NavLink>
+            <h6>@Showcase.BrandsText</h6>
+            <div class="brands">
+                @if (Showcase.Brands is not null)
+                {
+                    foreach (var brand in Showcase.Brands)
+                    {
+                        <img src="@brand.ImageUrl" alt="@brand.AltText" />
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <img class="background-image" src="@Showcase.ShowcaseImage.ImageUrl" alt="@Showcase.ShowcaseImage.AltText" />
+</section>
+
+@code {
+    ShowcaseModel Showcase { get; set; } = new ShowcaseModel();
+}

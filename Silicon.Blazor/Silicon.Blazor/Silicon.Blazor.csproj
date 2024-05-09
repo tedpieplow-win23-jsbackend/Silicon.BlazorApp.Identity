@@ -8,6 +8,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="compilerconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="compilerconfig.json" />
+    <None Include="Components\Components\Accounts\AddressInfo.razor" />
+    <None Include="Components\Components\Accounts\ContactInfo.razor" />
+    <None Include="Components\Components\Accounts\MyCourses.razor" />
+    <None Include="Components\Components\Accounts\NavBar.razor" />
+    <None Include="Components\Components\Auth\_SignIn.razor" />
+    <None Include="Components\Components\Auth\_SignUp.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Silicon.Blazor.Client\Silicon.Blazor.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.3" />

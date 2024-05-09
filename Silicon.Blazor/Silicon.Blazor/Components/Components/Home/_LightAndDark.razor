@@ -1,0 +1,19 @@
+﻿@using Silicon.Blazor.ViewModels.Home
+<section id="lightanddark">
+    <div class="container">
+        <h1>
+            <span class="white">@Model.TitleWhite</span>
+            <span class="black">@Model.TitleBlack</span>
+        </h1>
+        <div class="img-container">
+            <img src="@Model.ImageUrl" alt="@Model.ImageUrl" />
+            <div class="arrows">
+                <img src="@Model.IconUrl" alt="@Model.IconAlt" />
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    LightAndDarkModel Model { get; set; } = new LightAndDarkModel();
+}

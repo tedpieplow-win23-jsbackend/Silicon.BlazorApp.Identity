@@ -1,0 +1,50 @@
+﻿<section id="course-showcase">
+    <img class="header-image" src="/images/@Model.ShowcaseImage" alt="@Model.CourseImageAltText" />
+    <div class="container">
+        <div class="path">
+            <span><i class="fa-sharp fa-thin fa-house"></i> Home <i class="fa-thin fa-chevrons-right"></i> Courses <i class="fa-thin fa-chevrons-right"></i> @Model.Title </span>
+        </div>
+
+        <div class="header-container">
+            <div class="tags">
+                @if (Model.IsBestSeller)
+                {
+                    <div class="tag-1">
+                        <span class="text-s">Best seller</span>
+                    </div>
+                }
+                <div class="tag-2">
+                    <span class="text-s">Digital</span>
+                </div>
+            </div>
+            <div class="course-title">
+                <h1>@Model.Title</h1>
+                <span class="text-lg">@Model.CourseDescription</span>
+            </div>
+            <div class="author-rating-box">
+                <div class="interactions">
+                    <div class="rating">
+                        <i class="fa-sharp fa-solid fa-star"></i>
+                        <i class="fa-sharp fa-solid fa-star"></i>
+                        <i class="fa-sharp fa-solid fa-star"></i>
+                        <i class="fa-sharp fa-solid fa-star"></i>
+                        <i class="fa-sharp fa-regular fa-star"></i>
+                    </div>
+                    <span class="text-m">(@Model.Reviews reviews)</span>
+                    <span class="text-m"><i class="fa-light fa-thumbs-up"></i> @Model.LikesInNumbers likes</span>
+                    <span class="text-m"><i class="fa-regular fa-clock"></i> @Model.ViewHours hours</span>
+                </div>
+                <div class="author">
+                    <img src="/images/@Model.AuthorImage" alt="@Model.AutherImageAltText" />
+                    <div class="created-by">
+                        <span class="text-m">Created By</span>
+                        <span class="text-m">@Model.AuthorName</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@code {
+    Course Model { get; set; } = new Course();
+}

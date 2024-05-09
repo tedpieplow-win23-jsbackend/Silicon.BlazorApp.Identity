@@ -1,0 +1,21 @@
+﻿@using Silicon.Blazor.ViewModels.Home
+<section id="manage-work">
+    <div class="image-container">
+        <img src="@Model.ImageUrl" />
+    </div>
+    <div class="presentation">
+        <h2 class="h2">@Model.Title</h2>
+
+        @foreach (var feature in Model.Features)
+        {
+            <div class="info">
+                <i class="fa-sharp fa-regular fa-circle-check"></i><p>@feature</p>
+            </div>
+        }
+        <button class="btn-theme">@Model.ButtonText<i class="@Model.ButtonIcon"></i></button>
+    </div>
+</section>
+
+@code {
+    ManageWorkModel Model { get; set; } = new ManageWorkModel();
+}

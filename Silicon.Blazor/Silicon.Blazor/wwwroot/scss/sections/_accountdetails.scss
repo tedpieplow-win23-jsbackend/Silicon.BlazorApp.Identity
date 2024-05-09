@@ -1,0 +1,345 @@
+﻿#details {
+    padding-top: 40px;
+    padding-bottom: 60px;
+
+    .container {
+        display: grid;
+        justify-content: center;
+
+        @include lg {
+            grid-template-columns: 1fr 3fr;
+            padding-right: 5rem;
+        }
+
+        .menu-bar {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px;
+            align-self: flex-start;
+            align-items: center;
+
+            @include md {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            @include lg {
+                grid-template-columns: 1fr;
+            }
+
+
+            .profile {
+                text-align: center;
+
+                @include md {
+                    padding-right: 3rem;
+                }
+
+                .image {
+                    position: relative;
+                    img {
+                        clip-path: circle();
+                        max-width: 180px;
+                        max-height: 180px;
+                        border: 1px hidden;
+                    }
+
+                    .btn-upload {
+                        position: absolute;
+                        background-color: white;
+                        clip-path: circle();
+                        padding: 5px;
+                        bottom: 15px;
+                        right: 30px;
+
+                        @include xxl {
+                            right: 70px;
+                        }
+
+                        &:hover {
+                            background-color: black;
+                            cursor: pointer;
+                        }
+                    }
+                }
+
+                h5 {
+                    color: var(--color-gray-900);
+                    margin-bottom: 0;
+                }
+
+                p {
+                    color: var(--color-gray-600);
+                    margin-bottom: 2rem;
+                }
+            }
+
+            .options {
+                display: flex;
+                flex-direction: column;
+
+
+                @include md {
+                    padding-right: 1rem;
+                }
+
+                a {
+                    color: var(--color-gray-900);
+                    font-weight: 700;
+                    padding: 10px;
+                    max-width: 300px;
+                    width: auto;
+                    margin-bottom: 0.2rem;
+                    text-decoration: none;
+                    border-radius: .4rem;
+
+                    i {
+                        padding-right: 1rem;
+                        padding-left: 1.2rem;
+                    }
+
+                    &:hover,
+                    &:active,
+                    &:focus,
+                    .active {
+                        background-color: $theme;
+                        text-decoration: none;
+                        color: #fff;
+                    }
+                }
+
+                .active {
+                    background-color: $theme;
+                    color: #fff;
+                }
+            }
+        }
+
+        .account-details {
+
+            @include lg {
+                border-left: 1px solid $gray-300;
+                padding-left: 7rem;
+            }
+
+            h2 {
+                margin-bottom: 1.2rem;
+                margin-top: .5rem;
+                color: var(--color-gray-900);
+            }
+
+            .user-details {
+                .section-title {
+                    position: relative;
+
+                    .alert {
+                        position: absolute;
+                        top: -55px;
+                        left: -10px;
+                        width: 100%;
+                        display: none;
+                    }
+
+                    .alert:not(:empty) {
+                        display: block;
+                    }
+                }
+
+                .name, .contact-info {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                }
+
+                div {
+                    display: flex;
+                    flex-direction: column;
+                    width: 100%;
+                    margin-bottom: .5rem;
+
+                    .firstname, .email {
+                        margin-right: 1rem;
+                    }
+                }
+
+                span {
+                    margin-top: 5px;
+                    position: relative;
+
+                    &.field-validation-error {
+                        @include text-s;
+                        color: $danger;
+
+                        &::after {
+                            position: absolute;
+                            right: 10px;
+                            top: 45px;
+                            z-index: 1;
+                            font-size: 2em;
+                            display: block;
+                            content: '\2BBF';
+                        }
+                    }
+                }
+
+                .validation {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                }
+            }
+
+            .divider {
+                width: 100%;
+                height: 1px;
+                background-color: var(--color-gray-400);
+                margin-top: 2.5rem;
+                margin-bottom: 3.5rem;
+            }
+
+            .bio {
+                textarea {
+                    max-width: 100%;
+                    width: 100%;
+                    height: 7rem;
+                    background-color: var(--color-gray-100);
+                    border: .5px solid var(--color-gray-400);
+                    border-radius: .4rem;
+                    padding: .5rem;
+                }
+
+                span {
+                    font-weight: 300;
+                }
+
+                .user-buttons {
+                    display: flex;
+                    gap: 1rem;
+                    margin-top: 1rem;
+
+                    .btn-gray {
+                        color: var(--color-gray-800);
+                        background-color: var(--color-gray-200);
+                    }
+                }
+
+                span {
+                    margin-top: 15px;
+                    position: relative;
+
+                    &.field-validation-error {
+                        @include text-s;
+                        color: $danger;
+
+                        &::after {
+                            position: absolute;
+                            right: 10px;
+                            top: 42px;
+                            z-index: 1;
+                            font-size: 2em;
+                            display: block;
+                            content: '\2BBF';
+                        }
+                    }
+                }
+            }
+
+            .address-fields {
+                display: flex;
+                flex-direction: column;
+
+                .city-info {
+                    display: flex;
+                    flex-direction: row;
+
+                    .city, .postal {
+                        display: flex;
+                        flex-direction: column;
+                        width: 100%;
+                        margin-bottom: .5rem;
+                    }
+
+                    .postal {
+                        margin-right: .5rem;
+                    }
+                }
+
+                .validation {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+
+                    label {
+                        margin-top: 1rem;
+                    }
+
+                    span {
+                        padding-left: .4rem;
+                        font-weight: 400;
+                    }
+                }
+
+                span {
+                    margin-top: 15px;
+                    position: relative;
+
+                    &.field-validation-error {
+                        @include text-s;
+                        color: $danger;
+
+                        &::after {
+                            position: absolute;
+                            right: 10px;
+                            top: 42px;
+                            z-index: 1;
+                            font-size: 2em;
+                            display: block;
+                            content: '\2BBF';
+                        }
+                    }
+                }
+
+                .address-button {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 1rem;
+                    margin-top: 1rem;
+                }
+
+                .btn-gray {
+                    color: var(--color-gray-900);
+                    background-color: var(--color-gray-200);
+                }
+            }
+
+            input {
+                margin-bottom: .5rem;
+                padding: 0.6rem;
+                background-color: var(--color-gray-100);
+                border: .5px solid var(--color-gray-200);
+                color: var(--color-gray-700);
+                border-radius: .4rem;
+
+                &.input-validation-error {
+                    border: 0.050rem solid $danger !important;
+                    color: $danger;
+                }
+            }
+
+            label {
+                font-weight: 700;
+                margin-bottom: .2rem;
+                color: var(--color-gray-900);
+            }
+
+            span.field-validation-error {
+                color: $danger !important;
+            }
+
+            h5 {
+                color: $theme;
+                margin-bottom: 1rem;
+            }
+        }
+    }
+}

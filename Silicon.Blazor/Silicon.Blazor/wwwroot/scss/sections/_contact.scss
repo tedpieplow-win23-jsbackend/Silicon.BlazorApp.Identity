@@ -1,0 +1,226 @@
+.contact {
+    background-color: var(--color-gray-100);
+    z-index: 0;
+
+    .container {
+        padding: 2rem 2rem 2rem 2rem;
+        position: relative;
+
+
+        .nav {
+            gap: 0.5rem;
+            align-items: baseline;
+            color: var(--color-gray-600);
+
+            p {
+                color: var(--color-gray-600);
+            }
+        }
+
+        .upper {
+            h1 {
+                color: var(--color-gray-900);
+            }
+
+            .box {
+                display: flex;
+
+                @include xl {
+                    max-width: 40%;
+                }
+
+                .img-holder {
+                    vertical-align: top;
+                    padding-top: 1.3rem;
+                    padding-right: 1rem;
+
+                    img {
+                        width: 100%;
+                        height: auto;
+                    }
+                }
+
+                .box-content {
+                    padding: 1rem 2rem 0 0;
+
+                    h5 {
+                        color: var(--color-gray-900);
+                    }
+
+                    p {
+                        color: var(--color-gray-700);
+                    }
+                }
+            }
+
+            padding-bottom: 5rem;
+        }
+
+        .contact-form {
+            @include shadow-l;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background-color: var(--color-white);
+            border-radius: 0.5rem;
+            padding-top: 1rem;
+
+            @include xl {
+                position: absolute;
+                top: 8%;
+                left: 60%;
+                height: fit-content;
+                z-index: 2;
+            }
+
+            form {
+                padding: 3rem;
+                width: 100%;
+                display: grid;
+
+                h2 {
+                    color: var(--color-gray-900);
+                }
+
+                @include xl {
+                    padding: 2rem;
+                }
+
+                position: relative;
+
+                .alert {
+                    display: none;
+                    position: absolute;
+                    top: -30px;
+                    left: 0;
+                    width: 100%;
+                }
+
+                .alert:not(:empty) {
+                    display: block;
+                }
+
+                .form-content {
+                    display: grid;
+                    gap: 1rem 2rem;
+                    grid-template-columns: 1fr;
+                    grid-template-areas: "fullname" "email" "service" "message";
+
+                    #form-fullname {
+                        grid-area: fullname;
+                    }
+
+                    #form-email {
+                        grid-area: email;
+                    }
+
+                    #form-service {
+                        grid-area: service;
+                    }
+
+                    #form-message {
+                        grid-area: message;
+                    }
+
+                    .input-group {
+                        display: grid;
+                        color: var(--color-gray-900);
+                    }
+
+                    label {
+                        margin: 0;
+                        font-weight: 700;
+                    }
+
+                    input {
+                        padding: 1rem;
+                        border-radius: 0.5rem !important;
+                        border: 0.06rem solid var(--color-gray-400);
+                        background-color: var(--color-gray-100);
+
+                        &::placeholder {
+                            color: var(--color-gray-500);
+                        }
+
+                        &.input-validation-error {
+                            border: 0.06rem solid $danger !important;
+                        }
+                    }
+
+                    textarea {
+                        padding: 1rem;
+                        border-radius: 0.5rem !important;
+                        border: 0.06rem solid var(--color-gray-400);
+                        background-color: var(--color-gray-100);
+
+
+                        &::placeholder {
+                            color: var(--color-gray-500);
+                        }
+
+                        &.input-validation-error {
+                            border: 0.06rem solid $danger !important;
+                        }
+                    }
+
+                    select {
+                        padding: 1rem;
+                        border-radius: 0.5rem !important;
+                        border: 0.06rem solid var(--color-gray-400);
+                        color: var(--color-gray-500);
+                        background-color: var(--color-gray-100);
+
+
+                        option {
+                            color: var(--color-gray-700);
+                        }
+
+                        &::placeholder {
+                            color: var(--color-gray-500);
+                        }
+
+                        &.input-validation-error {
+                            border: 0.06rem solid $danger !important;
+                        }
+                    }
+
+                    span {
+                        &.field-validation-error {
+                            position: absolute;
+                            top: 0;
+                            right: 0;
+                            @include text-s;
+                            color: $danger;
+                        }
+                    }
+
+                    button {
+                        display: inline-block;
+                        max-width: 50%;
+                        padding: 1rem;
+
+                        @include xl {
+                            padding: 0.5rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .map {
+        padding-bottom: 50%;
+        position: relative;
+        margin-bottom: 5rem;
+        z-index: 1;
+    }
+
+    .map iframe {
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+        position: absolute;
+    }
+}

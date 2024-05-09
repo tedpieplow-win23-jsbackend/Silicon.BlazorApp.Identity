@@ -1,0 +1,59 @@
+﻿@* ﻿@model SignInViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+ *@
+<section id="signin">
+    <div class="main-holder container">
+
+@*         @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <span class="alert alert-danger" role="alert" id="userMessage">
+                @Model.ErrorMessage
+            </span>
+        } *@
+
+        <div class="section-title">
+            <h1>Welcome Back</h1>
+            <p>Don't have an account yet? <a asp-controller="Auth" asp-action="SignUp">Sign up here.</a></p>
+        </div>
+
+        <div class="login-box">
+
+@*             <form asp-controller="Auth" asp-action="SignIn" asp-route-ReturnUrl="@ViewData["ReturnUrl"]" method="post" novalidate> *@
+                <div class="email">
+                    <div class="validation">
+                        <label asp-for="Form.Email">Email</label>
+                        <span asp-validation-for="Form.Email"></span>
+                    </div>
+                    <input asp-for="Form.Email" />
+                </div>
+                <div class="password">
+                    <div class="validation">
+                        <label asp-for="Form.Password">Password</label>
+                        <span asp-validation-for="Form.Password"></span>
+                    </div>
+                    <input asp-for="Form.Password" type="password" id="password" />
+                </div>
+                <div class="checkbox">
+                    <input asp-for="Form.RememberMe" type="checkbox" />
+                    <label asp-for="Form.RememberMe">Remember me</label>
+                </div>
+                @* <button type="submit" class="btn-theme">@Model.Title</button> *@
+                <div class="social-box">
+                    <NavLink asp-controller="Home" asp-action="Index">Forgot your password?</NavLink>
+                    <div class="divider"></div>
+                    <p>Or sign in with your social network</p>
+                    <div class="social-media">
+                        <a asp-action="Google" asp-controller="Auth" class="btn-theme-s"><i class="fa-brands fa-google"></i>Google</a>
+                        <a asp-action="Facebook" asp-controller="Auth" class="btn-theme-s"><i class="fa-brands fa-facebook-f"></i>Facebook</a>
+                    </div>
+                </div>
+            @* </form> *@
+        </div>
+    </div>
+</section>
+
+@* @await Html.PartialAsync("_UserMessageScriptPartial")
+@await Html.PartialAsync("_ValidationScriptPartial") *@

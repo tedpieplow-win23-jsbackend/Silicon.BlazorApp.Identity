@@ -1,0 +1,66 @@
+﻿<section id="saved-courses">
+    <div class="container">
+        <div class="menu-bar">
+            @* @await Html.PartialAsync("~/Views/Shared/Component/_AccountNavbarPartial.cshtml") *@
+        </div>
+        <div class="content">
+            <div class="section-title">
+                <h2>@Model.Course.Title</h2>
+
+                @* There's a script tied to this button (removeallcourses.js)*@
+                <button class="btn-delete"><p><i class="fa-solid fa-trash-can"></i>Delete all</p></button>
+            </div>
+
+            <div class="saved-items">
+                @if (Model.CourseList != null && Model.CourseList.Count() > 0)
+                {
+
+                    @foreach (var savedCourses in Model.CourseList)
+                    {
+                        <div class="course-card" @* onclick="location.href='@Url.Action("CourseDetails", "Courses", new { id = savedCourses.Id })' *@ >
+                            <div class="image">
+                                <img src="~/images/@savedCourses.CourseImage" />
+                            </div>
+
+                            @* There's a script tied to this link (removeonecourse.js)*@
+                            <a href="#" class="bookmark" data-course-id="@savedCourses.Id" onclick="removeOneCourse(event, @savedCourses.Id)"><i class="fa-solid fa-bookmark"></i></a>
+
+                            <div class="course-info">
+                                <h5 class="title">@savedCourses.Title</h5>
+                                <p class="author">By @savedCourses.AuthorName</p>
+                                <p class="price">$@savedCourses.Price</p>
+                                <div class="divider"></div>
+                            </div>
+                            <div class="bottom">
+                                <div>
+                                    <i class="fa-sharp fa-solid fa-clock"></i>
+                                    <p>@savedCourses.ViewHours hours</p>
+                                </div>
+                                <div>
+                                    <i class="fa-sharp fa-light fa-thumbs-up"></i>
+                                    <p>@savedCourses.LikesInPercent</p>
+                                    <p>@savedCourses.LikesInNumbers</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                }
+                else
+                {
+                    <div class="no-courses">
+                        <h5>You don't have any saved courses yet.</h5>
+                        <p>Visit our <a asp-action="Index" asp-controller="Courses">course</a> page and find out what you're missing!</p>
+                    </div>
+                    @* <div class="lottie" id="lottieAnimation" data-saved-course-ids='@Json.Serialize(Model.SavedCourseIds)'></div> *@
+                }
+
+
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    AccountDetailsVM Model = new AccountDetailsVM();
+}

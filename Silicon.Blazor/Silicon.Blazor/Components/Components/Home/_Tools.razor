@@ -1,0 +1,23 @@
+﻿@using Silicon.Blazor.ViewModels.Home
+<section id="@Model.Id" class="tools">
+    <div class="container">
+        <h1>@Model.SectionTitle.Title</h1>
+        <p>@Model.SectionTitle.Subtitle</p>
+        <div class="tool-boxes">
+            @if (Model.ToolBoxes is not null)
+            {
+                foreach (var tool in Model.ToolBoxes)
+                {
+                    <div class="box">
+                        <img src="@tool.BoxImage.ImageUrl" alt="@tool.BoxImage.AltText" />
+                        <p>@tool.BoxText</p>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    ToolsModel Model { get; set; } = new ToolsModel();
+}

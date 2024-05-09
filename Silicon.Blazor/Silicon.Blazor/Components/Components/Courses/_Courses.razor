@@ -1,0 +1,113 @@
+﻿
+@* @{
+    ViewData["Title"] = "Details";
+} *@
+
+
+<section>
+    <div class="courses container">
+        @*There's a script tied to this span*@
+        <span id="statusMessage" class="message-container"></span>
+        <div class="section-title">
+            <h1 class="h1">Courses</h1>
+            <div class="search-div">
+                <div class="dropdown select">
+                    <div class="selected" data-value="all">All categories<i class="fa-sharp fa-light fa-circle-caret-down"></i></div>
+                    <div class="select-options">
+
+                        <div class="option" data-value="all">All Categories</div>
+                        @if (Model.Categories != null)
+                        {
+                        foreach (var category in Model.Categories)
+                        {
+@*                         <div class="option" data-value="@Html.Raw(@category.CategoryName)">@category.CategoryName</div> *@
+                        }
+                        }
+                    </div>
+                </div>
+                <div class="search">
+                    <input id="searchQuery" type="search" name="searchQuery" placeholder="Search courses" />
+                    <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                </div>
+            </div>
+        </div>
+         @if (Model.AllCourses != null)
+        {
+            <div class="items">
+
+            @foreach (var course in Model.AllCourses!)
+            {
+                <div class="course-card">
+@*                     <div class="content" onclick="location.href='@Url.Action("CourseDetails", "Courses", new { id = course.Id })' "> *@
+                        <div class="image">
+                            <img src="~/images/@course.CourseImage" alt="" />
+
+                            @if (course.IsBestSeller)
+                            {
+                                <span class="best-seller">Best Seller</span>
+                            }
+@*                             <NavLink href="#" data-course-id="@course.Id" class="bookmark" onclick="saveCourse(event, @course.Id)"> <i class="fa-sharp fa-regular fa-bookmark" title="Join Course"></i></NavLink> *@
+                        </div>
+                        <div class="course-info">
+                            <h5 class="title">@course.Title</h5>
+                            <p class="author">By @course.AuthorName</p>
+
+                            @if (course.DiscountPrice != null)
+                            {
+                                <div class="discount-div">
+                                    <p class="discount-price">$ @course.DiscountPrice</p>
+                                    <p class="original-price">$ @course.Price</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="price">$ @course.Price</p>
+                            }
+
+                        </div>
+                        <div class="divider"></div>
+                        <footer>
+                            <div>
+                                <i class="fa-sharp fa-solid fa-clock"></i>
+                                <p>@course.ViewHours hours</p>
+                            </div>
+                            <div>
+                                <i class="fa-sharp fa-light fa-thumbs-up"></i>
+                                <p>@course.LikesInPercent % (@course.LikesInNumbers K)</p>
+                            </div>
+                        </footer>
+@*                     </div> *@
+                </div>
+            }
+        </div>
+
+        if (Model.Pagination != null && Model.Pagination.TotalPages > 1)
+        {
+            <div class="pagination">
+                @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                {
+                    if (i == Model.Pagination.CurrentPage)
+                    {
+                        <span class="number active">@i</span>
+                    }
+                    else
+                    {
+            @*              <NavLink class="number" href="@Url.Action("Index", new { pageNumber = i, pageSize = Model.Pagination.PageSize })">@i</NavLink> *@
+                    }
+                }
+            </div>
+            }
+        }
+@*         @if (ViewData["Status"]?.ToString() == "ConnectionFailed")
+        {
+            <span class="alert alert-danger">Failed to contact server. Please try again later...</span>
+        } *@
+    </div>
+</section>
+@code {
+    CoursesVM Model { get; set; } = new CoursesVM();
+}
+@*
+@await Html.PartialAsync("_FilterAndQueryPartial")
+@await Html.PartialAsync("_SaveCourseAndMessage")
+*@

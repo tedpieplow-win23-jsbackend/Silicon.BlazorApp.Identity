@@ -1,0 +1,260 @@
+section {
+    background-color: var(--color-gray-001);
+    padding-bottom: 120px;
+
+    .courses {
+        padding-top: 60px;
+        position: relative;
+
+        .section-title {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-bottom: 30px;
+
+            h1 {
+                color: var(--color-gray-900);
+            }
+
+            @include md {
+                flex-direction: row;
+            }
+
+            .search-div {
+                display: flex;
+                flex-direction: row;
+                margin-top: 1rem;
+                gap: 30px;
+
+                .dropdown {
+                    position: relative;
+                    min-width: 300px;
+
+
+                    .selected {
+                        position: relative;
+                        margin-bottom: .3rem;
+                        padding: 0.65rem;
+                        border: .3px solid var(--color-gray-200);
+                        border-radius: .4rem;
+                        color: var(--color-gray-700);
+                        background-color: var(--color-gray-100);
+                        cursor: pointer;
+
+                        .fa-sharp {
+                            position: absolute;
+                            top: 15px;
+                            right: 15px;
+                        }
+                    }
+
+                    .select-options {
+                        display: none;
+                        position: absolute;
+                        top: 100%;
+                        left: 0;
+                        right: 0;
+                        background-color: var(--color-gray-100);
+                        border: 1px solid var(--color-gray-400);
+                        border-radius: 0.2rem;
+                        color: var(--color-gray-700);
+                        z-index: 99;
+
+                        .option {
+                            padding: 10px;
+                            cursor: pointer;
+                        }
+
+                        .option:hover {
+                            background-color: var(--color-gray-400);
+                        }
+                    }
+                }
+
+                .search {
+                    position: relative;
+                    color: var(--color-gray-700);
+
+                    input {
+                        width: 300px;
+                        margin-bottom: .3rem;
+                        padding: 0.6rem;
+                        border: .5px solid var(--color-gray-100);
+                        border-radius: .4rem;
+                        background-color: var(--color-gray-100);
+                    }
+
+                    i {
+                        position: absolute;
+                        top: 15px;
+                        right: 12px;
+                    }
+                }
+            }
+        }
+
+        .items {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 2rem 1rem;
+
+            @include md {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            @include lg {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .course-card {
+                background-color: var(--color-gray-100);
+                box-shadow: 0 3px 10px #0000000f, 0 4px 5px #0000000c;
+                border-radius: 1.1rem;
+                overflow: hidden;
+                padding: 5px;
+                padding: 1px;
+
+                &:hover {
+                    box-shadow: 0 3px 10px rgba(99, 102, 241, 0.7), 0 4px 5px rgba(99, 102, 241, 0.5);
+                    cursor: pointer;
+                }
+
+                .content {
+                    padding: 0;
+                    text-decoration: none;
+
+                    .course-info {
+                        padding-left: 15px;
+
+                        .title {
+                            margin-top: 1rem;
+                            font-weight: 800;
+                            padding-right: 32px;
+                            color: var(--color-gray-900);
+                        }
+
+                        .price {
+                            color: $theme;
+                            font-size: 1.2rem;
+                            font-weight: 700;
+                        }
+
+                        .discount-div {
+                            display: flex;
+                            flex-direction: row;
+                            font-size: 1.2rem;
+
+                            .discount-price {
+                                color: red;
+                                font-weight: 700;
+                                padding-right: .5rem;
+                            }
+
+                            .original-price {
+                                text-decoration: line-through;
+                                font-size: 1rem;
+                                color: var(--color-gray-600);
+                            }
+                        }
+
+                        .author {
+                            @include text-s;
+                        }
+                    }
+
+                    p {
+                        color: var(--color-gray-800);
+                        padding-left: 5px;
+                    }
+
+                    .image {
+                        position: relative;
+
+                        img {
+                            width: 100%;
+                            max-width: 100%;
+                        }
+
+                        .best-seller {
+                            position: absolute;
+                            top: 10px;
+                            left: 15px;
+                            color: white;
+                            background-color: $success;
+                            padding: .1rem 0.6rem;
+                            border-radius: .3rem;
+                        }
+
+                        i {
+                            position: absolute;
+                            top: 15px;
+                            right: 16px;
+                            border-radius: 50%;
+                            font-size: 1rem;
+                            background-color: #fff;
+                            color: #000;
+                            padding: .7rem;
+
+                            &:hover {
+                                background-color: $theme;
+                            }
+                        }
+                    }
+
+                    .divider {
+                        width: 90%;
+                        height: 1px;
+                        background-color: var(--color-gray-200);
+                        margin-left: 25px;
+                    }
+
+                    footer {
+                        background-color: var(--color-gray-100);
+                        padding: 0;
+                        padding-top: 1rem;
+                        padding-left: 1rem;
+                        gap: 2rem;
+
+                        p {
+                            color: var(--color-gray-600);
+                        }
+
+                        &, * {
+                            display: flex;
+                            align-items: center;
+                        }
+                    }
+
+                    i {
+                        padding-right: .1rem;
+                        margin-bottom: 1.2rem;
+                    }
+                }
+            }
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1.8rem;
+            gap: 1rem;
+
+            .number {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: .3rem;
+                width: 45px;
+                height: 45px;
+                color: var(--color-gray-900);
+                background-color: $theme;
+            }
+
+            .active {
+                background-color: var(--color-gray-500);
+                color: var(--color-gray-100);
+            }
+        }
+    }
+}

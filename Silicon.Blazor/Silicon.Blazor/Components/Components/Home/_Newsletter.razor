@@ -1,0 +1,68 @@
+﻿@using Silicon.Blazor.ViewModels.Home
+<section id="newsletter" class="newsletter">
+    <div class="container">
+        <div class="top">
+            <h1>@Model.NewsletterTitle.Title</h1>
+            <img src="@Model.NewsletterImage.ImageUrl" alt="@Model.NewsletterImage.AltText" />
+        </div>
+        <form id="subscribe-form" method="post" novalidate>
+            <div class="checkbox-content">
+                <div class="news-title">
+                    <h5>@Model.NewsletterTitle.Subtitle</h5>
+                </div>
+                <div class="checkboxes">
+                    @foreach (var item in Model.Checkbox)
+                    {
+                        <div class="box">
+                            <input type="checkbox" id="@item.Id" />
+                            <label asp-for="@item.Id">@item.Text</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="subscribe">
+                <input id="input-email" input="email" type="email" placeholder="Your Email" />
+                <button id="submit-button" type="submit" class="btn-theme"><span>* Subscribe</span></button>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+@* <script>
+    var message = document.getElementById('success');
+    message.style.display = "none";
+    var form = document.getElementById('newsletter');
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var email = document.getElementById('input-email').value;
+        var response = await fetch(`/Home/Subscribe?email=${email}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        message.style.display = "block";
+        if (response.ok) {
+            document.getElementById('input-email').value = "";
+            message.style.backgroundColor = "#90EE90";
+            message.textContent = "Subscribed!";
+        }
+        else if (response.status === 409) {
+            message.style.backgroundColor = "#FFCCCB";
+            message.textContent = "This subscriber already exists!";
+        }
+        else if (response.status === 500) {
+            message.style.backgroundColor = "#FFCCCB";
+            message.textContent = "Internal server error. Please try later";
+        }
+        else {
+            message.style.backgroundColor = "#FFCCCB";
+            message.textContent = "Enter a valid email!";
+        }
+    });
+</script> *@
+
+@code {
+    NewsletterModel Model { get; set; } = new NewsletterModel();
+}

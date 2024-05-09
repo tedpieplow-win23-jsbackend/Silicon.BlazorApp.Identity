@@ -1,0 +1,60 @@
+#skills {
+    .container {
+        background-color: var(--color-gray-200);
+        ;
+        display: grid;
+        margin-bottom: 60px;
+        padding: 10px;
+
+        @include lg {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .section-title {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 5rem;
+            color: var(--color-gray-800);
+
+            @include lg {
+                align-items: flex-start;
+                text-align: left;
+                padding-left: 10rem;
+            }
+
+            p {
+                margin: 0;
+            }
+
+            h1 {
+                margin-bottom: 2rem;
+                color: var(--color-gray-800);
+
+                .purple {
+                    color: $theme;
+                }
+            }
+
+            .button {
+                box-shadow: 0 3px 10px #0000000f, 0 4px 5px #0000000c;
+            }
+
+            .btn-theme {
+                box-shadow: 0 3px 10px #0000000f, 0 4px 5px #0000000c;
+            }
+        }
+
+        .image {
+            display: flex;
+            justify-content: center;
+
+            img {
+                max-width: 100%;
+                align-self: center;
+            }
+        }
+    }
+}

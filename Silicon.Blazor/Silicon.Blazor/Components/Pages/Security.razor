@@ -1,0 +1,83 @@
+﻿@* @page "/security"
+
+<section id="security">
+    <div class="container">
+        <div class="menu-bar">
+            <NavBar />
+        </div>
+        <div class="security-details">
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="alert alert-success" id="userMessage" role="alert">
+                    @Model
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger" id="userMessage" role="alert">
+                    @Model.ErrorMessage
+                </div>
+            } 
+            <h2>Security</h2>
+            <h5>Password</h5>
+           @* @if (user!.IsExternalAccount)
+            {
+                <div class="external-message">
+                    <p>You are logged in via an external account. To change your password contact your authenticator</p>
+                </div>
+            }
+            else
+            {
+                <form asp-controller="Account" asp-action="Security" method="post" novalidate>
+                    <div class="current-password">
+                        <div class="input-group">
+                            <div class="validation">
+                                <label asp-for="ChangePass.Password"></label>
+                                <span asp-validation-for="ChangePass.Password"></span>
+                            </div>
+                            <input asp-for="ChangePass.Password" />
+                        </div>
+                    </div>
+                    <div class="confirm-password">
+                        <div class="input-group">
+                            <div class="validation">
+                                <label asp-for="ChangePass.NewPassword"></label>
+                                <span asp-validation-for="ChangePass.NewPassword"></span>
+                            </div>
+                            <input asp-for="ChangePass.NewPassword" />
+                        </div>
+                        <div class="input-group">
+                            <div class="validation">
+                                <label asp-for="ChangePass.ConfirmPassword"></label>
+                                <span asp-validation-for="ChangePass.ConfirmPassword"></span>
+                            </div>
+                            <input asp-for="ChangePass.ConfirmPassword" />
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <button class="btn-theme" type="submit">Change password</button>
+                        <button class="btn-gray" asp-controller="Account" asp-action="Cancel">Cancel</button>
+                    </div>
+                </form>
+            } 
+            <div class="delete-section">
+                <form asp-controller="Account" asp-action="Delete" method="post" novalidate>
+                    <h5>Delete account</h5>
+                    <p>When you delete your account, your public profile will be deactivated immediately. If you change your mind before the 14 days are up, sign in with your email and password, and we’ll send you a link to reactivate your account.</p>
+                    <div id="form-terms" class="checkbox">
+                        <input type="checkbox" asp-for="Delete.DeleteAccount" />
+                        <label asp-for="Delete.DeleteAccount">Yes, I want to delete my account.</label>
+                        <span asp-validation-for="Delete.DeleteAccount"></span>
+                    </div>
+                    <button class="btn-theme" type="submit">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section> 
+
+
+@code {
+    private AccountDetailsVM Model { get; set; }
+}
+ *@

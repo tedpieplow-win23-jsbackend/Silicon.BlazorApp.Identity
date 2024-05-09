@@ -1,0 +1,57 @@
+﻿<header @* class="@((ViewContext.RouteData.Values["Controller"]!.ToString() == "Contact") ? "background-contact" : "") *@">
+    <div class="container">
+        @* <a id="logo" asp-controller="Home" asp-action="Index"><img src="~/images/icons/@(isDark ? "silicon-logo-dark.svg" : "silicon-logo-light_theme.svg")" alt="Silicon-logo"></a> *@
+
+        <div id="menu" class="hide">
+            <nav>
+                <NavLink class="menu-link asp-fragment" asp-controller="Home" asp-action="Index" asp-fragment="overview">Overview</NavLink>
+                <NavLink class="menu-link asp-fragment" asp-controller="Home" asp-action="Index" asp-fragment="features">Features</NavLink>
+                <NavLink class="menu-link" asp-controller="Contact" asp-action="Index">Contact</NavLink>
+
+@*                 @if (User.Identity!.IsAuthenticated)
+                {
+                    <a class="menu-link" asp-controller="Courses" asp-action="Index">Courses</a>
+
+                    @if (User.IsInRole("SuperUser"))
+                    {
+                        <a class="menu-link" asp-controller="Courses" asp-action="Create">Admin Portal</a>
+                    }
+                } *@
+
+            </nav>
+        </div>
+
+        <div class="btn-switch">
+            <label>Light</label>
+            <label class="switch" for="switch-mode">
+                <input type="checkbox" id="switch-mode" @* checked="@isDark" *@ />
+                <span class="slider round" id="slider"></span>
+            </label>
+            <label>Dark</label>
+        </div>
+
+        <div class="account-buttons hide" id="account-buttons">
+@*             @if (User.Identity.IsAuthenticated)
+            {
+
+                <a asp-controller="Auth" asp-action="SignOut" class="sign-out" title="Sign Out"><i class="fa-regular fa-right-from-bracket "></i></a>
+                <a asp-controller="Account" asp-action="Details" title="Profile"><img class="profile-image" src="~/images/profiles/@user!.ProfileImageUrl" /></a>
+            }
+            else
+            {
+                <a class="btn-gray" asp-controller="Auth" asp-action="SignIn"><i class="fa-regular fa-right-to-bracket"></i><span>Sign In</span></a>
+                <a class="btn-theme" asp-controller="Auth" asp-action="SignUp"><i class="fa-regular fa-user"></i><span>Sign Up</span></a>
+            } *@
+        </div>
+
+        <button onclick="toggleMenu()" class="btn-mobile">
+            <i id="barsIcon" class="fa-regular fa-bars"></i>
+            <i id="crossIcon" class="fa-sharp fa-solid fa-xmark hide"></i>
+        </button>
+
+    </div>
+</header>
+
+@code {
+
+}

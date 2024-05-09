@@ -1,0 +1,100 @@
+#signup {
+    padding-top: 50px;
+
+    .container {
+        display: flex;
+        justify-content: center;
+
+        h1 {
+            color: var(--color-gray-900);
+        }
+
+        p {
+            color: var(--color-gray-700);
+        }
+
+        .form-content {
+            width: 480px;
+
+            .form-name {
+                display: flex;
+                justify-content: space-between;
+
+                input {
+                    width: 230px;
+                }
+            }
+
+            .input-field {
+                display: flex;
+                flex-direction: column;
+
+
+                .test {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: baseline;
+                }
+
+                span {
+                    position: relative;
+
+                    &.field-validation-error {
+                        @include text-s;
+                        color: $danger;
+
+                        &::after {
+                            position: absolute;
+                            right: 10px;
+                            top: 38px;
+                            z-index: 1;
+                            font-size: 2em;
+                            display: block;
+                            content: '\2BBF';
+                        }
+                    }
+                }
+
+                input {
+                    border: 1px solid var(--color-gray-400);
+                    background-color: var(--color-gray-100);
+                    padding: 8px;
+                    border-radius: .3rem;
+                    margin-bottom: .4rem;
+
+                    &.input-validation-error {
+                        border: 0.050rem solid $danger !important;
+                        color: $danger;
+                    }
+                }
+
+                label {
+                    font-weight: 800;
+                    margin-top: 15px;
+                    margin-bottom: 5px;
+                    color: var(--color-gray-800);
+                }
+            }
+
+            .checkbox {
+                margin-top: 20px;
+                display: flex;
+                flex-flow: row wrap;
+                accent-color: $theme;
+
+                label {
+                    margin-left: 10px;
+                }
+
+                span {
+                    color: $danger;
+                }
+            }
+        }
+
+        .btn-theme {
+            width: 100%;
+            margin-top: 20px;
+        }
+    }
+}

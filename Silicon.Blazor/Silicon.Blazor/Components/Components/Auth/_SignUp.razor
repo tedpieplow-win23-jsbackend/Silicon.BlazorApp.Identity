@@ -1,0 +1,58 @@
+﻿@* ﻿@model SignUpViewModel *@
+
+<section id="signup">
+    <div class="container">
+        <form method="post" asp-controller="auth" asp-action="SignUp" novalidate>
+            <h1>Create Account</h1>
+            <p>Already have an accout? <NavLink asp-controller="auth" asp-action="SignIn">Sign in here</NavLink></p>
+
+            <div class="form-content">
+                <div class="form-name">
+                    <div id="form-firstname" class="input-field">
+                        <div class="test">
+                            <label asp-for="Form.FirstName"></label>
+                            <span asp-validation-for="Form.FirstName"></span>
+                        </div>
+                        <input asp-for="Form.FirstName" />
+                    </div>
+                    <div id="form-lastname" class="input-field">
+                        <div class="test">
+                            <label asp-for="Form.LastName"></label>
+                            <span asp-validation-for="Form.LastName"></span>
+                        </div>
+                        <input asp-for="Form.LastName" />
+                    </div>
+                </div>
+                <div id="form-email" class="input-field">
+                    <div class="test">
+                        <label asp-for="Form.Email"></label>
+                        <span asp-validation-for="Form.Email"></span>
+                    </div>
+                    <input asp-for="Form.Email" />
+                </div>
+                <div id="form-password" class="input-field">
+                    <div class="test">
+                        <label asp-for="Form.Password"></label>
+                        <span asp-validation-for="Form.Password"></span>
+                    </div>
+                    <input asp-for="Form.Password" />
+                </div>
+                <div id="form-confirm" class="input-field">
+                    <div class="test">
+                        <label asp-for="Form.ConfirmPassword"></label>
+                        <span asp-validation-for="Form.ConfirmPassword"></span>
+                    </div>
+                    <input asp-for="Form.ConfirmPassword" />
+                </div>
+                <div id="form-terms" class="checkbox">
+                    <input type="checkbox" asp-for="Form.TermsAndConditions" />
+                    <label asp-for="Form.TermsAndConditions">I agree to the terms and conditions</label>
+                    <span asp-validation-for="Form.TermsAndConditions"></span>
+                </div>
+            </div>
+            <button class="btn-theme" type="submit">Sign Up</button>
+        </form>
+    </div>
+</section>
+
+@* @await Html.PartialAsync("_ValidationScriptPartial") *@

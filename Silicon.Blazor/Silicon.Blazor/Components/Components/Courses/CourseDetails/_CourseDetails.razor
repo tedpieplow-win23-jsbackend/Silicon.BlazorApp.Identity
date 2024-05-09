@@ -1,0 +1,65 @@
+﻿<section id="course-description" class="container">
+    <div class="course-content">
+        <div class="description-section">
+            <div class="learn-points">
+                <div class="description">
+                    <p>Course Description</p>
+                    <p>@Model.CourseDescription</p>
+                </div>
+                <div class="learn">
+                    <p>What you'll learn</p>
+                    <ul class="list" style="list-style-type: none;">
+                        @if (Model.LearnPoints is not null)
+                        {
+                            @foreach (var point in Model.LearnPoints)
+                            {
+                                <li><i class="fa-sharp fa-regular fa-circle-check"></i> @point</li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="course-info">
+                <div class="course-box">
+                    <p class="title">This course includes:</p>
+                    <p><i class="fa-sharp fa-light fa-display"></i> @Model.ViewHours on-demand video</p>
+                    <p><i class="fa-thin fa-file"></i> @Model.Articles articles</p>
+                    <p><i class="fa-sharp fa-thin fa-download"></i> @Model.Resources downloadable resources</p>
+                    <p><i class="fa-regular fa-infinity"></i> @Model.AccessTime access</p>
+                    <p><i class="fa-sharp fa-thin fa-trophy"></i> Certificate of completion</p>
+
+                    <div class="course-price">
+                        @if (Model.DiscountPrice is null)
+                        {
+                            <p style="text-decoration:none" class="ord-price">$@Model.Price</p>
+                        }
+                        else
+                        {
+                            <p class="discount-price">$@Model.DiscountPrice</p>
+                            <p class="ord-price">$@Model.Price</p>
+                        }
+                    </div>
+                    <NavLink class="btn-theme">Join Course</NavLink>
+                </div>
+            </div>
+        </div>
+        <div class="details-section">
+            <p class="details-title">Program Details</p>
+            <ol class="detail-list">
+                @if (Model.ProgramDetailsTitle is not null && Model.ProgramDetailsText is not null)
+                {
+                    @foreach (var (detail, detailText) in Model.ProgramDetailsTitle.Zip(Model.ProgramDetailsText))
+                    {
+                        <li class="item">
+                            <p class="title">@detail</p>
+                            <p class="subtitle">@detailText</p>
+                        </li>
+                    }
+                }
+            </ol>
+        </div>
+    </div>
+</section>
+@code {
+    Course Model { get; set; } = new Course();
+}

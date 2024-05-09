@@ -1,0 +1,115 @@
+.author-content {
+    @include xxl {
+        display: flex;
+    }
+
+    background-color: $gray-900;
+
+    .squiggly {
+        display: none;
+
+        @include xxl {
+            display: block;
+            position: absolute;
+            z-index: 1;
+        }
+    }
+
+    .author-image {
+        z-index: 10;
+        text-align: center;
+        margin-bottom: 40px;
+
+        @include xxl {
+            margin: 0px;
+        }
+
+        img {
+            width: 20%;
+            border-radius: 50%;
+            margin-top: 20px;
+
+            @include xxl {
+                width: auto;
+                border-radius: 0%;
+                margin: 0px;
+            }
+        }
+    }
+
+    .author-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-left: 125px;
+        padding-right: 125px;
+
+        .author-info {
+            display: flex;
+            flex-direction: column;
+            row-gap: 40px;
+
+            .learn-from {
+                color: $white;
+                opacity: 0.6;
+                font-size: 20px;
+                text-align: center;
+
+                @include xxl {
+                    text-align: left;
+                }
+            }
+
+            .author-name {
+                color: $white;
+                font-size: 40px;
+                font-weight: 800;
+                text-align: center;
+
+                @include xxl {
+                    text-align: left;
+                }
+            }
+
+            .author-description {
+                color: $white;
+                opacity: 0.6;
+            }
+        }
+
+        .social {
+            display: flex;
+            gap: 20px;
+            z-index: 2;
+            margin-bottom: 15px;
+            align-items: center;
+            align-content: center;
+            justify-content: center;
+
+            @include xxl{
+                justify-content: flex-start;
+            }
+
+            .youtube-btn {
+                a {
+                    background-color: #FF0000;
+
+                    &:hover {
+                        background-color: black;
+                    }
+                }
+            }
+
+            .fb-btn {
+                a {
+                    background-color: #1877F2;
+
+                    &:hover {
+                        background-color: black;
+                    }
+                }
+            }
+        }
+    }
+}

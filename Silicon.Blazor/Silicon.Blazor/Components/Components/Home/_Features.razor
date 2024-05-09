@@ -1,0 +1,24 @@
+﻿@using Silicon.Blazor.ViewModels.Home
+<section id="@Features.Id" class="features">
+    <div class="container">
+        <h1>@Features.Title</h1>
+        <p>@Features.Subtitle</p>
+        <div class="tool-features">
+            @if (Features.Boxes is not null)
+            {
+                foreach (var item in Features.Boxes)
+                {
+                    <div class="box">
+                        <img src="@item.BoxImage.ImageUrl" alt="@item.BoxImage.AltText">
+                        <h5>@item.BoxTitle</h5>
+                        <p>@item.BoxText</p>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    FeaturesModel Features { get; set; } = new FeaturesModel();
+}

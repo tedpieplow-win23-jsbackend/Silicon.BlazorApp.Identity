@@ -1,0 +1,198 @@
+#course-showcase {
+    position: relative;
+    margin-bottom: 60px;
+    z-index: 1;
+
+    .header-image {
+        width: 100%;
+
+        @include xxxl {
+            max-height: 90%;
+            position: absolute;
+            z-index: -1;
+        }
+    }
+
+    .container {
+        .path {
+            margin-bottom: 10px;
+            position: absolute;
+            top: 0;
+            color: $white;
+            padding-top: 15px;
+
+            @include md {
+                padding-top: 40px;
+            }
+
+            @include xxxl {
+                position: static;
+                padding-top: 40px;
+                margin-bottom: 80px;
+            }
+        }
+
+        .header-container {
+
+            .tags {
+                display: flex;
+                gap: 10px;
+                margin-top: 20px;
+                margin-bottom: 20px;
+
+
+                .tag-1 {
+                    background-color: forestgreen;
+                    padding-right: 10px;
+                    padding-left: 10px;
+                    border-radius: 5px;
+
+                    span {
+                        color: $white;
+                    }
+                }
+
+                .tag-2 {
+                    background-color: $gray-200;
+                    padding-right: 10px;
+                    padding-left: 10px;
+                    border-radius: 5px;
+
+                    span {
+                        font-weight: 600;
+                    }
+                }
+            }
+
+            .course-title {
+                margin-bottom: 40px;
+
+
+                @include lg {
+                    box-shadow: none;
+                    position: absolute;
+                    top: 10%;
+                }
+
+                @include xxxl {
+                    position: static;
+                }
+
+                h1 {
+
+                    @include lg {
+                        margin-top: 40px;
+                        color: $white;
+                    }
+                }
+
+                span {
+
+                    @include lg {
+                        color: $white;
+                        opacity: 0.7;
+                    }
+                }
+            }
+
+            .author-rating-box {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                padding: 15px;
+                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+
+
+
+                @include xxxl {
+                    display: flex;
+                    flex-direction: column;
+                    box-shadow: none;
+                    padding: 0px;
+                }
+
+                .interactions {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+
+                    @include lg {
+                        flex-direction: row;
+                    }
+
+                    @include xxxl {
+                        flex-direction: row;
+                    }
+
+                    .rating {
+                        display: flex;
+                        align-items: center;
+                        color: orange;
+                    }
+
+                    span:nth-child(n + 3) {
+
+                        @include xxxl {
+                            padding-left: 15px;
+                        }
+                    }
+
+                    span {
+                        @include xxxl {
+                            border-right: 1px solid;
+                            padding-right: 15px;
+                            color: $white;
+                            opacity: 0.5;
+
+
+                            &:last-child {
+                                border: none;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .author {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+
+                @include xxxl {
+                    justify-content: flex-start;
+                    margin-left: 0px;
+                    margin-top: 120px;
+                }
+
+                .created-by {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-around;
+
+                    span:nth-of-type(1) {
+                        font-weight: 700;
+                    }
+
+                    span {
+
+                        @include xxxl {
+                            color: $white;
+                        }
+                    }
+                }
+
+                img {
+                    border-radius: 50%;
+
+                    @include xxxl {
+                        width: 4%;
+                    }
+
+                    width: 20%;
+                    height: auto;
+                }
+            }
+        }
+    }
+}

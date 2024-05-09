@@ -1,0 +1,67 @@
+@* @using Models.Account *@
+
+<form asp-controller="Account" asp-action="AccountBasicInfo" method="post" novalidate>
+    <div class="user-details">
+        <div class="section-title">
+
+            @if (!string.IsNullOrEmpty(WM.SuccessMessage))
+            {
+                <span class="alert alert-success" role="alert" id="userMessage">
+                    @WM.SuccessMessage
+                </span>
+            }
+            @if (!string.IsNullOrEmpty(WM.ErrorMessage))
+            {
+                <span class="alert alert-danger" role="alert" id="userMessage">
+                    @WM.ErrorMessage
+                </span>
+            }
+            <h2>Account Details</h2>
+            <h5>Basic Info</h5>
+        </div>
+        <div class="name">
+            <div class="firstname">
+                <div class="validation">
+                    <label asp-for="Details.FirstName">First name</label>
+                    <span asp-validation-for="Details.FirstName"></span>
+                </div>
+                <input asp-for="Details.FirstName" disabled="@WM.ContactInfo.IsExternalAccount" />
+            </div>
+            <div class="lastname">
+                <div class="validation">
+                    <label asp-for="Details.LastName">Last name</label>
+                    <span asp-validation-for="Details.LastName"></span>
+                </div>
+                <input asp-for="Details.LastName" disabled="@WM.ContactInfo.IsExternalAccount" />
+            </div>
+        </div>
+        <div class="contact-info">
+            <div class="email">
+                <div class="validation">
+                    <label asp-for="Details.Email">Email Address</label>
+                    <span asp-validation-for="Details.Email"></span>
+                </div>
+                <input asp-for="Details.Email" disabled="@WM.ContactInfo.IsExternalAccount" />
+            </div>
+            <div class="phone">
+                <div class="validation">
+                    <label asp-for="Details.Phone">Phone</label>
+                    <span asp-validation-for="Details.Phone"></span>
+                </div>
+                <input asp-for="Details.Phone" />
+            </div>
+        </div>
+    </div>
+    <div class="bio">
+        <label asp-for="Details.Bio">Bio <span>(optional)</span></label>
+        <textarea asp-for="Details.Bio"></textarea>
+        <div class="user-buttons">
+            <a asp-controller="Account" asp-action="Cancel" class="btn-gray">Cancel</a>
+            <button type="submit" class="btn-theme" id="knappen">Save Changes</button>
+        </div>
+    </div>
+</form>
+
+@code {
+    private AccountDetailsVM WM { get; set; } = new(); 
+}

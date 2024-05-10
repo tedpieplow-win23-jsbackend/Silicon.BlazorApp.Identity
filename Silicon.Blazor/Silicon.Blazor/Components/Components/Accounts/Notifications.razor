@@ -1,4 +1,7 @@
-﻿<div class="notifications">
+﻿@inject AuthenticationStateProvider authenticationStateProvider
+@inject UserService userService
+
+<div class="notifications">
         <div class="section-title">
             <h2>Notifications</h2>
             <div class="pref-email">
@@ -35,6 +38,28 @@
         </div>
 
     </div>
-@code {
 
+@code {
+    private bool isSubscribed;
+
+    private async Task<ClaimsPrincipal> GetUserClaimsAsync()
+    {
+        var authenticationState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        return authenticationState.User;
+    }
+
+    private async Task ToggleSubscription()
+    {
+        var userClaims = await GetUserClaimsAsync();
+        var response = await userService.ManageSubscription(isSubscribed, userClaims);
+
+        if (response.StatusCode == StatusCode.OK)
+        {
+
+        }
+        else
+        {
+            
+        }
+    }
 }

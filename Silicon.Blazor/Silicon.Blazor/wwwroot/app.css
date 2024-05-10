@@ -1958,7 +1958,7 @@ section .courses .pagination .active {
   }
 }
 #details .container .menu-bar .profile {
-  text-align: center;
+  text-align: left;
 }
 @media (min-width: 768px) {
   #details .container .menu-bar .profile {

@@ -1,8 +1,9 @@
-﻿
-@* @{
-    ViewData["Title"] = "Details";
-} *@
+﻿@using System.Text.Json
+@using Azure.Messaging.ServiceBus
+@inject ICoursesVM ViewModel
 
+
+<PageTitle>Courses</PageTitle>
 
 <section>
     <div class="courses container">
@@ -16,13 +17,15 @@
                     <div class="select-options">
 
                         <div class="option" data-value="all">All Categories</div>
-                        @if (Model.Categories != null)
+
+                        @if (ViewModel.Categories != null)
                         {
-                        foreach (var category in Model.Categories)
-                        {
-@*                         <div class="option" data-value="@Html.Raw(@category.CategoryName)">@category.CategoryName</div> *@
+                            foreach (var category in ViewModel.Categories)
+                            {
+                                <div class="option" data-value="(@category.CategoryName)">@category.CategoryName</div>
+                            }
                         }
-                        }
+
                     </div>
                 </div>
                 <div class="search">
@@ -31,14 +34,14 @@
                 </div>
             </div>
         </div>
-         @if (Model.AllCourses != null)
+
+        @if (ViewModel.AllCourses != null)
         {
             <div class="items">
 
-            @foreach (var course in Model.AllCourses!)
-            {
-                <div class="course-card">
-@*                     <div class="content" onclick="location.href='@Url.Action("CourseDetails", "Courses", new { id = course.Id })' "> *@
+                @foreach (var course in ViewModel.AllCourses!)
+                {
+                    <div class="course-card" @onclick="() => ViewModel.GoToCourseDetails(course.Id)">
                         <div class="image">
                             <img src="~/images/@course.CourseImage" alt="" />
 
@@ -46,8 +49,10 @@
                             {
                                 <span class="best-seller">Best Seller</span>
                             }
-@*                             <NavLink href="#" data-course-id="@course.Id" class="bookmark" onclick="saveCourse(event, @course.Id)"> <i class="fa-sharp fa-regular fa-bookmark" title="Join Course"></i></NavLink> *@
+
+                            <NavLink href="#" data-course-id="@course.Id" class="bookmark" @onclick="() => ViewModel.SaveCourse(course.Id)"> <i class="fa-sharp fa-regular fa-bookmark" title="Join Course"></i></NavLink>
                         </div>
+
                         <div class="course-info">
                             <h5 class="title">@course.Title</h5>
                             <p class="author">By @course.AuthorName</p>
@@ -76,36 +81,44 @@
                                 <p>@course.LikesInPercent % (@course.LikesInNumbers K)</p>
                             </div>
                         </footer>
-@*                     </div> *@
-                </div>
-            }
-        </div>
-
-        if (Model.Pagination != null && Model.Pagination.TotalPages > 1)
-        {
-            <div class="pagination">
-                @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
-                {
-                    if (i == Model.Pagination.CurrentPage)
-                    {
-                        <span class="number active">@i</span>
-                    }
-                    else
-                    {
-            @*              <NavLink class="number" href="@Url.Action("Index", new { pageNumber = i, pageSize = Model.Pagination.PageSize })">@i</NavLink> *@
-                    }
+                    </div>
                 }
             </div>
+
+            if (ViewModel.Pagination != null && ViewModel.Pagination.TotalPages > 1)
+            {
+
+                <div class="pagination">
+                    @for (int i = 1; i <= ViewModel.Pagination.TotalPages; i++)
+                    {
+                        if (i == ViewModel.Pagination.CurrentPage)
+                        {
+                            <span class="number active">@i</span>
+                        }
+                        else
+                        {
+                            <NavLink class="number" href="@($"?pageNumber={i}&pageSize={ViewModel.Pagination.PageSize}")">@i</NavLink>
+                        }
+                    }
+                </div>
             }
         }
-@*         @if (ViewData["Status"]?.ToString() == "ConnectionFailed")
+
+        @if (ViewModel.GetConnectionFailedStatus())
         {
             <span class="alert alert-danger">Failed to contact server. Please try again later...</span>
-        } *@
+        }
+
     </div>
 </section>
+
+
 @code {
-    CoursesVM Model { get; set; } = new CoursesVM();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ViewModel.OnInitializedAsync();
+    }
 }
 @*
 @await Html.PartialAsync("_FilterAndQueryPartial")

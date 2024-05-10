@@ -56,7 +56,7 @@
         <label asp-for="Details.Bio">Bio <span>(optional)</span></label>
         <textarea asp-for="Details.Bio"></textarea>
         <div class="user-buttons">
-            <a asp-controller="Account" asp-action="Cancel" class="btn-gray">Cancel</a>
+            <NavLink asp-controller="Account" asp-action="Cancel" class="btn-gray">Cancel</NavLink>
             <button type="submit" class="btn-theme" id="knappen">Save Changes</button>
         </div>
     </div>

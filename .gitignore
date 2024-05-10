@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Silicon.Blazor/Silicon.Blazor/appsettings.json
+/Silicon.Blazor/Silicon.Blazor/appsettings.Development.json
+/Silicon.Blazor/Silicon.Blazor/appsettings.json

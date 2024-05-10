@@ -10,7 +10,7 @@
 
                 <AuthorizeView>
                     <Authorized>
-                        <a href="/courses" class="menu-link">Courses</a>
+                        <NavLink href="/courses" class="menu-link">Courses</NavLink>
                     </Authorized>
                 </AuthorizeView>
 @*                     @if (User.IsInRole("SuperUser"))
@@ -20,14 +20,14 @@
             </nav>
         </div>
 
-        <div class="btn-switch">
+@*         <div class="btn-switch">
             <label>Light</label>
             <label class="switch" for="switch-mode">
-                <input type="checkbox" id="switch-mode" @* checked="@isDark" *@ />
+                <input type="checkbox" id="switch-mode" />
                 <span class="slider round" id="slider"></span>
             </label>
             <label>Dark</label>
-        </div>
+        </div> *@
 
         <div class="account-buttons hide" id="account-buttons">
             <AuthorizeView>

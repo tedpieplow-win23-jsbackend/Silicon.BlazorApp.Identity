@@ -1,6 +1,8 @@
-﻿namespace Silicon.Blazor.Services
+﻿using Silicon.Blazor.Data;
+
+namespace Silicon.Blazor.Services;
+
+public class UserService(ApplicationDbContext context)
 {
-    public class UserService
-    {
-    }
+private readonly ApplicationDbContext _context = context;
 }

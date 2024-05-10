@@ -1692,7 +1692,7 @@ section .courses .pagination .active {
   display: flex;
   flex-direction: column;
 }
-#signup .container .form-content .input-field .test {
+#signup .container .form-content .input-field .input-labels {
   display: flex;
   justify-content: space-between;
   align-items: baseline;

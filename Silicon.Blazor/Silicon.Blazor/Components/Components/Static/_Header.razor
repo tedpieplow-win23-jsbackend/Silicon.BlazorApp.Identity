@@ -1,23 +1,22 @@
 ﻿<header @* class="@((ViewContext.RouteData.Values["Controller"]!.ToString() == "Contact") ? "background-contact" : "") *@">
     <div class="container">
-        @* <a id="logo" asp-controller="Home" asp-action="Index"><img src="~/images/icons/@(isDark ? "silicon-logo-dark.svg" : "silicon-logo-light_theme.svg")" alt="Silicon-logo"></a> *@
+        @* <NavLink id="logo" href="/"><img src="/images/icons/@(isDark ? "silicon-logo-dark.svg" : "silicon-logo-light_theme.svg")" alt="Silicon-logo"></NavLink> *@
 
         <div id="menu" class="hide">
             <nav>
-                <NavLink class="menu-link asp-fragment" asp-controller="Home" asp-action="Index" asp-fragment="overview">Overview</NavLink>
-                <NavLink class="menu-link asp-fragment" asp-controller="Home" asp-action="Index" asp-fragment="features">Features</NavLink>
-                <NavLink class="menu-link" asp-controller="Contact" asp-action="Index">Contact</NavLink>
+                <NavLink href="/" class="menu-link asp-fragment">Overview</NavLink>
+                <NavLink href="#features" class="menu-link asp-fragment">Features</NavLink>
+                <NavLink href="/contact" class="menu-link">Contact</NavLink>
 
-@*                 @if (User.Identity!.IsAuthenticated)
-                {
-                    <a class="menu-link" asp-controller="Courses" asp-action="Index">Courses</a>
-
-                    @if (User.IsInRole("SuperUser"))
+                <AuthorizeView>
+                    <Authorized>
+                        <NavLink href="/courses" class="menu-link">Courses</NavLink>
+                    </Authorized>
+                </AuthorizeView>
+@*                     @if (User.IsInRole("SuperUser"))
                     {
                         <a class="menu-link" asp-controller="Courses" asp-action="Create">Admin Portal</a>
-                    }
-                } *@
-
+                    } *@
             </nav>
         </div>
 
@@ -31,17 +30,16 @@
         </div>
 
         <div class="account-buttons hide" id="account-buttons">
-@*             @if (User.Identity.IsAuthenticated)
-            {
-
-                <a asp-controller="Auth" asp-action="SignOut" class="sign-out" title="Sign Out"><i class="fa-regular fa-right-from-bracket "></i></a>
-                <a asp-controller="Account" asp-action="Details" title="Profile"><img class="profile-image" src="~/images/profiles/@user!.ProfileImageUrl" /></a>
-            }
-            else
-            {
-                <a class="btn-gray" asp-controller="Auth" asp-action="SignIn"><i class="fa-regular fa-right-to-bracket"></i><span>Sign In</span></a>
-                <a class="btn-theme" asp-controller="Auth" asp-action="SignUp"><i class="fa-regular fa-user"></i><span>Sign Up</span></a>
-            } *@
+            <AuthorizeView>
+                <Authorized>
+                    <NavLink class="sign-out" title="Sign Out"><i class="fa-regular fa-right-from-bracket "></i></NavLink>
+                    @* <NavLink title="Profile"><img class="profile-image" src="/images/profiles/@user!.ProfileImageUrl" /></NavLink> *@
+                </Authorized>
+                <NotAuthorized>
+                    <NavLink href="/signin" class="btn-gray"><i class="fa-regular fa-right-to-bracket"></i><span>Sign In</span></NavLink>
+                    <NavLink href="/signup" class="btn-theme"><i class="fa-regular fa-user"></i><span>Sign Up</span></NavLink>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
 
         <button onclick="toggleMenu()" class="btn-mobile">

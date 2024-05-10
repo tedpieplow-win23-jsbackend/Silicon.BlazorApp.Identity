@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Silicon.Blazor.Components.Account;
 using Silicon.Blazor.Data;
+using Silicon.Blazor.Services;
 using Silicon.Blazor.ViewModels.Courses;
 
 namespace Silicon.Blazor.Configurations;
@@ -21,7 +22,11 @@ public static class ServiceConfiguration
         services.AddScoped<IdentityRedirectManager>();
         services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
         services.AddScoped<ICoursesVM, CoursesVM>();
+        services.AddScoped<UserService>();
+
         services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+
         services.AddAuthentication(options =>
         {
             options.DefaultScheme = IdentityConstants.ApplicationScheme;

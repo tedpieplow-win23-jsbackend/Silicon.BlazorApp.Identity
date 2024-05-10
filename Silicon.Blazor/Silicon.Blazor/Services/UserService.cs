@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using Silicon.Blazor.Data;
+using Silicon.Blazor.Factories;
 using Silicon.Blazor.Models;
 using System.Security.Claims;
 

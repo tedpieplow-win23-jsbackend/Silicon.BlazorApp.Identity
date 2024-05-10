@@ -21,6 +21,7 @@ public class ApplicationUser : IdentityUser
     public DateTime? Updated { get; set; }
     public bool IsExternalAccount { get; set; } = false;
     public bool IsDarkMode { get; set; } = false;
+    public bool IsSubscribed { get; set; } = false;
 
     public ICollection<UserAddressEntity> UserAddresses { get; set; } = new List<UserAddressEntity>();
 }

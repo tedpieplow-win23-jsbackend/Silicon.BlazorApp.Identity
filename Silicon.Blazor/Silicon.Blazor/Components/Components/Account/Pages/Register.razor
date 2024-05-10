@@ -15,11 +15,134 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Register</PageTitle>
+<PageTitle>Sign up</PageTitle>
 
-<h1>Register</h1>
+<section id="signup">
+    <div class="container">
 
-<div class="row">
+        @if (!string.IsNullOrEmpty(StatusMessage))
+        {
+            <div class="alert alert-danger">
+                @StatusMessage
+            </div>
+        }
+
+        <EditForm FormName="signupform" Model="SignUpForm" OnValidSubmit="SignUp" method="post"novalidate>
+            <h1>Create Account</h1>
+            <p>Already have an account? <NavLink href="/signin">Sign in here</NavLink></p>
+
+            <div class="form-content">
+                <div class="form-name">
+
+                    <div id="form-firstname" class="input-field">
+                        <div class="test">
+                            <label asp-for="Form.FirstName"></label>
+                            <span asp-validation-for="Form.FirstName"></span>
+                        </div>
+                        <input asp-for="Form.FirstName" />
+                    </div>
+
+                    <div id="form-lastname" class="input-field">
+                        <div class="test">
+                            <label asp-for="Form.LastName"></label>
+                            <span asp-validation-for="Form.LastName"></span>
+                        </div>
+                        <input asp-for="Form.LastName" />
+                    </div>
+
+                </div>
+
+                <div id="form-email" class="input-field">
+                    <div class="test">
+                        <label asp-for="Form.Email"></label>
+                        <span asp-validation-for="Form.Email"></span>
+                    </div>
+                    <input asp-for="Form.Email" />
+                </div>
+
+                <div id="form-password" class="input-field">
+                    <div class="test">
+                        <label asp-for="Form.Password"></label>
+                        <span asp-validation-for="Form.Password"></span>
+                    </div>
+                    <input asp-for="Form.Password" />
+                </div>
+
+                <div id="form-confirm" class="input-field">
+                    <div class="test">
+                        <label asp-for="Form.ConfirmPassword"></label>
+                        <span asp-validation-for="Form.ConfirmPassword"></span>
+                    </div>
+                    <input asp-for="Form.ConfirmPassword" />
+                </div>
+
+                <div id="form-terms" class="checkbox">
+                    <input type="checkbox" asp-for="Form.TermsAndConditions" />
+                    <label asp-for="Form.TermsAndConditions">I agree to the terms and conditions</label>
+                    <span asp-validation-for="Form.TermsAndConditions"></span>
+                </div>
+
+            </div>
+            <button class="btn-theme" type="submit">Sign Up</button>
+        </EditForm>
+    </div>
+</section>
+
+
+@code {
+    [SupplyParameterFromQuery]
+    private string? StatusMessage { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    [SupplyParameterFromForm]
+    private SignUpModel SignUpForm { get; set; } = new();
+
+    public void SignUp()
+    {
+        
+    }
+
+    public class SignUpModel
+    {
+        [Display(Name = "First name", Prompt = "Enter your first name", Order = 0)]
+        [Required(ErrorMessage = "Required")]
+        [MinLength(2, ErrorMessage = "Invalid")]
+        public string FirstName { get; set; } = null!;
+
+        [Display(Name = "Last name", Prompt = "Enter your last name", Order = 1)]
+        [Required(ErrorMessage = "Required")]
+        [MinLength(2, ErrorMessage = "Invalid")]
+        public string LastName { get; set; } = null!;
+
+        [Display(Name = "Email address", Prompt = "Enter your email address", Order = 2)]
+        [Required(ErrorMessage = "Required")]
+        [DataType(DataType.EmailAddress)]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid e-mail address.")]
+        public string Email { get; set; } = null!;
+
+        [Display(Name = "Password", Prompt = "Enter your password", Order = 3)]
+        [DataType(DataType.Password)]
+        [Required(ErrorMessage = "Required")]
+        [RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$", ErrorMessage = "Password not strong enough")]
+        public string Password { get; set; } = null!;
+
+        [Display(Name = "Confirm password", Prompt = "Confirm password", Order = 4)]
+        [DataType(DataType.Password)]
+        [Required(ErrorMessage = "Confirm your password")]
+        [Compare(nameof(Password), ErrorMessage = "Password does not match")]
+        public string ConfirmPassword { get; set; } = null!;
+
+        [Display(Name = "Terms and conditions", Order = 5)]
+        public bool TermsAndConditions { get; set; } = false;
+    }
+}
+
+
+
+
+@* <div class="row">
     <div class="col-md-4">
         <StatusMessage Message="@Message" />
         <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
@@ -142,4 +265,4 @@
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = "";
     }
-}
+} *@

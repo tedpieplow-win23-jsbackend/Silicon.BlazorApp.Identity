@@ -117,32 +117,32 @@
         @include text-nav;
     }
 
-    .switch {
+    .switch-isDarkMode {
         position: relative;
         display: inline-block;
         width: 46px;
         height: 26px;
 
-        & input {
+        & .input2 {
             opacity: 0;
             width: 0;
             height: 0;
 
-            &:checked + .slider {
-                background-color: $success;
+            &:checked + .slider2 {
+                background-color: $theme;
             }
 
-            &:focus + .slider {
-                box-shadow: 0 0 1px $success;
+            &:focus + .slider2 {
+                box-shadow: 0 0 1px $theme;
             }
 
-            &:checked + .slider:before {
+            &:checked + .slider2:before {
                 transform: translateX(20px) scale(1.2);
                 background-color: $white;
             }
         }
 
-        .slider {
+        .slider2 {
             position: absolute;
             cursor: pointer;
             top: 0;
@@ -163,27 +163,31 @@
                 transition: .4s;
             }
 
-            &.round {
+            &.round2 {
                 border-radius: 34px;
             }
 
-            &.round:before {
+            &.round2:before {
                 border-radius: 50%;
             }
         }
     }
 }
 
-.btn-switch-isDarkMode {
+.btn-reset-switch {
     display: flex;
     align-items: center;
     gap: 10px;
+
+    .switch-text {
+        padding-top: 40px;
+    }
 
     label {
         @include text-nav;
     }
 
-    .switch-isDarkMode {
+    .switch {
         position: relative;
         display: inline-block;
         width: 46px;
@@ -193,19 +197,6 @@
             opacity: 0;
             width: 0;
             height: 0;
-
-            &:checked + .slider {
-                background-color: $theme;
-            }
-
-            &:focus + .slider {
-                box-shadow: 0 0 1px $theme;
-            }
-
-            &:checked + .slider:before {
-                transform: translateX(20px) scale(1.2);
-                background-color: $theme;
-            }
         }
 
         .slider {

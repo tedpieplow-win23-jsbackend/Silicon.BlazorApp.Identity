@@ -11,9 +11,9 @@
         </div>
     </div>
 
-    <div class="btn-switch">
-        <label class="@GetSwitchState()" for="switch-mode">
-            <input type="checkbox" id="switch-mode" @onclick="ToggleSubscription" />
+    <div class="@GetSwitchState()">
+        <label class="switch" for="switch-mode-1">
+            <input type="checkbox" id="switch-mode-1" @onclick="ToggleSubscription" />
             <span class="slider round" id="slider"></span>
         </label>
         <div class="switch-text">
@@ -24,9 +24,9 @@
 
 
     <div class="btn-switch2">
-        <label class="switch-isDarkMode" for="switch-mode">
-            <input type="checkbox" id="switch-mode" />
-            <span class="slider round" id="slider"></span>
+        <label class="switch-isDarkMode" for="switch-mode-2">
+            <input class="input2" type="checkbox" id="switch-mode-2" />
+            <span class="slider2 round2" id="slider"></span>
         </label>
         <div class="switch-text">
             <label>Use Dark Mode Theme in Application</label>
@@ -86,7 +86,7 @@
             GetSwitchState();
             StateHasChanged();
 
-            System.Threading.Timer timer = null!;
+            Timer timer = null!;
             timer = new Timer((state) =>
             {
                 showMessage = false;
@@ -100,11 +100,11 @@
     {
         if (resetSwitch)
         {
-            return "switch";
+            return "btn-reset-switch";
         }
         else
         {
-            return "switch";
+            return "btn-switch";
         }
     }
 }

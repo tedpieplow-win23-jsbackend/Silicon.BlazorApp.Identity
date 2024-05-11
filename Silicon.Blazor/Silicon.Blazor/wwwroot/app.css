@@ -3323,28 +3323,28 @@ html, body {
   color: #33354D;
   font-weight: 600 !important;
 }
-.btn-switch2 .switch {
+.btn-switch2 .switch-isDarkMode {
   position: relative;
   display: inline-block;
   width: 46px;
   height: 26px;
 }
-.btn-switch2 .switch input {
+.btn-switch2 .switch-isDarkMode .input2 {
   opacity: 0;
   width: 0;
   height: 0;
 }
-.btn-switch2 .switch input:checked + .slider {
-  background-color: #22C55E;
+.btn-switch2 .switch-isDarkMode .input2:checked + .slider2 {
+  background-color: #6366F1;
 }
-.btn-switch2 .switch input:focus + .slider {
-  box-shadow: 0 0 1px #22C55E;
+.btn-switch2 .switch-isDarkMode .input2:focus + .slider2 {
+  box-shadow: 0 0 1px #6366F1;
 }
-.btn-switch2 .switch input:checked + .slider:before {
+.btn-switch2 .switch-isDarkMode .input2:checked + .slider2:before {
   transform: translateX(20px) scale(1.2);
   background-color: #FFFFFF;
 }
-.btn-switch2 .switch .slider {
+.btn-switch2 .switch-isDarkMode .slider2 {
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -3354,7 +3354,7 @@ html, body {
   background-color: #565973;
   transition: 0.4s;
 }
-.btn-switch2 .switch .slider:before {
+.btn-switch2 .switch-isDarkMode .slider2:before {
   position: absolute;
   content: "";
   height: 20px;
@@ -3364,19 +3364,22 @@ html, body {
   background-color: #FFFFFF;
   transition: 0.4s;
 }
-.btn-switch2 .switch .slider.round {
+.btn-switch2 .switch-isDarkMode .slider2.round2 {
   border-radius: 34px;
 }
-.btn-switch2 .switch .slider.round:before {
+.btn-switch2 .switch-isDarkMode .slider2.round2:before {
   border-radius: 50%;
 }
 
-.btn-switch-isDarkMode {
+.btn-reset-switch {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.btn-switch-isDarkMode label {
+.btn-reset-switch .switch-text {
+  padding-top: 40px;
+}
+.btn-reset-switch label {
   line-height: 160%;
   font-weight: 400;
   color: #565973;
@@ -3385,28 +3388,18 @@ html, body {
   color: #33354D;
   font-weight: 600 !important;
 }
-.btn-switch-isDarkMode .switch-isDarkMode {
+.btn-reset-switch .switch {
   position: relative;
   display: inline-block;
   width: 46px;
   height: 26px;
 }
-.btn-switch-isDarkMode .switch-isDarkMode input {
+.btn-reset-switch .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
-.btn-switch-isDarkMode .switch-isDarkMode input:checked + .slider {
-  background-color: #6366F1;
-}
-.btn-switch-isDarkMode .switch-isDarkMode input:focus + .slider {
-  box-shadow: 0 0 1px #6366F1;
-}
-.btn-switch-isDarkMode .switch-isDarkMode input:checked + .slider:before {
-  transform: translateX(20px) scale(1.2);
-  background-color: #6366F1;
-}
-.btn-switch-isDarkMode .switch-isDarkMode .slider {
+.btn-reset-switch .switch .slider {
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -3416,7 +3409,7 @@ html, body {
   background-color: #565973;
   transition: 0.4s;
 }
-.btn-switch-isDarkMode .switch-isDarkMode .slider:before {
+.btn-reset-switch .switch .slider:before {
   position: absolute;
   content: "";
   height: 20px;
@@ -3426,9 +3419,9 @@ html, body {
   background-color: #FFFFFF;
   transition: 0.4s;
 }
-.btn-switch-isDarkMode .switch-isDarkMode .slider.round {
+.btn-reset-switch .switch .slider.round {
   border-radius: 34px;
 }
-.btn-switch-isDarkMode .switch-isDarkMode .slider.round:before {
+.btn-reset-switch .switch .slider.round:before {
   border-radius: 50%;
 }

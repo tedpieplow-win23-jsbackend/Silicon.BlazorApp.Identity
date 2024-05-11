@@ -5,6 +5,7 @@ using Silicon.Blazor.Components.Account;
 using Silicon.Blazor.Data;
 using Silicon.Blazor.Services;
 using Silicon.Blazor.ViewModels.Courses;
+using System.Security.Claims;
 
 namespace Silicon.Blazor.Configurations;
 
@@ -23,6 +24,7 @@ public static class ServiceConfiguration
         services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
         services.AddScoped<ICoursesVM, CoursesVM>();
         services.AddScoped<UserService>();
+        services.AddScoped<ClaimsPrincipal>();
 
         services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 

@@ -1,65 +1,110 @@
 ﻿@inject AuthenticationStateProvider authenticationStateProvider
 @inject UserService userService
+@rendermode InteractiveServer
 
 <div class="notifications">
-        <div class="section-title">
-            <h2>Notifications</h2>
-            <div class="pref-email">
-                <p>Preferred email for notifications</p>
-                <input />
-            </div>
+    <div class="section-title">
+        <h2>Notifications</h2>
+        <div class="pref-email">
+            <p>Preferred email for notifications</p>
+            <input @bind="email" placeholder="example@gmail.com" />
         </div>
-
-        <div class="btn-switch">
-            <label>Light</label>
-            <label class="switch" for="switch-mode">
-                <input type="checkbox" id="switch-mode" />
-                <span class="slider round" id="slider"></span>
-            </label>
-            <label>Dark</label>
-            <p>Subscribe to Newsletter</p>
-        </div>
-
-        <div>
-            <div class="btn-switch">
-                <label>Light</label>
-                <label class="switch" for="switch-mode">
-                    <input type="checkbox" id="switch-mode" />
-                    <span class="slider round" id="slider"></span>
-                </label>
-                <label>Dark</label>
-                <p>Use Dark Mode Theme in Application</p>
-            </div>
-        </div>
-
-        <div class="buttons">
-            <button class="btn-gray">Cancel</button>
-            <button class="btn-theme">Subscribe</button>
-        </div>
-
     </div>
+
+    <div class="btn-switch">
+        <label class="@GetSwitchState()" for="switch-mode">
+            <input type="checkbox" id="switch-mode" @onclick="ToggleSubscription" />
+            <span class="slider round" id="slider"></span>
+        </label>
+        <div class="switch-text">
+            <label>Subscribe to Newsletter</label>
+            <p>Nec, posuere non felis duis massa vitae aliquet interdum scelerisque. Neque ullamcorper.</p>
+        </div>
+    </div>
+
+
+    <div class="btn-switch2">
+        <label class="switch-isDarkMode" for="switch-mode">
+            <input type="checkbox" id="switch-mode" />
+            <span class="slider round" id="slider"></span>
+        </label>
+        <div class="switch-text">
+            <label>Use Dark Mode Theme in Application</label>
+            <p>Tortor massa porttitor enim tristique neque fermentum sed.</p>
+        </div>
+    </div>
+
+
+    @if (showMessage)
+    {
+        <p class="alert-danger danger">@infoMessage</p>
+    }
+
+
+    <div class="buttons">
+        <button class="btn-gray">Cancel</button>
+        <button class="btn-theme">Subscribe</button>
+    </div>
+
+</div>
 
 @code {
     private bool isSubscribed;
+    private bool showMessage;
+    private string infoMessage = "";
+    private bool resetSwitch;
+    private string? email;
 
-    private async Task<ClaimsPrincipal> GetUserClaimsAsync()
+    private async Task<string> GetUserClaimsAsync()
     {
         var authenticationState = await authenticationStateProvider.GetAuthenticationStateAsync();
-        return authenticationState.User;
+        var user = authenticationState.User;
+
+        if (!string.IsNullOrEmpty(email))
+            return email;
+
+        return null!;
     }
 
     private async Task ToggleSubscription()
     {
+        resetSwitch = isSubscribed;
         var userClaims = await GetUserClaimsAsync();
-        var response = await userService.ManageSubscription(isSubscribed, userClaims);
+        var response = await userService.ManageSubscription(isSubscribed, email!);
 
         if (response.StatusCode == StatusCode.OK)
         {
-
+            isSubscribed = !isSubscribed;
+            infoMessage = "Successfully subscribed";
+            GetSwitchState();
         }
         else
         {
-            
+            showMessage = true;
+            infoMessage = "Server not responding, please try again later";
+            resetSwitch = true;
+            GetSwitchState();
+            StateHasChanged();
+
+            System.Threading.Timer timer = null!;
+            timer = new Timer((state) =>
+            {
+                showMessage = false;
+                InvokeAsync(() => StateHasChanged());
+                timer.Dispose();
+            }, null, 4000, Timeout.Infinite);
+        }
+    }
+
+    private string GetSwitchState()
+    {
+        if (resetSwitch)
+        {
+            return "switch";
+        }
+        else
+        {
+            return "switch";
         }
     }
 }

@@ -1,11 +1,10 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.Components.Authorization
-@inject AuthenticationStateProvider authenticationStateProvider
+﻿@inject AuthenticationStateProvider authenticationStateProvider
 @inject UserService userService
 @inject ApplicationDbContext Context
 @inject UserManager<ApplicationUser> UserManager
 
 @rendermode InteractiveServer
+
 
 <div class="notifications @(isDarkMode ? "dark" : "notifications")">
     <div class="section-title">

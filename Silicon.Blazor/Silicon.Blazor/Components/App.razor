@@ -2,7 +2,7 @@
 @inject UserManager<ApplicationUser> UserManager
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="@(IsDarkMode ? "dark" : "")">
 
 <head>
     <meta charset="utf-8" />
@@ -20,7 +20,7 @@
     <HeadOutlet />
 </head>
 
-<body class="@(IsDarkMode ? "dark" : "")">
+<body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
 </body>
@@ -44,6 +44,10 @@
                 IsDarkMode = applicationUser.IsDarkMode;
                 StateHasChanged();
             }
+        }
+        else
+        {
+            IsDarkMode = true;
         }
     }
 }

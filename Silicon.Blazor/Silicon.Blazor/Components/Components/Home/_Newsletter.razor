@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using Silicon.Blazor.Models
 @using Silicon.Blazor.ViewModels.Home
 @using System.ComponentModel.DataAnnotations
 @using System.Net
@@ -17,8 +18,6 @@
                     <h5>@Model.NewsletterTitle.Subtitle</h5>
                 </div>
                 <div class="checkboxes">
-                    @*                     @foreach (var item in Model.Checkbox)
-                    { *@
                     <div class="box">
                         <InputCheckbox @bind-Value="SubscribeForm.AdvertisingUpdates" />
                         <label>Advertising Updates</label>
@@ -43,13 +42,12 @@
                         <InputCheckbox @bind-Value="SubscribeForm.WeekInReviews" />
                         <label>Week In Reviews</label>
                     </div>
-                    @*                     } *@
                 </div>
             </div>
             <div class="subscribe">
                 <InputText @bind-Value="SubscribeForm.Email" id="input-email" type="email" placeholder="Your Email" />
                 <button id="submit-button" type="submit" class="btn-theme"><span>* Subscribe</span></button>
-                <ValidationMessage For="() => SubscribeForm.Email" class="text-danger"/>
+                <ValidationMessage For="() => SubscribeForm.Email" class="text-danger" />
             </div>
         </EditForm>
         <div class="alert">@SuccessMessage</div>
@@ -106,21 +104,6 @@
             InvokeAsync(() => StateHasChanged());
             timerMessage.Dispose();
         }, null, 4000, Timeout.Infinite);
-    }
-
-    public class SubscribeFormModel
-    {
-        [Display(Name = "Email", Prompt = "Enter your email.")]
-        [Required(ErrorMessage = "Email is required.")]
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid email address.")]
-        public string Email { get; set; } = null!;
-        public bool IsSubscribed { get; set; }
-        public bool DailyNewsLetter { get; set; }
-        public bool AdvertisingUpdates { get; set; }
-        public bool WeekInReviews { get; set; }
-        public bool EventUpdates { get; set; }
-        public bool StartupsWeekly { get; set; }
-        public bool Podcasts { get; set; }
     }
 
     NewsletterModel Model { get; set; } = new NewsletterModel();

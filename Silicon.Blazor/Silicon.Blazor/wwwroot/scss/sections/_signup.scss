@@ -3,7 +3,9 @@
 
     .container {
         display: flex;
+        flex-direction: column;
         justify-content: center;
+        align-items: center;
 
         h1 {
             color: var(--color-gray-900);
@@ -36,36 +38,12 @@
                     align-items: baseline;
                 }
 
-                span {
-                    position: relative;
-
-                    &.field-validation-error {
-                        @include text-s;
-                        color: $danger;
-
-                        &::after {
-                            position: absolute;
-                            right: 10px;
-                            top: 38px;
-                            z-index: 1;
-                            font-size: 2em;
-                            display: block;
-                            content: '\2BBF';
-                        }
-                    }
-                }
-
                 input {
                     border: 1px solid var(--color-gray-400);
                     background-color: var(--color-gray-100);
                     padding: 8px;
                     border-radius: .3rem;
                     margin-bottom: .4rem;
-
-                    &.input-validation-error {
-                        border: 0.050rem solid $danger !important;
-                        color: $danger;
-                    }
                 }
 
                 label {
@@ -84,10 +62,6 @@
 
                 label {
                     margin-left: 10px;
-                }
-
-                span {
-                    color: $danger;
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿@page "/Account/Login"
+﻿@page "/signin"
+@rendermode InteractiveServer
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
@@ -12,117 +13,108 @@
 
 <PageTitle>Log in</PageTitle>
 
-<h1>Log in</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <StatusMessage Message="@errorMessage" />
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+
+<section id="signin">
+    <div class="main-holder container">
+
+        @if (!string.IsNullOrEmpty(StatusMessage))
+        {
+            <div class="alert alert-danger w-50 text-lg-center">
+                @StatusMessage
+            </div>
+        }
+
+        <div class="section-title">
+            <h1>Welcome Back</h1>
+            <p>Don't have an account yet? <NavLink href="/signup">Sign up here.</NavLink></p>
+        </div>
+
+        <div class="login-box">
+
+            <EditForm FormName="signinform" Model="SignInForm" OnValidSubmit="SignIn" method="post">
                 <DataAnnotationsValidator />
-                <h2>Use a local account to log in.</h2>
-                <hr />
-                <ValidationSummary class="text-danger" role="alert" />
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label for="email" class="form-label">Email</label>
-                    <ValidationMessage For="() => Input.Email" class="text-danger" />
+                <div class="email">
+                    <div class="validation">
+                        <label asp-for="Form.Email">Email</label>
+                        <ValidationMessage For="() => SignInForm.Email" class="text-danger" />
+                    </div>
+                    <InputText @bind-Value="SignInForm.Email" type="email" />
                 </div>
-                <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label for="password" class="form-label">Password</label>
-                    <ValidationMessage For="() => Input.Password" class="text-danger" />
+
+                <div class="password">
+                    <div class="validation">
+                        <label asp-for="Form.Password">Password</label>
+                        <ValidationMessage For="() => SignInForm.Password" class="text-danger" />
+                    </div>
+                    <InputText @bind-Value="SignInForm.Password" type="password" />
                 </div>
-                <div class="checkbox mb-3">
-                    <label class="form-label">
-                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
-                        Remember me
-                    </label>
+
+                <div class="checkbox">
+                    <label asp-for="SignInForm.RememberMe">Remember me</label>
+                    <InputCheckbox @bind-Value="SignInForm.RememberMe" type="checkbox" />
                 </div>
-                <div>
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
-                <div>
-                    <p>
-                        <a href="Account/ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
+
+                <button type="submit" class="btn-theme">Sign in</button>
+                <div class="social-box">
+                    <NavLink>Forgot your password?</NavLink>
+                    <div class="divider"></div>
+                    <p>Or sign in with your social network</p>
+                    <div class="social-media">
+                        <NavLink class="btn-theme-s"><i class="fa-brands fa-google"></i>Google</NavLink>
+                        <NavLink class="btn-theme-s"><i class="fa-brands fa-facebook-f"></i>Facebook</NavLink>
+                    </div>
                 </div>
             </EditForm>
-        </section>
+        </div>
     </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr />
-            <ExternalLoginPicker />
-        </section>
-    </div>
-</div>
+</section>
 
 @code {
-    private string? errorMessage;
+    [SupplyParameterFromQuery]
+    private string? StatusMessage { get; set; }
+
+    [SupplyParameterFromForm]
+    private SignInModel SignInForm { get; set; } = new();
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    [SupplyParameterFromForm]
-    private InputModel Input { get; set; } = new();
-
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
+
     protected override async Task OnInitializedAsync()
     {
-        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        try
         {
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            if (HttpMethods.IsGet(HttpContext.Request.Method))
+            {
+                // Clear the existing external cookie to ensure a clean login process
+                await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            }
+        }
+        catch(Exception ex)
+        {
+            Logger.LogError(ex.Message);
         }
     }
 
-    public async Task LoginUser()
+    private async Task SignIn()
     {
-        // This doesn't count login failures towards account lockout
-        // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-        var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-        if (result.Succeeded)
+        try
         {
-            Logger.LogInformation("User logged in.");
-            RedirectManager.RedirectTo(ReturnUrl);
-        }
-        else if (result.RequiresTwoFactor)
-        {
-            RedirectManager.RedirectTo(
-                "Account/LoginWith2fa",
-                new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = Input.RememberMe });
-        }
-        else if (result.IsLockedOut)
-        {
-            Logger.LogWarning("User account locked out.");
-            RedirectManager.RedirectTo("Account/Lockout");
-        }
-        else
-        {
-            errorMessage = "Error: Invalid login attempt.";
-        }
-    }
+            var result = await SignInManager.PasswordSignInAsync(SignInForm.Email, SignInForm.Password, SignInForm.RememberMe, false);
 
-    private sealed class InputModel
-    {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; } = "";
+            if (result.Succeeded)
+                RedirectManager.RedirectTo("/Account/Details");
+            else
+                StatusMessage = "Failed to login, please try again";
 
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; } = "";
-
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; }
+            return;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex.Message);
+        }
     }
 }

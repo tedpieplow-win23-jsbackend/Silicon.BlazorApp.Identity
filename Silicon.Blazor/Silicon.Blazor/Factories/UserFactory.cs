@@ -1,11 +1,14 @@
 ﻿using Newtonsoft.Json;
 using Silicon.Blazor.Data;
 using Silicon.Blazor.Models;
+using System.Text;
 
 namespace Silicon.Blazor.Factories;
 
-public class UserFactory
+public class UserFactory(IConfiguration configuration)
 {
+    private readonly IConfiguration _configuration = configuration;
+
     public async Task<ApplicationUser> PopulateUserEntity(SignUpModel model)
     {
         return new ApplicationUser
@@ -22,7 +25,8 @@ public class UserFactory
     {
         HttpClient http = new HttpClient();
         var json = JsonConvert.SerializeObject(new { Email = email });
-        var result = await http.PostAsJsonAsync("https://subscriptionprovider-silicon.azurewebsites.net/api/GetSubscribersFunction?code=VdUem1ardDpuXjfbHNodWR6NRuTneq6ZTFo3n_8r7fHZAzFutbdzXA==", json);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var result = await http.PostAsync(_configuration.GetConnectionString("GetSubscribersProvider"), content);
 
         if (result.IsSuccessStatusCode)
             return true;

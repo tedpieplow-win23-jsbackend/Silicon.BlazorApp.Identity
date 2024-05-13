@@ -17,7 +17,6 @@
     <None Include="Components\Components\Accounts\ContactInfo.razor" />
     <None Include="Components\Components\Accounts\MyCourses.razor" />
     <None Include="Components\Components\Accounts\NavBar.razor" />
-    <None Include="Components\Components\Auth\_SignIn.razor" />
   </ItemGroup>
 
   <ItemGroup>

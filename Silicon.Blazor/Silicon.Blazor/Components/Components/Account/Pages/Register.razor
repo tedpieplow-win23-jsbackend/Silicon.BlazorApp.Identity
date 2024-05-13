@@ -1,8 +1,10 @@
 ﻿@page "/signup"
+@rendermode InteractiveServer
 
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
+@using Azure.Messaging.ServiceBus
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 
@@ -14,77 +16,79 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject UserFactory UserFactory
+@inject UserService UserService
+@inject ServiceBusHandler ServiceBusHandler
 
 <PageTitle>Sign up</PageTitle>
 
 <section id="signup">
-    <div class="container">
 
+    <div class="container">
         @if (!string.IsNullOrEmpty(StatusMessage))
         {
-            <div class="alert alert-danger">
+            <div class="alert alert-danger w-50 text-lg-center">
                 @StatusMessage
             </div>
         }
 
-        <EditForm FormName="signupform" Model="SignUpForm" OnValidSubmit="SignUp" method="post"novalidate>
-            <h1>Create Account</h1>
-            <p>Already have an account? <NavLink href="/signin">Sign in here</NavLink></p>
+        <EditForm FormName="signupform" Model="SignUpForm" OnValidSubmit="SignUp" method="post">
+            <DataAnnotationsValidator />
+                <h1>Create Account</h1>
+                <p>Already have an account? <NavLink href="/signin">Sign in here</NavLink></p>
 
-            <div class="form-content">
-                <div class="form-name">
+                <div class="form-content">
+                    <div class="form-name">
 
-                    <div id="form-firstname" class="input-field">
-                        <div class="input-labels">
-                            <label>First name</label>
+                        <div id="form-firstname" class="input-field">
+                            <div class="input-labels">
+                                <label>First name</label>
+                            </div>
+                            <InputText @bind-Value="SignUpForm.FirstName" />
                             <ValidationMessage For="() => SignUpForm.FirstName" class="text-danger" />
                         </div>
-                        <InputText @bind-Value="SignUpForm.FirstName" />
-                    </div>
 
-                    <div id="form-lastname" class="input-field">
-                        <div class="input-labels">
-                            <label>Last Name</label>
+                        <div id="form-lastname" class="input-field">
+                            <div class="input-labels">
+                                <label>Last Name</label>
+                            </div>
+                            <InputText @bind-Value="SignUpForm.LastName" />
                             <ValidationMessage For="() => SignUpForm.LastName" class="text-danger" />
                         </div>
-                        <InputText @bind-Value="SignUpForm.LastName" />
+
                     </div>
 
-                </div>
-
-                <div id="form-email" class="input-field">
-                    <div class="input-labels">
-                        <label>Email</label>
+                    <div id="form-email" class="input-field">
+                        <div class="input-labels">
+                            <label>Email</label>
+                        </div>
+                        <InputText @bind-Value="SignUpForm.Email" type="email" />
                         <ValidationMessage For="() => SignUpForm.Email" class="text-danger" />
                     </div>
-                    <InputText @bind-Value="SignUpForm.Email" type="email" />
-                </div>
 
-                <div id="form-password" class="input-field">
-                    <div class="input-labels">
-                        <label>Password</label>
+                    <div id="form-password" class="input-field">
+                        <div class="input-labels">
+                            <label>Password</label>
+                        </div>
+                        <InputText @bind-Value="SignUpForm.Password" type="password" />
                         <ValidationMessage For="() => SignUpForm.Password" class="text-danger" />
                     </div>
-                    <InputText @bind-Value="SignUpForm.Password" type="password" />
-                </div>
 
-                <div id="form-confirm" class="input-field">
-                    <div class="input-labels">
-                        <label>Confirm Password</label>
+                    <div id="form-confirm" class="input-field">
+                        <div class="input-labels">
+                            <label>Confirm Password</label>
+                        </div>
+                        <InputText @bind-Value="SignUpForm.ConfirmPassword" type="password" />
                         <ValidationMessage For="() => SignUpForm.ConfirmPassword" class="text-danger" />
-                        <InputText @bind-Value="SignUpForm.ConfirmPassword" type="password"/>
                     </div>
-                    <input asp-for="Form.ConfirmPassword" />
-                </div>
 
-                <div id="form-terms" class="checkbox">
-                    <InputCheckbox @bind-Value="SignUpForm.TermsAndConditions" />
-                    <label>I agree to the terms and conditions</label>
-                    <ValidationMessage For="() => SignUpForm.TermsAndConditions" class="text-danger" />
-                </div>
+                    <div id="form-terms" class="checkbox">
+                        <InputCheckbox @bind-Value="SignUpForm.TermsAndConditions" />
+                        <label>I agree to the terms and conditions</label>
+                        <ValidationMessage For="() => SignUpForm.TermsAndConditions" class="text-danger" />
+                    </div>
 
-            </div>
-            <button class="btn-theme" type="submit">Sign Up</button>
+                </div>
+                <button class="btn-theme" type="submit">Sign Up</button>
         </EditForm>
     </div>
 </section>
@@ -102,25 +106,37 @@
 
     public async Task SignUp(EditContext editContext)
     {
-        var user = await UserFactory.PopulateUserEntity(SignUpForm);
-
-        var result = await UserManager.CreateAsync(user, SignUpForm.Password);
-        if (!result.Succeeded)
+        try
         {
-            StatusMessage = "Unable to register account. Please try again.";
+            var existingUser = await UserManager.FindByEmailAsync(SignUpForm.Email);
+            if (existingUser != null)
+            {
+                StatusMessage = "An account with this email address already exists.";
+                return;
+            }
+
+            var user = await UserFactory.PopulateUserEntity(SignUpForm);
+            var result = await UserManager.CreateAsync(user, SignUpForm.Password);
+            if (!result.Succeeded)
+            {
+                StatusMessage = "Unable to register account. Please try again.";
+                return;
+            }
+
+            var body = new { email = SignUpForm.Email };
+            await ServiceBusHandler.SendServiceBusMessage(body, "VerificationServiceBus", "verification_request");
+
+            if (UserManager.Options.SignIn.RequireConfirmedAccount)
+            {
+                RedirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = SignUpForm.Email, ["returnUrl"] = ReturnUrl });
+            }
+
+            RedirectManager.RedirectTo("/signin");
+        }
+        catch
+        {
+            StatusMessage = "An error occured while creating the account.";
             return;
         }
-
-        HttpClient http = new HttpClient();
-        await http.PostAsJsonAsync("", SignUpForm);
-
-        if (UserManager.Options.SignIn.RequireConfirmedAccount)
-        {
-            RedirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = SignUpForm.Email, ["returnUrl"] = ReturnUrl });
-        }
-
-        await SignInManager.SignInAsync(user, isPersistent: false);
-        RedirectManager.RedirectTo(ReturnUrl);
-
     }
 }

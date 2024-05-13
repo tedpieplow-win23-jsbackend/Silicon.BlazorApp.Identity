@@ -1,68 +1,110 @@
-﻿@using Silicon.Blazor.ViewModels.Home
+﻿@using Newtonsoft.Json
+@using Silicon.Blazor.Models
+@using Silicon.Blazor.ViewModels.Home
+@using System.ComponentModel.DataAnnotations
+@using System.Net
+@inject HttpClient Http
+@rendermode InteractiveServer
 <section id="newsletter" class="newsletter">
     <div class="container">
         <div class="top">
             <h1>@Model.NewsletterTitle.Title</h1>
             <img src="@Model.NewsletterImage.ImageUrl" alt="@Model.NewsletterImage.AltText" />
         </div>
-        <form id="subscribe-form" method="post" novalidate>
+        <EditForm FormName="subscribeform" Model="SubscribeForm" OnValidSubmit="OnSubmit" id="subscribe-form" method="post" novalidate>
+            <DataAnnotationsValidator />
             <div class="checkbox-content">
                 <div class="news-title">
                     <h5>@Model.NewsletterTitle.Subtitle</h5>
                 </div>
                 <div class="checkboxes">
-                    @foreach (var item in Model.Checkbox)
-                    {
-                        <div class="box">
-                            <input type="checkbox" id="@item.Id" />
-                            <label asp-for="@item.Id">@item.Text</label>
-                        </div>
-                    }
+                    <div class="box">
+                        <InputCheckbox @bind-Value="SubscribeForm.AdvertisingUpdates" />
+                        <label>Advertising Updates</label>
+                    </div>
+                    <div class="box">
+                        <InputCheckbox @bind-Value="SubscribeForm.DailyNewsLetter" />
+                        <label>Daily newsletter</label>
+                    </div>
+                    <div class="box">
+                        <InputCheckbox @bind-Value="SubscribeForm.EventUpdates" />
+                        <label>Event Updates</label>
+                    </div>
+                    <div class="box">
+                        <InputCheckbox @bind-Value="SubscribeForm.Podcasts" />
+                        <label>Podcasts</label>
+                    </div>
+                    <div class="box">
+                        <InputCheckbox @bind-Value="SubscribeForm.StartupsWeekly" />
+                        <label>Startups Weekly</label>
+                    </div>
+                    <div class="box">
+                        <InputCheckbox @bind-Value="SubscribeForm.WeekInReviews" />
+                        <label>Week In Reviews</label>
+                    </div>
                 </div>
             </div>
             <div class="subscribe">
-                <input id="input-email" input="email" type="email" placeholder="Your Email" />
+                <InputText @bind-Value="SubscribeForm.Email" id="input-email" type="email" placeholder="Your Email" />
                 <button id="submit-button" type="submit" class="btn-theme"><span>* Subscribe</span></button>
+                <ValidationMessage For="() => SubscribeForm.Email" class="text-danger" />
             </div>
-        </form>
+        </EditForm>
+        <div class="alert">@SuccessMessage</div>
     </div>
 </section>
 
 
-@* <script>
-    var message = document.getElementById('success');
-    message.style.display = "none";
-    var form = document.getElementById('newsletter');
-    form.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        var email = document.getElementById('input-email').value;
-        var response = await fetch(`/Home/Subscribe?email=${email}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        message.style.display = "block";
-        if (response.ok) {
-            document.getElementById('input-email').value = "";
-            message.style.backgroundColor = "#90EE90";
-            message.textContent = "Subscribed!";
-        }
-        else if (response.status === 409) {
-            message.style.backgroundColor = "#FFCCCB";
-            message.textContent = "This subscriber already exists!";
-        }
-        else if (response.status === 500) {
-            message.style.backgroundColor = "#FFCCCB";
-            message.textContent = "Internal server error. Please try later";
-        }
-        else {
-            message.style.backgroundColor = "#FFCCCB";
-            message.textContent = "Enter a valid email!";
-        }
-    });
-</script> *@
-
 @code {
+    [SupplyParameterFromForm]
+    public SubscribeFormModel SubscribeForm { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    public string SuccessMessage { get; set; } = "";
+
+
+    public async Task OnSubmit()
+    {
+        try
+        {
+            var result = await Http.PostAsJsonAsync("https://subscriptionprovider-silicon.azurewebsites.net/api/SubscribeFunction?code=-aN4VeTZphDS5C4POoEP-Nycz7KCqohb6lnUmFj36o8uAzFuiGfTow==", SubscribeForm);
+            if (result.IsSuccessStatusCode)
+            {
+                SubscribeForm = new SubscribeFormModel();
+                SuccessMessage = "You have been subscribed!";
+                DisposeMessage();
+            }
+            else if (result.StatusCode == HttpStatusCode.Conflict)
+            {
+                SubscribeForm = new SubscribeFormModel();
+                SuccessMessage = "This user already exists!";
+                DisposeMessage();
+
+            }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                SubscribeForm = new SubscribeFormModel();
+                SuccessMessage = "Skriv rätt";
+                DisposeMessage();
+            }
+        }
+        catch
+        {
+            SubscribeForm = new SubscribeFormModel();
+            SuccessMessage = "Something went wrong. Try again later";
+        }
+    }
+
+    private void DisposeMessage()
+    {
+        Timer timerMessage = null!;
+        timerMessage = new Timer((state) =>
+        {
+            SuccessMessage = "";
+            InvokeAsync(() => StateHasChanged());
+            timerMessage.Dispose();
+        }, null, 4000, Timeout.Infinite);
+    }
+
     NewsletterModel Model { get; set; } = new NewsletterModel();
 }

@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+
+using Silicon.Blazor.Data;
 using Silicon.Blazor.Factories;
 using Silicon.Blazor.Models;
 using System.Net;
@@ -31,6 +33,7 @@ public class UserService(HttpClient httpClient, IConfiguration configuration)
             }
             else
                 return ResponseFactory.Error();
+
         }
         catch (Exception ex)
         {

@@ -1674,7 +1674,9 @@ section .courses .pagination .active {
 }
 #signup .container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 #signup .container h1 {
   color: var(--color-gray-900);
@@ -1701,36 +1703,12 @@ section .courses .pagination .active {
   justify-content: space-between;
   align-items: baseline;
 }
-#signup .container .form-content .input-field span {
-  position: relative;
-}
-#signup .container .form-content .input-field span.field-validation-error {
-  line-height: 160%;
-  font-weight: 400;
-  color: #565973;
-  font-family: "Manrope", sans-serif;
-  font-size: 14px !important;
-  color: #EF4444;
-}
-#signup .container .form-content .input-field span.field-validation-error::after {
-  position: absolute;
-  right: 10px;
-  top: 38px;
-  z-index: 1;
-  font-size: 2em;
-  display: block;
-  content: "⮿";
-}
 #signup .container .form-content .input-field input {
   border: 1px solid var(--color-gray-400);
   background-color: var(--color-gray-100);
   padding: 8px;
   border-radius: 0.3rem;
   margin-bottom: 0.4rem;
-}
-#signup .container .form-content .input-field input.input-validation-error {
-  border: 0.05rem solid #EF4444 !important;
-  color: #EF4444;
 }
 #signup .container .form-content .input-field label {
   font-weight: 800;
@@ -1746,9 +1724,6 @@ section .courses .pagination .active {
 }
 #signup .container .form-content .checkbox label {
   margin-left: 10px;
-}
-#signup .container .form-content .checkbox span {
-  color: #EF4444;
 }
 #signup .container .btn-theme {
   width: 100%;
@@ -3440,4 +3415,68 @@ html, body {
 }
 .btn-reset-switch .switch .slider.round:before {
   border-radius: 50%;
+}
+
+#registerconfirmation {
+  padding-top: 50px;
+}
+#registerconfirmation .container {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+#registerconfirmation .container h1 {
+  color: var(--color-gray-900);
+}
+#registerconfirmation .container p {
+  color: var(--color-gray-700);
+}
+#registerconfirmation .container .verify-form {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+#registerconfirmation .container .verify-form .form-content {
+  width: 480px;
+}
+#registerconfirmation .container .verify-form .form-content .input-field {
+  display: flex;
+  flex-direction: column;
+}
+#registerconfirmation .container .verify-form .form-content .input-field .input-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+#registerconfirmation .container .verify-form .form-content .input-field input {
+  border: 1px solid var(--color-gray-400);
+  background-color: var(--color-gray-100);
+  padding: 8px;
+  border-radius: 0.3rem;
+  margin-bottom: 0.4rem;
+}
+#registerconfirmation .container .verify-form .form-content .input-field label {
+  font-weight: 800;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  color: var(--color-gray-800);
+}
+#registerconfirmation .container .verify-form .form-content .checkbox {
+  margin-top: 20px;
+  display: flex;
+  flex-flow: row wrap;
+  accent-color: #6366F1;
+}
+#registerconfirmation .container .verify-form .form-content .checkbox label {
+  margin-left: 10px;
+}
+#registerconfirmation .container .verify-form .btn-theme {
+  width: auto;
+  margin-top: 20px;
+}
+#registerconfirmation .container .resend {
+  margin-top: 10rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

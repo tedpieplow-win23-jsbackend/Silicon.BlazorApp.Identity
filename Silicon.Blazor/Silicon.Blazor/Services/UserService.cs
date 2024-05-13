@@ -22,17 +22,18 @@ public class UserService(ApplicationDbContext context, UserManager<ApplicationUs
             var loggedInUser = await _userManager.GetUserAsync(_userClaims!);
             if (loggedInUser != null)
             {
-                loggedInUser.IsSubscribed = isSubscribed;
-                var userId = loggedInUser.Id;
-                await _context.SaveChangesAsync();
-
                 var apiUrl = _configuration.GetValue<string>("ConnectionStrings:ToggleSubscription");
-                var requestData = new { userId, email, isSubscribed };
+                var requestData = new { Email = email, IsSubscribed = isSubscribed };
                 var jsonContent = JsonConvert.SerializeObject(requestData);
                 var httpResponse = await _httpClient.PostAsJsonAsync(apiUrl, jsonContent);
 
                 if (httpResponse.IsSuccessStatusCode)
+                {
+                    loggedInUser.IsSubscribed = isSubscribed;
+                    var userId = loggedInUser.Id;
+                    var response = await _context.SaveChangesAsync();
                     return ResponseFactory.Ok();
+                }
                 else
                     return ResponseFactory.Error("API-request failed.");
             }

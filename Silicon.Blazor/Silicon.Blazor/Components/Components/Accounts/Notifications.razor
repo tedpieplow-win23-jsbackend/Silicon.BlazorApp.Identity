@@ -13,7 +13,7 @@
 
     <div class="@GetSwitchState()">
         <label class="switch" for="switch-mode-1">
-            <input type="checkbox" id="switch-mode-1" @onclick="ToggleSubscription" />
+            <input type="checkbox" id="switch-mode-1" />
             <span class="slider round" id="slider"></span>
         </label>
         <div class="switch-text">
@@ -21,7 +21,6 @@
             <p>Nec, posuere non felis duis massa vitae aliquet interdum scelerisque. Neque ullamcorper.</p>
         </div>
     </div>
-
 
     <div class="btn-switch2">
         <label class="switch-isDarkMode" for="switch-mode-2">
@@ -34,16 +33,14 @@
         </div>
     </div>
 
-
     @if (showMessage)
     {
         <p class="alert-danger danger">@infoMessage</p>
     }
 
-
     <div class="buttons">
         <button class="btn-gray">Cancel</button>
-        <button class="btn-theme">Subscribe</button>
+        <button class="btn-theme" @onclick="ToggleSubscription">Subscribe</button>
     </div>
 
 </div>
@@ -54,6 +51,9 @@
     private string infoMessage = "";
     private bool resetSwitch;
     private string? email;
+    private ClaimsPrincipal claims;
+
+
 
     private async Task<string> GetUserClaimsAsync()
     {

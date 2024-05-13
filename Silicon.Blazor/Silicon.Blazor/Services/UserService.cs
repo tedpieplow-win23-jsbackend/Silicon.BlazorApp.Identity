@@ -19,9 +19,9 @@ public class UserService(ApplicationDbContext context, UserManager<ApplicationUs
     {
         try
         {
-            var loggedInUser = await _userManager.GetUserAsync(_userClaims!);
-            if (loggedInUser != null)
-            {
+            //var loggedInUser = await _userManager.GetUserAsync(_userClaims!);
+            //if (loggedInUser != null)
+            //{
                 var apiUrl = _configuration.GetValue<string>("ConnectionStrings:ToggleSubscription");
                 var requestData = new { Email = email, IsSubscribed = isSubscribed };
                 var jsonContent = JsonConvert.SerializeObject(requestData);
@@ -29,18 +29,18 @@ public class UserService(ApplicationDbContext context, UserManager<ApplicationUs
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
-                    loggedInUser.IsSubscribed = isSubscribed;
-                    var userId = loggedInUser.Id;
-                    var response = await _context.SaveChangesAsync();
+                    //loggedInUser.IsSubscribed = isSubscribed;
+                    //var userId = loggedInUser.Id;
+                    //var response = await _context.SaveChangesAsync();
                     return ResponseFactory.Ok();
                 }
                 else
                     return ResponseFactory.Error("API-request failed.");
-            }
-            else
-            {
-                return ResponseFactory.NotFound("User email is null.");
-            }
+            //}
+            //else
+            //{
+            //    return ResponseFactory.NotFound("User email is null.");
+            //}
         }
         catch (Exception ex)
         {

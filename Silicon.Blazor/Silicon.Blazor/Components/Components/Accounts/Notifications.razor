@@ -40,7 +40,7 @@
 
     <div class="buttons">
         <button class="btn-gray">Cancel</button>
-        <button class="btn-theme" @onclick="ToggleSubscription">Subscribe</button>
+        <button class="btn-theme" @onclick="ToggleSubscription">Save changes</button>
     </div>
 
 </div>
@@ -52,8 +52,6 @@
     private bool resetSwitch;
     private string? email;
     private ClaimsPrincipal claims;
-
-
 
     private async Task<string> GetUserClaimsAsync()
     {

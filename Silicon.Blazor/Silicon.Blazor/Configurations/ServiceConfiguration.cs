@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Silicon.Blazor.Components.Account;
 using Silicon.Blazor.Data;
+using Silicon.Blazor.Factories;
 using Silicon.Blazor.Services;
 using Silicon.Blazor.ViewModels.Courses;
 using System.Security.Claims;
@@ -25,6 +26,7 @@ public static class ServiceConfiguration
         services.AddScoped<ICoursesVM, CoursesVM>();
         services.AddScoped<UserService>();
         services.AddScoped<ClaimsPrincipal>();
+        services.AddScoped<UserFactory>();
 
         services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 

@@ -1,17 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
-using Silicon.Blazor.Data;
+﻿using Newtonsoft.Json;
 using Silicon.Blazor.Factories;
 using Silicon.Blazor.Models;
-using System.Security.Claims;
+using System.Net;
+using System.Text;
 
 namespace Silicon.Blazor.Services;
 
-public class UserService(ApplicationDbContext context, UserManager<ApplicationUser> userManager, HttpClient httpClient, IConfiguration configuration, ClaimsPrincipal userClaims)
+public class UserService(HttpClient httpClient, IConfiguration configuration)
 {
-    private readonly ApplicationDbContext _context = context;
-    private readonly ClaimsPrincipal? _userClaims = userClaims;
-    private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly HttpClient _httpClient = httpClient;
     private readonly IConfiguration _configuration = configuration;
 
@@ -19,28 +15,22 @@ public class UserService(ApplicationDbContext context, UserManager<ApplicationUs
     {
         try
         {
-            //var loggedInUser = await _userManager.GetUserAsync(_userClaims!);
-            //if (loggedInUser != null)
-            //{
-                var apiUrl = _configuration.GetValue<string>("ConnectionStrings:ToggleSubscription");
-                var requestData = new { Email = email, IsSubscribed = isSubscribed };
-                var jsonContent = JsonConvert.SerializeObject(requestData);
-                var httpResponse = await _httpClient.PostAsJsonAsync(apiUrl, jsonContent);
+            var apiUrl = _configuration.GetValue<string>("ConnectionStrings:ToggleSubscription");
+            var requestData = new { Email = email, IsSubscribed = isSubscribed };
+            var jsonContent = JsonConvert.SerializeObject(requestData);
+            var content = new StringContent(jsonContent, Encoding.UTF8, "appliction/json");
+            var httpResponse = await _httpClient.PostAsync(apiUrl, content);
 
-                if (httpResponse.IsSuccessStatusCode)
-                {
-                    //loggedInUser.IsSubscribed = isSubscribed;
-                    //var userId = loggedInUser.Id;
-                    //var response = await _context.SaveChangesAsync();
-                    return ResponseFactory.Ok();
-                }
-                else
-                    return ResponseFactory.Error("API-request failed.");
-            //}
-            //else
-            //{
-            //    return ResponseFactory.NotFound("User email is null.");
-            //}
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                return ResponseFactory.Ok();
+            }
+            else if (httpResponse.StatusCode == HttpStatusCode.Conflict)
+            {
+                return ResponseFactory.Exists();
+            }
+            else
+                return ResponseFactory.Error();
         }
         catch (Exception ex)
         {

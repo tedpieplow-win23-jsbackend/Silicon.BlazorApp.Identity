@@ -3224,16 +3224,25 @@ html, body {
 .notifications .section-title h2 {
   color: var(--color-gray-900);
   font-weight: 800;
+  margin-bottom: 2rem;
 }
 .notifications .section-title p {
   color: var(--color-gray-900);
   font-weight: 600;
+  margin: 0.1rem;
 }
 .notifications .section-title .pref-email input {
-  margin-top: 0;
+  margin-bottom: 0.5rem;
+  width: 419px;
+  padding: 0.6rem;
+  background-color: var(--color-gray-100);
+  border: 0.5px solid var(--color-gray-500);
+  color: var(--color-gray-700);
   border-radius: 0.4rem;
-  width: 416px;
-  padding: 10px;
+}
+.notifications .section-title .pref-email input.input-validation-error {
+  border: 0.05rem solid #EF4444 !important;
+  color: #EF4444;
 }
 .notifications .buttons {
   margin-top: 200px;
@@ -3247,7 +3256,8 @@ html, body {
   gap: 10px;
 }
 .btn-switch .switch-text {
-  padding-top: 40px;
+  padding-top: 30px;
+  margin-left: 1rem;
 }
 .btn-switch label {
   line-height: 160%;
@@ -3257,6 +3267,9 @@ html, body {
   font-size: 16px;
   color: #33354D;
   font-weight: 600 !important;
+  color: var(--color-gray-900);
+  font-weight: 900 !important;
+  margin-bottom: 0.2rem;
 }
 .btn-switch .switch {
   position: relative;
@@ -3276,7 +3289,7 @@ html, body {
   box-shadow: 0 0 1px #22C55E;
 }
 .btn-switch .switch input:checked + .slider:before {
-  transform: translateX(20px) scale(1.2);
+  transform: translateX(20px) scale(1.1);
   background-color: #FFFFFF;
 }
 .btn-switch .switch .slider {
@@ -3312,7 +3325,8 @@ html, body {
   gap: 10px;
 }
 .btn-switch2 .switch-text {
-  padding-top: 40px;
+  padding-top: 30px;
+  margin-left: 1rem;
 }
 .btn-switch2 label {
   line-height: 160%;
@@ -3322,6 +3336,8 @@ html, body {
   font-size: 16px;
   color: #33354D;
   font-weight: 600 !important;
+  color: var(--color-gray-900);
+  font-weight: 900 !important;
 }
 .btn-switch2 .switch-isDarkMode {
   position: relative;

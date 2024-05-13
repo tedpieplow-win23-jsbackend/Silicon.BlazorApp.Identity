@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -17,9 +20,30 @@
     <HeadOutlet />
 </head>
 
-<body class="isDarkMode">
+<body class="@(IsDarkMode ? "dark" : "")">
     <Routes />
     <script src="_framework/blazor.web.js"></script>
 </body>
 
 </html>
+
+
+@code {
+    public bool IsDarkMode;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity!.IsAuthenticated)
+        {
+            var applicationUser = await UserManager.GetUserAsync(user);
+            if (applicationUser != null)
+            {
+                IsDarkMode = applicationUser.IsDarkMode;
+                StateHasChanged();
+            }
+        }
+    }
+}

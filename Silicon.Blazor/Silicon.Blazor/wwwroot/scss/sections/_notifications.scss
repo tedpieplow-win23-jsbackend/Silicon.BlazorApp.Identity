@@ -10,19 +10,29 @@
         h2 {
             color: var(--color-gray-900);
             font-weight: 800;
+            margin-bottom: 2rem;
         }
 
         p {
             color: var(--color-gray-900);
             font-weight: 600;
+            margin: .1rem;
         }
 
         .pref-email {
             input {
-                margin-top: 0;
+                margin-bottom: .5rem;
+                width: 419px;
+                padding: 0.6rem;
+                background-color: var(--color-gray-100);
+                border: .5px solid var(--color-gray-500);
+                color: var(--color-gray-700);
                 border-radius: .4rem;
-                width: 416px;
-                padding: 10px;
+
+                &.input-validation-error {
+                    border: 0.050rem solid $danger !important;
+                    color: $danger;
+                }
             }
         }
     }
@@ -38,13 +48,18 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    
 
     .switch-text {
-        padding-top: 40px;
+        padding-top: 30px;
+        margin-left: 1rem;
     }
 
     label {
         @include text-nav;
+        color: var(--color-gray-900);
+        font-weight: 900 !important;
+        margin-bottom: .2rem;
     }
 
     .switch {
@@ -67,7 +82,7 @@
             }
 
             &:checked + .slider:before {
-                transform: translateX(20px) scale(1.2);
+                transform: translateX(20px) scale(1.1);
                 background-color: $white;
             }
         }
@@ -110,11 +125,14 @@
     gap: 10px;
 
     .switch-text {
-        padding-top: 40px;
+        padding-top: 30px;
+        margin-left: 1rem;
     }
 
     label {
         @include text-nav;
+        color: var(--color-gray-900);
+        font-weight: 900 !important;
     }
 
     .switch-isDarkMode {
@@ -230,3 +248,4 @@
         }
     }
 }
+

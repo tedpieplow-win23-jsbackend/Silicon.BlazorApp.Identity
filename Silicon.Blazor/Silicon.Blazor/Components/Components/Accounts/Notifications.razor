@@ -1,8 +1,12 @@
 ﻿@inject AuthenticationStateProvider authenticationStateProvider
 @inject UserService userService
+@inject ApplicationDbContext Context
+@inject UserManager<ApplicationUser> UserManager
+
 @rendermode InteractiveServer
 
-<div class="notifications">
+
+<div class="notifications @(isDarkMode ? "dark" : "notifications")">
     <div class="section-title">
         <h2>Notifications</h2>
         <div class="pref-email">
@@ -13,7 +17,7 @@
 
     <div class="@GetSwitchState()">
         <label class="switch" for="switch-mode-1">
-            <input type="checkbox" id="switch-mode-1" />
+            <input type="checkbox" id="switch-mode-1" checked="@resetSwitch" @onchange="ToggleCheckbox" />
             <span class="slider round" id="slider"></span>
         </label>
         <div class="switch-text">
@@ -24,7 +28,7 @@
 
     <div class="btn-switch2">
         <label class="switch-isDarkMode" for="switch-mode-2">
-            <input class="input2" type="checkbox" id="switch-mode-2" />
+            <input class="input2" type="checkbox" id="switch-mode-2" checked="@isDarkMode" @onchange="ToggleDarkMode" />
             <span class="slider2 round2" id="slider"></span>
         </label>
         <div class="switch-text">
@@ -33,65 +37,94 @@
         </div>
     </div>
 
-    @if (showMessage)
+    @if (!string.IsNullOrEmpty(infoMessage))
     {
-        <p class="alert-danger danger">@infoMessage</p>
+        <p class="@(infoMessage == "OK" ? "alert-success" : infoMessage == "Exists" ? "alert-info" : infoMessage == "Error" ? "alert-danger" : "")">@GetMessageText(infoMessage)</p>
     }
 
     <div class="buttons">
         <button class="btn-gray">Cancel</button>
-        <button class="btn-theme" @onclick="ToggleSubscription">Save changes</button>
+        <button class="btn-theme" @onclick="ToggleSettings">Save changes</button>
     </div>
 
 </div>
 
 @code {
-    private bool isSubscribed;
-    private bool showMessage;
     private string infoMessage = "";
     private bool resetSwitch;
+    private bool isSubscribed;
+    private bool isDarkMode;
     private string? email;
-    private ClaimsPrincipal claims;
 
-    private async Task<string> GetUserClaimsAsync()
+    private async Task<ClaimsPrincipal> GetUserClaimsAsync()
     {
         var authenticationState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authenticationState.User;
 
-        if (!string.IsNullOrEmpty(email))
-            return email;
+        if (user is not null)
+        {
+            return user;
+        }
 
         return null!;
     }
 
-    private async Task ToggleSubscription()
+    private async Task ToggleSettings()
     {
-        resetSwitch = isSubscribed;
         var userClaims = await GetUserClaimsAsync();
         var response = await userService.ManageSubscription(isSubscribed, email!);
 
+        var user = await UserManager.GetUserAsync(userClaims);
+
+        if (user is not null)
+        {
+            user.IsDarkMode = isDarkMode;
+            await UserManager.UpdateAsync(user);
+        }
+
         if (response.StatusCode == StatusCode.OK)
         {
-            isSubscribed = !isSubscribed;
-            infoMessage = "Successfully subscribed";
+            isSubscribed = true;
+            infoMessage = "OK";
             GetSwitchState();
+            DisposeMessage();
+        }
+        else if (response.StatusCode == StatusCode.EXISTS)
+        {
+            infoMessage = "Exists";
+            DisposeMessage();
         }
         else
         {
-            showMessage = true;
-            infoMessage = "Server not responding, please try again later";
             resetSwitch = true;
-            GetSwitchState();
+            infoMessage = "Error";
+            DisposeMessage();
             StateHasChanged();
 
-            Timer timer = null!;
-            timer = new Timer((state) =>
+            Timer timerSwitch = null!;
+            timerSwitch = new Timer((state) =>
             {
-                showMessage = false;
+                ResetSwitch();
                 InvokeAsync(() => StateHasChanged());
-                timer.Dispose();
-            }, null, 4000, Timeout.Infinite);
+                timerSwitch.Dispose();
+            }, null, 10, Timeout.Infinite);
         }
+    }
+
+    private void DisposeMessage()
+    {
+        Timer timerMessage = null!;
+        timerMessage = new Timer((state) =>
+        {
+            infoMessage = "";
+            InvokeAsync(() => StateHasChanged());
+            timerMessage.Dispose();
+        }, null, 4000, Timeout.Infinite);
+    }
+
+    private void ResetSwitch()
+    {
+        resetSwitch = false;
     }
 
     private string GetSwitchState()
@@ -104,5 +137,27 @@
         {
             return "btn-switch";
         }
+    }
+
+    private void ToggleCheckbox()
+    {
+        isSubscribed = !resetSwitch;
+    }
+
+    private string GetMessageText(string message)
+    {
+        return message switch
+        {
+            "OK" => "You successfully subscribed to the newsletter!",
+            "Exists" => "You have already subscribed.",
+            "Error" => "Internal error, please try again later.",
+            _ => ""
+        };
+    }
+
+    private void ToggleDarkMode(ChangeEventArgs e)
+    {
+        isDarkMode = (bool)e.Value!;
+        StateHasChanged();
     }
 }

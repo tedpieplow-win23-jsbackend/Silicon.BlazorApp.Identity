@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,8 @@ public static class ServiceConfiguration
         services.AddScoped<ClaimsPrincipal>();
         services.AddScoped<UserFactory>();
         services.AddScoped<ServiceBusHandler>();
+        services.AddScoped<DarkModeService>();
+        services.AddBlazoredLocalStorage();
 
         services.AddHttpContextAccessor();
 

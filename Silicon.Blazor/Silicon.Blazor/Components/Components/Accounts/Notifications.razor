@@ -1,12 +1,14 @@
-﻿@inject AuthenticationStateProvider authenticationStateProvider
+﻿@using Blazored.LocalStorage
+@inject AuthenticationStateProvider authenticationStateProvider
 @inject UserService userService
 @inject ApplicationDbContext Context
 @inject UserManager<ApplicationUser> UserManager
+@inject DarkModeService DarkModeService
+@inject ILocalStorageService LocalStorage
 
 @rendermode InteractiveServer
 
-
-<div class="notifications @(isDarkMode ? "dark" : "notifications")">
+<div class="notifications @(isDarkMode ? "dark" : "notifications")" key="@_key">
     <div class="section-title">
         <h2>Notifications</h2>
         <div class="pref-email">
@@ -28,7 +30,7 @@
 
     <div class="btn-switch2">
         <label class="switch-isDarkMode" for="switch-mode-2">
-            <input class="input2" type="checkbox" id="switch-mode-2" checked="@isDarkMode" @onchange="ToggleDarkMode" />
+            <input class="input2" type="checkbox" id="switch-mode-2" checked="@isDarkMode" @onchange="ChangeTheme" />
             <span class="slider2 round2" id="slider"></span>
         </label>
         <div class="switch-text">
@@ -55,32 +57,13 @@
     private bool isSubscribed;
     private bool isDarkMode;
     private string? email;
+    private int _key = 0;
 
-    private async Task<ClaimsPrincipal> GetUserClaimsAsync()
-    {
-        var authenticationState = await authenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authenticationState.User;
-
-        if (user is not null)
-        {
-            return user;
-        }
-
-        return null!;
-    }
 
     private async Task ToggleSettings()
     {
-        var userClaims = await GetUserClaimsAsync();
+        var userClaims = await userService.GetUserClaimsAsync();
         var response = await userService.ManageSubscription(isSubscribed, email!);
-
-        var user = await UserManager.GetUserAsync(userClaims);
-
-        if (user is not null)
-        {
-            user.IsDarkMode = isDarkMode;
-            await UserManager.UpdateAsync(user);
-        }
 
         if (response.StatusCode == StatusCode.OK)
         {
@@ -108,6 +91,21 @@
                 InvokeAsync(() => StateHasChanged());
                 timerSwitch.Dispose();
             }, null, 10, Timeout.Infinite);
+        }
+    }
+
+    public async Task ChangeTheme()
+    {
+        isDarkMode = !isDarkMode;
+        var theme = await LocalStorage.GetItemAsStringAsync("theme");
+
+        if (theme == "dark")
+        {
+            await LocalStorage.SetItemAsStringAsync("theme", "light");
+        }
+        else
+        {
+            await LocalStorage.SetItemAsStringAsync("theme", "dark");
         }
     }
 
@@ -155,9 +153,11 @@
         };
     }
 
-    private void ToggleDarkMode(ChangeEventArgs e)
+    private async Task ToggleDarkMode(ChangeEventArgs e)
     {
         isDarkMode = (bool)e.Value!;
-        StateHasChanged();
+        await DarkModeService.SaveDarkModeSetting(isDarkMode);
+        await InvokeAsync(StateHasChanged);
+
     }
 }

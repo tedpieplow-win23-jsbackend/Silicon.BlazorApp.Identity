@@ -1,9 +1,22 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="wrapper">
-    <_Header />
-    @Body
-    <_Footer />
+@using Blazored.LocalStorage
+@using Silicon.Blazor.Components.Components.Accounts
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
+@inject DarkModeService DarkModeService
+@inject ILocalStorageService LocalStorage
+
+
+<div class="@(IsDarkMode ? "dark-theme" : "")">
+    <div class="wrapper">
+        <_Header />
+        <main>
+            @Body
+        </main>
+        <_Footer />
+    </div>
 </div>
 
 
@@ -12,3 +25,32 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    public bool IsDarkMode { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (!(await LocalStorage.ContainKeyAsync("theme")))
+            {
+                await LocalStorage.SetItemAsStringAsync("theme", "light");
+            }
+            else
+            {
+                var theme = await LocalStorage.GetItemAsStringAsync("theme");
+
+                if (theme == "dark")
+                {
+                    IsDarkMode = true;
+                }
+                else
+                {
+                    IsDarkMode = false;
+                }
+            }
+            StateHasChanged();
+        }
+    }
+}

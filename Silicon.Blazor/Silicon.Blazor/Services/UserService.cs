@@ -1,17 +1,20 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Newtonsoft.Json;
 
 using Silicon.Blazor.Data;
 using Silicon.Blazor.Factories;
 using Silicon.Blazor.Models;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 
 namespace Silicon.Blazor.Services;
 
-public class UserService(HttpClient httpClient, IConfiguration configuration)
+public class UserService(HttpClient httpClient, IConfiguration configuration, AuthenticationStateProvider stateProvider)
 {
     private readonly HttpClient _httpClient = httpClient;
     private readonly IConfiguration _configuration = configuration;
+    private readonly AuthenticationStateProvider _stateProvider = stateProvider;
 
     public async Task<ResponseResult> ManageSubscription(bool isSubscribed, string email)
     {
@@ -39,5 +42,18 @@ public class UserService(HttpClient httpClient, IConfiguration configuration)
         {
             return ResponseFactory.Error($"ERROR: {ex.Message}");
         }
+    }
+
+    public async Task<ClaimsPrincipal> GetUserClaimsAsync()
+    {
+        var authenticationState = await _stateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        if (user is not null)
+        {
+            return user;
+        }
+
+        return null!;
     }
 }

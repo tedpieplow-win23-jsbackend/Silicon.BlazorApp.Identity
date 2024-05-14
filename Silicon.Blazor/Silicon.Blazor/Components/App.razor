@@ -1,8 +1,12 @@
-﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+﻿@using Silicon.Blazor.Components.Components.Accounts
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
+@inject DarkModeService DarkModeService
+
 
 <!DOCTYPE html>
-<html lang="en" class="@(IsDarkMode ? "dark" : "")">
+<html lang="en" @* class="@(IsDarkMode ? "dark" : "") *@">
 
 <head>
     <meta charset="utf-8" />
@@ -10,7 +14,7 @@
     <base href="/" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.5/lottie.min.js"></script>
     <script defer src="~/js/site.js" asp-append-version="true"></script>
-    <link rel="stylesheet" href="https://kit.fontawesome.com/e83f67faa0.css" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://kit.fontawesome.com/e83f67faa0.css" crossorigin="anonymous" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css" />
@@ -28,28 +32,46 @@
 
 
 @code {
+    // public bool IsDarkMode { get; set; }
 
-    //Tanken här är att denna lyssnar konstant då den omsveper alla andra pages/comps.
-    // I så fall kommer den reagera på StateHasChanged(); och hämta hem den senaste inställningen på darkmode. 
-    public bool IsDarkMode;
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     await GetDarkModeSetting();
+    //     StateHasChanged();
+    //     DarkModeService.OnDarkModeChanged += OnDarkModeChangedHandler;
+    // }
 
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+    // private async Task GetDarkModeSetting()
+    // {
+    //     var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    //     var user = authState.User;
 
-        if (user.Identity!.IsAuthenticated)
-        {
-            var applicationUser = await UserManager.GetUserAsync(user);
-            if (applicationUser != null)
-            {
-                IsDarkMode = applicationUser.IsDarkMode;
-                StateHasChanged();
-            }
-        }
-        else
-        {
-            IsDarkMode = true;
-        }
-    }
+    //     if (user.Identity!.IsAuthenticated)
+    //     {
+    //         var applicationUser = await UserManager.GetUserAsync(user);
+    //         if (applicationUser != null)
+    //         {
+    //             IsDarkMode = applicationUser.IsDarkMode;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         IsDarkMode = true;
+    //     }
+    // }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         await DarkModeService.SaveDarkModeSetting(IsDarkMode);
+    //         StateHasChanged();
+    //     }
+    // }
+
+    // private void OnDarkModeChangedHandler(bool darkMode)
+    // {
+    //     IsDarkMode = darkMode;
+    //     StateHasChanged();
+    // }
 }

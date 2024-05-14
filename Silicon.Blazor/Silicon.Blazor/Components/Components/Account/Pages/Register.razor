@@ -33,62 +33,62 @@
 
         <EditForm FormName="signupform" Model="SignUpForm" OnValidSubmit="SignUp" method="post">
             <DataAnnotationsValidator />
-                <h1>Create Account</h1>
-                <p>Already have an account? <NavLink href="/signin">Sign in here</NavLink></p>
+            <h1>Create Account</h1>
+            <p>Already have an account? <NavLink href="/signin">Sign in here</NavLink></p>
 
-                <div class="form-content">
-                    <div class="form-name">
+            <div class="form-content">
+                <div class="form-name">
 
-                        <div id="form-firstname" class="input-field">
-                            <div class="input-labels">
-                                <label>First name</label>
-                            </div>
-                            <InputText @bind-Value="SignUpForm.FirstName" />
-                            <ValidationMessage For="() => SignUpForm.FirstName" class="text-danger" />
-                        </div>
-
-                        <div id="form-lastname" class="input-field">
-                            <div class="input-labels">
-                                <label>Last Name</label>
-                            </div>
-                            <InputText @bind-Value="SignUpForm.LastName" />
-                            <ValidationMessage For="() => SignUpForm.LastName" class="text-danger" />
-                        </div>
-
-                    </div>
-
-                    <div id="form-email" class="input-field">
+                    <div id="form-firstname" class="input-field">
                         <div class="input-labels">
-                            <label>Email</label>
+                            <label>First name</label>
                         </div>
-                        <InputText @bind-Value="SignUpForm.Email" type="email" />
-                        <ValidationMessage For="() => SignUpForm.Email" class="text-danger" />
+                        <InputText @bind-Value="SignUpForm.FirstName" />
+                        <ValidationMessage For="() => SignUpForm.FirstName" class="text-danger" />
                     </div>
 
-                    <div id="form-password" class="input-field">
+                    <div id="form-lastname" class="input-field">
                         <div class="input-labels">
-                            <label>Password</label>
+                            <label>Last Name</label>
                         </div>
-                        <InputText @bind-Value="SignUpForm.Password" type="password" />
-                        <ValidationMessage For="() => SignUpForm.Password" class="text-danger" />
-                    </div>
-
-                    <div id="form-confirm" class="input-field">
-                        <div class="input-labels">
-                            <label>Confirm Password</label>
-                        </div>
-                        <InputText @bind-Value="SignUpForm.ConfirmPassword" type="password" />
-                        <ValidationMessage For="() => SignUpForm.ConfirmPassword" class="text-danger" />
-                    </div>
-
-                    <div id="form-terms" class="checkbox">
-                        <InputCheckbox @bind-Value="SignUpForm.TermsAndConditions" />
-                        <label>I agree to the terms and conditions</label>
-                        <ValidationMessage For="() => SignUpForm.TermsAndConditions" class="text-danger" />
+                        <InputText @bind-Value="SignUpForm.LastName" />
+                        <ValidationMessage For="() => SignUpForm.LastName" class="text-danger" />
                     </div>
 
                 </div>
-                <button class="btn-theme" type="submit">Sign Up</button>
+
+                <div id="form-email" class="input-field">
+                    <div class="input-labels">
+                        <label>Email</label>
+                    </div>
+                    <InputText @bind-Value="SignUpForm.Email" type="email" />
+                    <ValidationMessage For="() => SignUpForm.Email" class="text-danger" />
+                </div>
+
+                <div id="form-password" class="input-field">
+                    <div class="input-labels">
+                        <label>Password</label>
+                    </div>
+                    <InputText @bind-Value="SignUpForm.Password" type="password" />
+                    <ValidationMessage For="() => SignUpForm.Password" class="text-danger" />
+                </div>
+
+                <div id="form-confirm" class="input-field">
+                    <div class="input-labels">
+                        <label>Confirm Password</label>
+                    </div>
+                    <InputText @bind-Value="SignUpForm.ConfirmPassword" type="password" />
+                    <ValidationMessage For="() => SignUpForm.ConfirmPassword" class="text-danger" />
+                </div>
+
+                <div id="form-terms" class="checkbox">
+                    <InputCheckbox @bind-Value="SignUpForm.TermsAndConditions" />
+                    <label>I agree to the terms and conditions</label>
+                    <ValidationMessage For="() => SignUpForm.TermsAndConditions" class="text-danger" />
+                </div>
+
+            </div>
+            <button class="btn-theme" type="submit">Sign Up</button>
         </EditForm>
     </div>
 </section>
@@ -126,17 +126,18 @@
             var body = new { email = SignUpForm.Email };
             await ServiceBusHandler.SendServiceBusMessage(body, "VerificationServiceBus", "verification_request");
 
-            if (UserManager.Options.SignIn.RequireConfirmedAccount)
-            {
-                RedirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = SignUpForm.Email, ["returnUrl"] = ReturnUrl });
-            }
-
-            RedirectManager.RedirectTo("/signin");
         }
         catch
         {
             StatusMessage = "An error occured while creating the account.";
             return;
         }
+
+        if (UserManager.Options.SignIn.RequireConfirmedAccount)
+        {
+            RedirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = SignUpForm.Email, ["returnUrl"] = ReturnUrl });
+        }
+
+        RedirectManager.RedirectTo("/signin");
     }
 }

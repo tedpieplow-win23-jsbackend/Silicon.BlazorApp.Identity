@@ -5,6 +5,7 @@ using Silicon.Blazor.Configurations;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.RegisterServices(builder.Configuration);
+builder.Services.RegisterAuthorization();
 
 var app = builder.Build();
 
@@ -28,5 +29,7 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(Silicon.Blazor.Client._Imports).Assembly);
 
 app.MapAdditionalIdentityEndpoints();
+await RoleConfiguration.RegisterRoles(app);
+
 
 app.Run();

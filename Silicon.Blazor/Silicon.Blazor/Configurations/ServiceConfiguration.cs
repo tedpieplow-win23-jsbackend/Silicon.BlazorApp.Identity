@@ -28,6 +28,7 @@ public static class ServiceConfiguration
         services.AddScoped<ClaimsPrincipal>();
         services.AddScoped<UserFactory>();
         services.AddScoped<ServiceBusHandler>();
+        services.AddHttpContextAccessor();
 
         services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 

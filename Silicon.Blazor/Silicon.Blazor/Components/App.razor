@@ -28,6 +28,9 @@
 
 
 @code {
+
+    //Tanken här är att denna lyssnar konstant då den omsveper alla andra pages/comps.
+    // I så fall kommer den reagera på StateHasChanged(); och hämta hem den senaste inställningen på darkmode. 
     public bool IsDarkMode;
 
     protected override async Task OnInitializedAsync()

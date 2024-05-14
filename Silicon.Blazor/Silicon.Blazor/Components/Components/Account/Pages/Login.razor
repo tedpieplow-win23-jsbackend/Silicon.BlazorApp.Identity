@@ -1,9 +1,12 @@
 ﻿@page "/signin"
+
 @* @rendermode InteractiveServer *@
+
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc
 @using Silicon.Blazor.Data
 
 @inject SignInManager<ApplicationUser> SignInManager
@@ -109,20 +112,19 @@
         }
     }
 
+    [ValidateAntiForgeryToken]
     private async Task SignIn()
     {
 
-        isBusy = true;
 
         var result = await SignInManager.PasswordSignInAsync(SignInForm.Email, SignInForm.Password, SignInForm.RememberMe, false);
+
         if (result.Succeeded)
-        {
-            RedirectManager.RedirectTo("/");
-        }
+            NavigationManager.NavigateTo("/", true);
         else
-        {
             StatusMessage = "Failed to login, please try again";
-        }
+
+        return;
 
     }
 }

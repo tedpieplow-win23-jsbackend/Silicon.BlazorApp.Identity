@@ -1,9 +1,9 @@
 ﻿@page "/signin"
-@rendermode InteractiveServer
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc
 @using Silicon.Blazor.Data
 
 @inject SignInManager<ApplicationUser> SignInManager
@@ -99,22 +99,18 @@
         }
     }
 
+    [ValidateAntiForgeryToken]
     private async Task SignIn()
     {
-        try
-        {
-            var result = await SignInManager.PasswordSignInAsync(SignInForm.Email, SignInForm.Password, SignInForm.RememberMe, false);
 
-            if (result.Succeeded)
-                RedirectManager.RedirectTo("/Account/Details");
-            else
-                StatusMessage = "Failed to login, please try again";
+        var result = await SignInManager.PasswordSignInAsync(SignInForm.Email, SignInForm.Password, SignInForm.RememberMe, false);
 
-            return;
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex.Message);
-        }
+        if (result.Succeeded)
+            NavigationManager.NavigateTo("/", true);
+        else
+            StatusMessage = "Failed to login, please try again";
+
+        return;
+
     }
 }

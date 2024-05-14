@@ -1,4 +1,8 @@
-﻿<header @* class="@((ViewContext.RouteData.Values["Controller"]!.ToString() == "Contact") ? "background-contact" : "") *@">
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IdentityRedirectManager RedirectManager
+
+<header @* class="@((ViewContext.RouteData.Values["Controller"]!.ToString() == "Contact") ? "background-contact" : "") *@">
     <div class="container">
         @* <NavLink id="logo" href="/"><img src="/images/icons/@(isDark ? "silicon-logo-dark.svg" : "silicon-logo-light_theme.svg")" alt="Silicon-logo"></NavLink> *@
 
@@ -32,7 +36,7 @@
         <div class="account-buttons hide" id="account-buttons">
             <AuthorizeView>
                 <Authorized>
-                    <NavLink class="sign-out" title="Sign Out"><i class="fa-regular fa-right-from-bracket "></i></NavLink>
+                    <NavLink href="/signout" class="sign-out" title="Sign Out"><i class="fa-regular fa-right-from-bracket "></i></NavLink>
                     @* <NavLink title="Profile"><img class="profile-image" src="/images/profiles/@user!.ProfileImageUrl" /></NavLink> *@
                 </Authorized>
                 <NotAuthorized>

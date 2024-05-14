@@ -1,10 +1,10 @@
-﻿@page "/backoffice"
-@using Silicon.Blazor.Components.Components.BackOffice
+﻿@rendermode InteractiveServer
+@page "/backoffice"
+
 <PageTitle>BackOffice</PageTitle>
 
 <section class="backoffice">
-    <Menu />
-    <AdministratorsView />
+    <Menu OnClick="RenderClickedPage"/>
     <div class="container">
         @switch (componentToDisplay)
         {
@@ -31,7 +31,6 @@
             default:
                 <BackOfficeMain />
                 break;
-
         }
         
     </div>

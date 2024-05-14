@@ -1,15 +1,24 @@
-﻿<div class="nav-bar">
+﻿@rendermode InteractiveServer
+
+<div class="nav-bar">
     <i class="icon fa-solid fa-building-memo"></i>
     <nav>
-        <NavLink class="link"><i class="fa-duotone fa-users"></i>Administrators</NavLink>
-        <NavLink class="link"><i class="fa-duotone fa-users"></i>Users</NavLink>
-        <NavLink class="link"><i class="fa-duotone fa-envelope"></i>NewsLetter</NavLink>
-        <NavLink class="link"><i class="fa-regular fa-graduation-cap"></i>Courses</NavLink>
-        <NavLink class="link"><i class="fa-sharp fa-solid fa-headset"></i>Chat</NavLink>
+        <button class="link" @onclick='() => NavigateToPage("Administrators")'><i class="fa-duotone fa-users"></i>Administrators</button>
+        <button class="link" @onclick='() => NavigateToPage("Users")'><i class="fa-duotone fa-users"></i>Users</button>
+        <button class="link" @onclick='() => NavigateToPage("Newsletter")'><i class="fa-duotone fa-envelope"></i>NewsLetter</button>
+        <button class="link" @onclick='() => NavigateToPage("Courses")'><i class="fa-regular fa-graduation-cap"></i>Courses</button>
+        <button class="link" @onclick='() => NavigateToPage("Chat")'><i class="fa-sharp fa-solid fa-headset"></i>Chat</button>
     </nav>
 </div>
 
 
 @code {
+    [Parameter]
+    public EventCallback<string> OnClick { get; set; }
 
+    private async Task NavigateToPage(string page)
+    {
+        await OnClick.InvokeAsync(page);
+    }
 }
+

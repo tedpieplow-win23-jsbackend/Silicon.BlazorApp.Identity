@@ -1,4 +1,4 @@
-﻿@page "/Account/Manage"
+﻿@page "/Account/Details"
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
@@ -9,9 +9,8 @@
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Profile</PageTitle>
+<PageTitle>Account Details</PageTitle>
 
-<h3>Profile</h3>
 <StatusMessage />
 
 <div class="row">
@@ -43,6 +42,9 @@
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
+
+    [SupplyParameterFromForm]
+    private AccountDetailsVM AccountDetailsModel { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {

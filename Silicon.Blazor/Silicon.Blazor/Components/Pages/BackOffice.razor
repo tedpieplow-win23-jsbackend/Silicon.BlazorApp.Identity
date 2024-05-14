@@ -1,37 +1,46 @@
 ﻿@page "/backoffice"
+@using Silicon.Blazor.Components.Components.BackOffice
 <PageTitle>BackOffice</PageTitle>
 
 <section class="backoffice">
     <Menu />
-
+    <AdministratorsView />
     <div class="container">
         @switch (componentToDisplay)
         {
             case "Administrators":
-            
+                <AdministratorsView />
                 break;
+
             case "Users":
-
+                <UsersView />
                 break;
+
             case "Newsletter":
-
+                <NewsLettersView />
                 break;
+
             case "Courses":
-
+                <CoursesView />
                 break;
-            case "Chat":
 
+            case "Chat":
+                <ChatView />
+                break;
+
+            default:
+                <BackOfficeMain />
                 break;
 
         }
-        <BackOfficeMain />
+        
     </div>
 
 </section>
 
 
 @code {
-    private string componentToDisplay;
+    private string componentToDisplay = "default";
 
     private void RenderClickedPage(string page)
     {

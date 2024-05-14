@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Silicon.Blazor.Components.Account;
 using Silicon.Blazor.Data;
@@ -28,6 +29,7 @@ public static class ServiceConfiguration
         services.AddScoped<ClaimsPrincipal>();
         services.AddScoped<UserFactory>();
         services.AddScoped<ServiceBusHandler>();
+
         services.AddHttpContextAccessor();
 
         services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
@@ -47,8 +49,12 @@ public static class ServiceConfiguration
         services.AddDatabaseDeveloperPageExceptionFilter();
 
         services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddSignInManager()
+            .AddRoleManager<RoleManager<IdentityRole>>()
+            .AddRoleStore<RoleStore<IdentityRole, ApplicationDbContext>>()
             .AddDefaultTokenProviders();
+
     }
 }

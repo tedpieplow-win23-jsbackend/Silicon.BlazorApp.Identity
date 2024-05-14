@@ -39,7 +39,7 @@
 
     @if (!string.IsNullOrEmpty(infoMessage))
     {
-        <p class="@(infoMessage == "OK" ? "alert-success" : infoMessage == "Exists" ? "alert-info" : infoMessage == "Error" ? "alert-danger" : "")">@GetMessageText(infoMessage)</p>
+        <p class="@(infoMessage == "OK" ? "alert-success" : infoMessage == "Exists" ? "alert-info" : infoMessage == "Error" ? "alert-danger" : "") w-50 text-lg-center">@GetMessageText(infoMessage)</p>
     }
 
     <div class="buttons">

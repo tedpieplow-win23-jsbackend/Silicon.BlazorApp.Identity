@@ -29,9 +29,7 @@ public class CoursesVM(HttpClient httpClient, NavigationManager navigationManage
                 var content = await response.Content.ReadAsStringAsync();
                 if (content != null)
                 {
-                    // Kan vara problem med JsonSerializer. 
                     AllCourses = JsonConvert.DeserializeObject<IEnumerable<Course>>(content);
-                    //AllCourses = JsonSerializer.Deserialize<List<Course>>(content);
                 }
             }
             else

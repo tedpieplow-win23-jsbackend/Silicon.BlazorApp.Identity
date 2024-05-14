@@ -9,7 +9,7 @@ public static class AuthorizationConfiguration
             x.AddPolicy("SuperUser", policy => policy.RequireRole("SuperUser"));
             x.AddPolicy("Administrator", policy => policy.RequireRole("SuperUser", "Administrator"));
             x.AddPolicy("Author", policy => policy.RequireRole("SuperUser", "Administrator", "Author"));
-            x.AddPolicy("AuthenticatedUsers", policy => policy.RequireRole("SuperUser", "Administrator", "Author", "User"));
+            x.AddPolicy("User", policy => policy.RequireRole("SuperUser", "Administrator", "Author", "User"));
         });
     }
 }

@@ -13,10 +13,13 @@
                         <NavLink href="/courses" class="menu-link">Courses</NavLink>
                     </Authorized>
                 </AuthorizeView>
-@*                     @if (User.IsInRole("SuperUser"))
-                    {
-                        <a class="menu-link" asp-controller="Courses" asp-action="Create">Admin Portal</a>
-                    } *@
+
+                <AuthorizeView Roles="SuperUser, Administrator, Author">
+                    <Authorized>
+                        <NavLink href="/backoffice" class="menu-link">Courses</NavLink>
+                    </Authorized>
+                </AuthorizeView>
+
             </nav>
         </div>
 

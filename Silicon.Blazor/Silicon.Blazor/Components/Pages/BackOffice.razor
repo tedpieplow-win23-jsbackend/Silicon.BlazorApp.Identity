@@ -1,8 +1,40 @@
 ﻿@page "/backoffice"
-
 <PageTitle>BackOffice</PageTitle>
-<h3>BackOffice</h3>
+
+<section class="backoffice">
+    <Menu />
+
+    <div class="container">
+        @switch (componentToDisplay)
+        {
+            case "Administrators":
+            
+                break;
+            case "Users":
+
+                break;
+            case "Newsletter":
+
+                break;
+            case "Courses":
+
+                break;
+            case "Chat":
+
+                break;
+
+        }
+        <BackOfficeMain />
+    </div>
+
+</section>
+
 
 @code {
+    private string componentToDisplay;
 
+    private void RenderClickedPage(string page)
+    {
+        componentToDisplay = page;
+    }
 }

@@ -31,5 +31,4 @@ app.MapRazorComponents<App>()
 app.MapAdditionalIdentityEndpoints();
 await RoleConfiguration.RegisterRoles(app);
 
-
 app.Run();

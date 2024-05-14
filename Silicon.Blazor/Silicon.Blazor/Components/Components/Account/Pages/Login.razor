@@ -1,4 +1,5 @@
 ﻿@page "/signin"
+@* @rendermode InteractiveServer *@
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
@@ -110,28 +111,18 @@
 
     private async Task SignIn()
     {
-        try
-        {
-            isBusy = true;
 
-            var result = await SignInManager.PasswordSignInAsync(SignInForm.Email, SignInForm.Password, SignInForm.RememberMe, lockoutOnFailure: false);
-            if (result.Succeeded)
-            {
-                RedirectManager.RedirectTo(ReturnUrl);
-            }
-            else
-                StatusMessage = "Failed to login, please try again";
+        isBusy = true;
 
-            return;
-        }
-        catch (Exception ex)
+        var result = await SignInManager.PasswordSignInAsync(SignInForm.Email, SignInForm.Password, SignInForm.RememberMe, false);
+        if (result.Succeeded)
         {
-            Logger.LogError(ex.Message);
-            StatusMessage = "FUCK YOU";
+            RedirectManager.RedirectTo("/");
         }
-        finally
+        else
         {
-            isBusy = false;
+            StatusMessage = "Failed to login, please try again";
         }
+
     }
 }

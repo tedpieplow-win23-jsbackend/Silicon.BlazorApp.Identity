@@ -55,6 +55,5 @@ public static class ServiceConfiguration
             .AddRoleManager<RoleManager<IdentityRole>>()
             .AddRoleStore<RoleStore<IdentityRole, ApplicationDbContext>>()
             .AddDefaultTokenProviders();
-
     }
 }

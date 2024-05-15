@@ -1,11 +1,11 @@
-﻿using Silicon.Blazor.ViewModels.Courses;
-using Silicon.Blazor.ViewModels.Users;
+﻿using Silicon.Blazor.Data;
+using Silicon.Blazor.ViewModels.Courses;
 
 namespace Silicon.Blazor.ViewModels.Account;
 
 public class AccountDetailsVM
 {
-    public User User { get; set; } = new User();
+    public ApplicationUser User { get; set; } = new ApplicationUser();
     public AddressInfoVM AddressInfo { get; set; } = new AddressInfoVM();
     public ContactInfoVM ContactInfo { get; set; } = new ContactInfoVM();
     public NavigationVM Navigation { get; set; } = new NavigationVM();

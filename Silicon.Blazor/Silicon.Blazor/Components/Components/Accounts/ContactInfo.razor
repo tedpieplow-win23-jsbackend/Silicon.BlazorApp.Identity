@@ -1,67 +1,134 @@
-@* @using Models.Account *@
+@using Microsoft.EntityFrameworkCore
+@inject UserManager<ApplicationUser> UserManager
+@inject UserFactory UserFactory
+@inject IdentityUserAccessor UserAccessor
+@inject IdentityRedirectManager RedirectManager
+@inject AuthenticationStateProvider StateProvider
 
-<form asp-controller="Account" asp-action="AccountBasicInfo" method="post" novalidate>
+<EditForm FormName="AccountDetailsForm" Model="ContactInfoModel" OnValidSubmit="UpdateBasicInfo">
+    <DataAnnotationsValidator />
+
     <div class="user-details">
         <div class="section-title">
 
-            @if (!string.IsNullOrEmpty(WM.SuccessMessage))
+            @if (!string.IsNullOrEmpty(SuccessMessage))
             {
                 <span class="alert alert-success" role="alert" id="userMessage">
-                    @WM.SuccessMessage
+                    SuccessMessage
                 </span>
             }
-            @if (!string.IsNullOrEmpty(WM.ErrorMessage))
+            @if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 <span class="alert alert-danger" role="alert" id="userMessage">
-                    @WM.ErrorMessage
+                    ErrorMessage
                 </span>
             }
             <h2>Account Details</h2>
             <h5>Basic Info</h5>
         </div>
         <div class="name">
+
             <div class="firstname">
                 <div class="validation">
                     <label asp-for="Details.FirstName">First name</label>
-                    <span asp-validation-for="Details.FirstName"></span>
+                    <ValidationMessage For="() => ContactInfoModel.FirstName" />
                 </div>
-                <input asp-for="Details.FirstName" disabled="@WM.ContactInfo.IsExternalAccount" />
+                <InputText @bind-Value="ContactInfoModel.FirstName" />
             </div>
+
             <div class="lastname">
                 <div class="validation">
                     <label asp-for="Details.LastName">Last name</label>
-                    <span asp-validation-for="Details.LastName"></span>
+                    <ValidationMessage For="() => ContactInfoModel.LastName" />
                 </div>
-                <input asp-for="Details.LastName" disabled="@WM.ContactInfo.IsExternalAccount" />
+                <InputText @bind-Value="ContactInfoModel.LastName" />
             </div>
+
         </div>
         <div class="contact-info">
+
             <div class="email">
                 <div class="validation">
                     <label asp-for="Details.Email">Email Address</label>
-                    <span asp-validation-for="Details.Email"></span>
+                    <ValidationMessage For="() => ContactInfoModel.Email" />
                 </div>
-                <input asp-for="Details.Email" disabled="@WM.ContactInfo.IsExternalAccount" />
+                <InputText @bind-Value="ContactInfoModel.Email" type="email" />
             </div>
+
             <div class="phone">
                 <div class="validation">
                     <label asp-for="Details.Phone">Phone</label>
-                    <span asp-validation-for="Details.Phone"></span>
+                    <ValidationMessage For="() => ContactInfoModel.Phone" />
                 </div>
-                <input asp-for="Details.Phone" />
+                <InputText @bind-Value="ContactInfoModel.Phone" />
             </div>
+
         </div>
     </div>
+
     <div class="bio">
         <label asp-for="Details.Bio">Bio <span>(optional)</span></label>
-        <textarea asp-for="Details.Bio"></textarea>
+        <InputTextArea @bind-Value="ContactInfoModel.Bio" />
         <div class="user-buttons">
-            <NavLink asp-controller="Account" asp-action="Cancel" class="btn-gray">Cancel</NavLink>
+            <NavLink href="/account/details" class="btn-gray">Cancel</NavLink>
             <button type="submit" class="btn-theme" id="knappen">Save Changes</button>
         </div>
     </div>
-</form>
+
+</EditForm>
 
 @code {
-    private AccountDetailsVM WM { get; set; } = new(); 
+
+    private string? SuccessMessage;
+    private string? ErrorMessage;
+
+    [SupplyParameterFromForm]
+    private ContactInfoVM ContactInfoModel { get; set; } = new();
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private ApplicationUser user = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(10);
+        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        await Task.Delay(10);
+
+        // var authState = await StateProvider.GetAuthenticationStateAsync();
+        // var user = await UserManager.GetUserAsync(authState.User);
+
+        // using var httpContext = new HttpContext();
+        // var user = await UserManager.GetUserAsync(HttpContext.User);
+
+        if (user != null)
+        {
+            ContactInfoModel = UserFactory.PopulateContactInfo(user);
+        }
+
+    }
+
+    private async Task UpdateBasicInfo()
+    {
+        var FirstName = ContactInfoModel.FirstName;
+        var LastName = ContactInfoModel.LastName;
+        var Email = ContactInfoModel.Email;
+        var Phone = ContactInfoModel.Phone;
+        var Bio = ContactInfoModel.Bio;
+
+        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        var model = new ContactInfoVM
+        {
+                FirstName = FirstName,
+                LastName = LastName,
+                Email = Email,
+                Phone = Phone,
+                Bio = Bio
+        };
+        var userToUpdate = UserFactory.PopulateUserEntity(model, user);
+        var result = await UserManager.UpdateAsync(userToUpdate);
+
+        RedirectManager.RedirectTo("/account/details");
+    }
 }

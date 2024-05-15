@@ -8,7 +8,6 @@
 @inject DarkModeService DarkModeService
 @inject ILocalStorageService LocalStorage
 
-
 <div class="@(IsDarkMode ? "dark-theme" : "")">
     <div class="wrapper">
         <_Header />
@@ -19,7 +18,6 @@
     </div>
 </div>
 
-
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
@@ -29,28 +27,25 @@
 @code {
     public bool IsDarkMode { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        IsDarkMode = await DarkModeService.UpdateDarkModeButtonSwitch();
+        StateHasChanged();
+        DarkModeService.OnDarkModeChanged += OnDarkModeChangedHandler;
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            if (!(await LocalStorage.ContainKeyAsync("theme")))
-            {
-                await LocalStorage.SetItemAsStringAsync("theme", "light");
-            }
-            else
-            {
-                var theme = await LocalStorage.GetItemAsStringAsync("theme");
-
-                if (theme == "dark")
-                {
-                    IsDarkMode = true;
-                }
-                else
-                {
-                    IsDarkMode = false;
-                }
-            }
+            await DarkModeService.SaveDarkModeSetting(IsDarkMode);
             StateHasChanged();
         }
+    }
+
+    private void OnDarkModeChangedHandler(bool darkMode)
+    {
+        IsDarkMode = darkMode;
+        StateHasChanged();
     }
 }

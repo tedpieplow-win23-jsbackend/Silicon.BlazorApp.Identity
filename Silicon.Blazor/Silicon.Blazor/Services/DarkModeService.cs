@@ -5,23 +5,19 @@ using System.Security.Claims;
 
 namespace Silicon.Blazor.Services;
 
-public class DarkModeService(AuthenticationStateProvider stateProvider, UserManager<ApplicationUser> userManager, IServiceProvider serviceProvider)
+public class DarkModeService(IServiceProvider serviceProvider)
 {
-    private readonly AuthenticationStateProvider _stateProvider = stateProvider;
-    private readonly UserManager<ApplicationUser> _userManager = userManager;
+
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     public event Action<bool>? OnDarkModeChanged;
     public async Task SaveDarkModeSetting(bool isDarkMode)
     {
-        var authenticationStateProvider = _serviceProvider.GetRequiredService<AuthenticationStateProvider>();
-        var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        var (authState, user) = await GetAuthenticationAsync();
 
         if (user.Identity!.IsAuthenticated)
         {
+            var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var applicationUser = await userManager.GetUserAsync(user);
             if (applicationUser != null)
             {
@@ -31,6 +27,30 @@ public class DarkModeService(AuthenticationStateProvider stateProvider, UserMana
                 OnDarkModeChanged?.Invoke(isDarkMode);
             }
         }
+    }
+
+    public async Task<bool> UpdateDarkModeButtonSwitch()
+    {
+        var (authState, user) = await GetAuthenticationAsync();
+
+        if (user.Identity!.IsAuthenticated)
+        {
+            var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var applicationUser = await userManager.GetUserAsync(user);
+            if (applicationUser != null)
+            {
+                return applicationUser.IsDarkMode;
+            }
+        }
+        return false;
+    }
+
+    private async Task<(AuthenticationState, ClaimsPrincipal)> GetAuthenticationAsync()
+    {
+        var authenticationStateProvider = _serviceProvider.GetRequiredService<AuthenticationStateProvider>();
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        return (authState,  user);
     }
 }
 

@@ -1,12 +1,5 @@
-﻿@using Silicon.Blazor.Components.Components.Accounts
-
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject UserManager<ApplicationUser> UserManager
-@inject DarkModeService DarkModeService
-
-
-<!DOCTYPE html>
-<html lang="en" @* class="@(IsDarkMode ? "dark" : "") *@">
+﻿<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8" />
@@ -30,48 +23,3 @@
 
 </html>
 
-
-@code {
-    // public bool IsDarkMode { get; set; }
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     await GetDarkModeSetting();
-    //     StateHasChanged();
-    //     DarkModeService.OnDarkModeChanged += OnDarkModeChangedHandler;
-    // }
-
-    // private async Task GetDarkModeSetting()
-    // {
-    //     var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-    //     var user = authState.User;
-
-    //     if (user.Identity!.IsAuthenticated)
-    //     {
-    //         var applicationUser = await UserManager.GetUserAsync(user);
-    //         if (applicationUser != null)
-    //         {
-    //             IsDarkMode = applicationUser.IsDarkMode;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         IsDarkMode = true;
-    //     }
-    // }
-
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     if (firstRender)
-    //     {
-    //         await DarkModeService.SaveDarkModeSetting(IsDarkMode);
-    //         StateHasChanged();
-    //     }
-    // }
-
-    // private void OnDarkModeChangedHandler(bool darkMode)
-    // {
-    //     IsDarkMode = darkMode;
-    //     StateHasChanged();
-    // }
-}

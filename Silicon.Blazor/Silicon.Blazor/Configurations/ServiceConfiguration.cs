@@ -33,6 +33,7 @@ public static class ServiceConfiguration
         services.AddScoped<DarkModeService>();
         services.AddBlazoredLocalStorage();
 
+
         services.AddHttpContextAccessor();
 
         services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();

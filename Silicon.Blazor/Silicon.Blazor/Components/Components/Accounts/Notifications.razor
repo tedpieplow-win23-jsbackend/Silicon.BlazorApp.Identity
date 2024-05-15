@@ -5,10 +5,12 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject DarkModeService DarkModeService
 @inject ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
 
 @rendermode InteractiveServer
 
-<div class="notifications @(isDarkMode ? "dark" : "notifications")" key="@_key">
+
+<div class="notifications @(isDarkMode ? "dark" : "notifications")">
     <div class="section-title">
         <h2>Notifications</h2>
         <div class="pref-email">
@@ -30,7 +32,7 @@
 
     <div class="btn-switch2">
         <label class="switch-isDarkMode" for="switch-mode-2">
-            <input class="input2" type="checkbox" id="switch-mode-2" checked="@isDarkMode" @onchange="ChangeTheme" />
+            <input class="input2" type="checkbox" id="switch-mode-2" checked="@isDarkMode" @onchange="ToggleDarkMode" />
             <span class="slider2 round2" id="slider"></span>
         </label>
         <div class="switch-text">
@@ -57,9 +59,26 @@
     private bool isSubscribed;
     private bool isDarkMode;
     private string? email;
-    private int _key = 0;
 
+    // For darkmode
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isDarkMode = await DarkModeService.UpdateDarkModeButtonSwitch();
+            StateHasChanged();
+        }
+    }
 
+    private async Task ToggleDarkMode(ChangeEventArgs e)
+    {
+        isDarkMode = (bool)e.Value!;
+        await DarkModeService.SaveDarkModeSetting(isDarkMode);
+        await InvokeAsync(StateHasChanged);
+        NavigationManager.NavigateTo("/Account/Notifications");
+    }
+
+    // For subscription
     private async Task ToggleSettings()
     {
         var userClaims = await userService.GetUserClaimsAsync();
@@ -91,21 +110,6 @@
                 InvokeAsync(() => StateHasChanged());
                 timerSwitch.Dispose();
             }, null, 10, Timeout.Infinite);
-        }
-    }
-
-    public async Task ChangeTheme()
-    {
-        isDarkMode = !isDarkMode;
-        var theme = await LocalStorage.GetItemAsStringAsync("theme");
-
-        if (theme == "dark")
-        {
-            await LocalStorage.SetItemAsStringAsync("theme", "light");
-        }
-        else
-        {
-            await LocalStorage.SetItemAsStringAsync("theme", "dark");
         }
     }
 
@@ -151,13 +155,5 @@
             "Error" => "Internal error, please try again later.",
             _ => ""
         };
-    }
-
-    private async Task ToggleDarkMode(ChangeEventArgs e)
-    {
-        isDarkMode = (bool)e.Value!;
-        await DarkModeService.SaveDarkModeSetting(isDarkMode);
-        await InvokeAsync(StateHasChanged);
-
     }
 }

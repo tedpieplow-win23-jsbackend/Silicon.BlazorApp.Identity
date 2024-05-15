@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json;
 
-using Silicon.Blazor.Data;
 using Silicon.Blazor.Factories;
 using Silicon.Blazor.Models;
 using System.Net;

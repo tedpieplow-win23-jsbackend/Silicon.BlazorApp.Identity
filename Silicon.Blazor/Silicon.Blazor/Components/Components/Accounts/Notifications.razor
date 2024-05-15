@@ -60,7 +60,7 @@
     private bool isDarkMode;
     private string? email;
 
-    // For darkmode
+    #region DarkMode
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -77,8 +77,9 @@
         await InvokeAsync(StateHasChanged);
         NavigationManager.NavigateTo("/Account/Notifications");
     }
-
-    // For subscription
+    #endregion
+    
+    #region Subscription
     private async Task ToggleSettings()
     {
         var userClaims = await userService.GetUserClaimsAsync();
@@ -156,4 +157,5 @@
             _ => ""
         };
     }
+    #endregion
 }

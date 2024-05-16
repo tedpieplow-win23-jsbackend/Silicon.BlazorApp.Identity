@@ -1,7 +1,11 @@
-﻿@inject AuthenticationStateProvider authenticationStateProvider
+﻿@using Blazored.LocalStorage
+@inject AuthenticationStateProvider authenticationStateProvider
 @inject UserService userService
 @inject ApplicationDbContext Context
 @inject UserManager<ApplicationUser> UserManager
+@inject DarkModeService DarkModeService
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
 
 @rendermode InteractiveServer
 
@@ -39,7 +43,7 @@
 
     @if (!string.IsNullOrEmpty(infoMessage))
     {
-        <p class="@(infoMessage == "OK" ? "alert-success" : infoMessage == "Exists" ? "alert-info" : infoMessage == "Error" ? "alert-danger" : "")">@GetMessageText(infoMessage)</p>
+        <p class="@(infoMessage == "OK" ? "alert-success" : infoMessage == "Exists" ? "alert-info" : infoMessage == "Error" ? "alert-danger" : "") w-50 text-lg-center">@GetMessageText(infoMessage)</p>
     }
 
     <div class="buttons">
@@ -56,31 +60,30 @@
     private bool isDarkMode;
     private string? email;
 
-    private async Task<ClaimsPrincipal> GetUserClaimsAsync()
+    #region DarkMode
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var authenticationState = await authenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authenticationState.User;
-
-        if (user is not null)
+        if (firstRender)
         {
-            return user;
+            isDarkMode = await DarkModeService.UpdateDarkModeButtonSwitch();
+            StateHasChanged();
         }
-
-        return null!;
     }
 
+    private async Task ToggleDarkMode(ChangeEventArgs e)
+    {
+        isDarkMode = (bool)e.Value!;
+        await DarkModeService.SaveDarkModeSetting(isDarkMode);
+        await InvokeAsync(StateHasChanged);
+        NavigationManager.NavigateTo("/Account/Notifications");
+    }
+    #endregion
+    
+    #region Subscription
     private async Task ToggleSettings()
     {
-        var userClaims = await GetUserClaimsAsync();
+        var userClaims = await userService.GetUserClaimsAsync();
         var response = await userService.ManageSubscription(isSubscribed, email!);
-
-        var user = await UserManager.GetUserAsync(userClaims);
-
-        if (user is not null)
-        {
-            user.IsDarkMode = isDarkMode;
-            await UserManager.UpdateAsync(user);
-        }
 
         if (response.StatusCode == StatusCode.OK)
         {
@@ -154,10 +157,5 @@
             _ => ""
         };
     }
-
-    private void ToggleDarkMode(ChangeEventArgs e)
-    {
-        isDarkMode = (bool)e.Value!;
-        StateHasChanged();
-    }
+    #endregion
 }

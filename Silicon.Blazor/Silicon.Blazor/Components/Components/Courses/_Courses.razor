@@ -1,6 +1,7 @@
 ﻿@using System.Text.Json
 @using Azure.Messaging.ServiceBus
 @inject ICoursesVM ViewModel
+@inject IConfiguration Configuration
 
 @attribute [StreamRendering]
 
@@ -103,7 +104,7 @@
     protected override async Task OnInitializedAsync()
     {  // rSnxh_B26vti9pvR8dwF4Xe1LzkeUFveETw6scP8dkT5AzFuwMQx2g==
         var query = new GraphQLQuery { Query = "{ getCourses { id title isBestseller categories title imageHeaderUri imageUri likesInPercent likes hours authors { name } prices { currency price discount } } }" };
-        var response = await Http.PostAsJsonAsync("https://courseprovider.azurewebsites.net/api/graphql?code=rSnxh_B26vti9pvR8dwF4Xe1LzkeUFveETw6scP8dkT5AzFuwMQx2g%3D%3D", query);
+        var response = await Http.PostAsJsonAsync(Configuration.GetValue<string>("ConnectionStrings:GetCoursesProvider"), query);
 
         if (response.IsSuccessStatusCode)
         {

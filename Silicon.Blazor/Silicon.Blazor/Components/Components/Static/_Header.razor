@@ -17,10 +17,13 @@
                         <NavLink href="/courses" class="menu-link">Courses</NavLink>
                     </Authorized>
                 </AuthorizeView>
-@*                     @if (User.IsInRole("SuperUser"))
-                    {
-                        <a class="menu-link" asp-controller="Courses" asp-action="Create">Admin Portal</a>
-                    } *@
+
+                <AuthorizeView Roles="SuperUser, Administrator, Author">
+                    <Authorized>
+                        <NavLink href="/backoffice" class="menu-link">Courses</NavLink>
+                    </Authorized>
+                </AuthorizeView>
+
             </nav>
         </div>
 
@@ -37,7 +40,7 @@
             <AuthorizeView>
                 <Authorized>
                     <NavLink href="/signout" class="sign-out" title="Sign Out"><i class="fa-regular fa-right-from-bracket "></i></NavLink>
-                    @* <NavLink title="Profile"><img class="profile-image" src="/images/profiles/@user!.ProfileImageUrl" /></NavLink> *@
+                    <NavLink href="/account/details" title="Profile">Account Details@* <img class="profile-image" src="/images/profiles/@user!.ProfileImageUrl" /> *@</NavLink>
                 </Authorized>
                 <NotAuthorized>
                     <NavLink href="/signin" class="btn-gray"><i class="fa-regular fa-right-to-bracket"></i><span>Sign In</span></NavLink>

@@ -127,7 +127,6 @@
 
             var body = new { email = SignUpForm.Email };
             await ServiceBusHandler.SendServiceBusMessage(body, "VerificationServiceBus", "verification_request");
-
         }
         catch
         {

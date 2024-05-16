@@ -1,6 +1,4 @@
-﻿@page "/Account/Manage"
-
-@using System.ComponentModel.DataAnnotations
+﻿@using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
 @using Silicon.Blazor.Data
 
@@ -9,9 +7,8 @@
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Profile</PageTitle>
+<PageTitle>Account Details</PageTitle>
 
-<h3>Profile</h3>
 <StatusMessage />
 
 <div class="row">
@@ -44,14 +41,17 @@
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        username = await UserManager.GetUserNameAsync(user);
-        phoneNumber = await UserManager.GetPhoneNumberAsync(user);
+    [SupplyParameterFromForm]
+    private AccountDetailsVM AccountDetailsModel { get; set; } = new();
 
-        Input.PhoneNumber ??= phoneNumber;
-    }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+    //     username = await UserManager.GetUserNameAsync(user);
+    //     phoneNumber = await UserManager.GetPhoneNumberAsync(user);
+
+    //     Input.PhoneNumber ??= phoneNumber;
+    // }
 
     private async Task OnValidSubmitAsync()
     {

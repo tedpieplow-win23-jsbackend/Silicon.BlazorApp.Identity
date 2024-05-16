@@ -1,5 +1,7 @@
 ﻿@page "/signin"
 
+@* @rendermode InteractiveServer *@
+
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
@@ -10,6 +12,9 @@
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject AuthenticationStateProvider Stateprovider
+@inject UserManager<ApplicationUser> UserManager
 
 <PageTitle>Log in</PageTitle>
 
@@ -31,7 +36,7 @@
 
         <div class="login-box">
 
-            <EditForm FormName="signinform" Model="SignInForm" OnValidSubmit="SignIn" method="post">
+            <EditForm FormName="signinform" Model="SignInForm" OnValidSubmit="SignIn" method="post" novalidate>
                 <DataAnnotationsValidator />
                 <div class="email">
                     <div class="validation">
@@ -54,7 +59,7 @@
                     <InputCheckbox @bind-Value="SignInForm.RememberMe" type="checkbox" />
                 </div>
 
-                <button type="submit" class="btn-theme">Sign in</button>
+                <button type="submit" class="btn-theme" disabled="@isBusy">Sign in</button>
                 <div class="social-box">
                     <NavLink>Forgot your password?</NavLink>
                     <div class="divider"></div>
@@ -70,6 +75,8 @@
 </section>
 
 @code {
+    private bool isBusy;
+
     [SupplyParameterFromQuery]
     private string? StatusMessage { get; set; }
 
@@ -87,13 +94,17 @@
     {
         try
         {
-            if (HttpMethods.IsGet(HttpContext.Request.Method))
+            var httpContext = HttpContextAccessor.HttpContext;
+            if (HttpContext is not null)
             {
-                // Clear the existing external cookie to ensure a clean login process
-                await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+                if (HttpMethods.IsGet(HttpContext.Request.Method))
+                {
+                    // Clear the existing external cookie to ensure a clean login process
+                    await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+                }
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Logger.LogError(ex.Message);
         }
@@ -102,7 +113,6 @@
     [ValidateAntiForgeryToken]
     private async Task SignIn()
     {
-
         var result = await SignInManager.PasswordSignInAsync(SignInForm.Email, SignInForm.Password, SignInForm.RememberMe, false);
 
         if (result.Succeeded)
@@ -111,6 +121,5 @@
             StatusMessage = "Failed to login, please try again";
 
         return;
-
     }
 }

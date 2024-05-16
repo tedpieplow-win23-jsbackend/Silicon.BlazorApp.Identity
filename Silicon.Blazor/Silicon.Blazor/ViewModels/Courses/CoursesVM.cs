@@ -21,17 +21,13 @@ public class CoursesVM(HttpClient httpClient, NavigationManager navigationManage
     {
         try
         {
-            // azure: https://courseprovider.azurewebsites.net
-            // lokalt: http://localhost:7151/api/CoursesFunction
-            var response = await _httpClient.GetAsync("https://courseprovider.azurewebsites.net");
+            var response = await _httpClient.GetAsync("");
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
                 if (content != null)
                 {
-                    // Kan vara problem med JsonSerializer. 
                     AllCourses = JsonConvert.DeserializeObject<IEnumerable<Course>>(content);
-                    //AllCourses = JsonSerializer.Deserialize<List<Course>>(content);
                 }
             }
             else

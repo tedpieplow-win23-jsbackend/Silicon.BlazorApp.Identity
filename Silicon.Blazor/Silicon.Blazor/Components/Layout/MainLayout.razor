@@ -1,14 +1,52 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="wrapper">
-    <_Header />
-    @Body
-    <_Footer />
-</div>
+@using Blazored.LocalStorage
+@using Silicon.Blazor.Components.Components.Accounts
 
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
+@inject DarkModeService DarkModeService
+@inject ILocalStorageService LocalStorage
+
+<div class="@(IsDarkMode ? "dark-theme" : "")">
+    <div class="wrapper">
+        <_Header />
+        <main>
+            @Body
+        </main>
+        <_Footer />
+    </div>
+</div>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+
+@code {
+    public bool IsDarkMode { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsDarkMode = await DarkModeService.UpdateDarkModeButtonSwitch();
+        StateHasChanged();
+        DarkModeService.OnDarkModeChanged += OnDarkModeChangedHandler;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await DarkModeService.SaveDarkModeSetting(IsDarkMode);
+            StateHasChanged();
+        }
+    }
+
+    private void OnDarkModeChangedHandler(bool darkMode)
+    {
+        IsDarkMode = darkMode;
+        StateHasChanged();
+    }
+}

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Silicon.Blazor.Components.Account;
 using Silicon.Blazor.Data;
@@ -28,9 +30,13 @@ public static class ServiceConfiguration
         services.AddScoped<ClaimsPrincipal>();
         services.AddScoped<UserFactory>();
         services.AddScoped<ServiceBusHandler>();
+        services.AddScoped<DarkModeService>();
+        services.AddBlazoredLocalStorage();
+
+
+        services.AddHttpContextAccessor();
 
         services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-
 
         services.AddAuthentication(options =>
         {
@@ -42,12 +48,30 @@ public static class ServiceConfiguration
         var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString));
+        {
+            options.UseSqlServer(connectionString);
+        });
+
+        //services.AddPooledDbContextFactory<ApplicationDbContext>(options =>
+        //{
+        //    options.UseSqlServer(connectionString)
+        //    .UseLazyLoadingProxies();
+        //});
+
+        //var sp = services.BuildServiceProvider();
+        //using var scope = sp.CreateScope();
+        //var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+        //using var context = dbContextFactory.CreateDbContext();
+        //context.Database.EnsureCreated();
+
         services.AddDatabaseDeveloperPageExceptionFilter();
 
         services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddSignInManager()
+            .AddRoleManager<RoleManager<IdentityRole>>()
+            .AddRoleStore<RoleStore<IdentityRole, ApplicationDbContext>>()
             .AddDefaultTokenProviders();
     }
 }

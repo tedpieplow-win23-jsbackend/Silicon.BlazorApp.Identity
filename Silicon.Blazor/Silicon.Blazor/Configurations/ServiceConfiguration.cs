@@ -43,12 +43,22 @@ public static class ServiceConfiguration
 
         var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-        services.AddDbContext<ApplicationDbContext>(options => {
+        services.AddDbContext<ApplicationDbContext>(options =>
+        {
             options.UseSqlServer(connectionString);
-            options.EnableSensitiveDataLogging();
-            });
+        });
 
-        //services.AddScoped<ApplicationDbContext>(p => p.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
+        //services.AddPooledDbContextFactory<ApplicationDbContext>(options =>
+        //{
+        //    options.UseSqlServer(connectionString)
+        //    .UseLazyLoadingProxies();
+        //});
+
+        //var sp = services.BuildServiceProvider();
+        //using var scope = sp.CreateScope();
+        //var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+        //using var context = dbContextFactory.CreateDbContext();
+        //context.Database.EnsureCreated();
 
         services.AddDatabaseDeveloperPageExceptionFilter();
 

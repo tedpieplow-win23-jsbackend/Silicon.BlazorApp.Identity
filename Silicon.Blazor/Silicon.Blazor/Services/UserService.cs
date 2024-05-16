@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 
 using Silicon.Blazor.Data;
 using Silicon.Blazor.Factories;
@@ -8,10 +9,11 @@ using System.Text;
 
 namespace Silicon.Blazor.Services;
 
-public class UserService(HttpClient httpClient, IConfiguration configuration)
+public class UserService(HttpClient httpClient, IConfiguration configuration, UserManager<ApplicationUser> userManager)
 {
     private readonly HttpClient _httpClient = httpClient;
     private readonly IConfiguration _configuration = configuration;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
 
     public async Task<ResponseResult> ManageSubscription(bool isSubscribed, string email)
     {
@@ -39,5 +41,14 @@ public class UserService(HttpClient httpClient, IConfiguration configuration)
         {
             return ResponseFactory.Error($"ERROR: {ex.Message}");
         }
+    }
+
+    public async Task<ApplicationUser> GetUserAsync(HttpContext context)
+    {
+        var user = await _userManager.GetUserAsync(context.User);
+        if (user != null)
+            return user;
+
+        return null!;
     }
 }

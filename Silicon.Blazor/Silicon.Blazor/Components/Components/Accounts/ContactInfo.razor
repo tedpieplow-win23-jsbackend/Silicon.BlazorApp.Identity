@@ -88,13 +88,12 @@
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    private ApplicationUser user = default!;
+    [CascadingParameter]
+    private ApplicationUser user { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(10);
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        await Task.Delay(10);
+        // user = await UserAccessor.GetRequiredUserAsync(HttpContext);
 
         // var authState = await StateProvider.GetAuthenticationStateAsync();
         // var user = await UserManager.GetUserAsync(authState.User);

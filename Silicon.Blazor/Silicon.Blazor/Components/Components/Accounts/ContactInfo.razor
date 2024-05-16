@@ -4,8 +4,9 @@
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject AuthenticationStateProvider StateProvider
+@inject UserService UserService
 
-<EditForm FormName="AccountDetailsForm" Model="ContactInfoModel" OnValidSubmit="UpdateBasicInfo">
+<EditForm FormName="AccountDetailsForm" Model="ContactInfoModel" OnValidSubmit="UpdateBasicInfo" method="post">
     <DataAnnotationsValidator />
 
     <div class="user-details">
@@ -89,21 +90,15 @@
     private HttpContext HttpContext { get; set; } = default!;
 
     [CascadingParameter]
-    private ApplicationUser user { get; set; } = null!;
+    private ApplicationUser User { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
-        // user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        User = await UserService.GetUserAsync(HttpContext);
 
-        // var authState = await StateProvider.GetAuthenticationStateAsync();
-        // var user = await UserManager.GetUserAsync(authState.User);
-
-        // using var httpContext = new HttpContext();
-        // var user = await UserManager.GetUserAsync(HttpContext.User);
-
-        if (user != null)
+        if (User != null)
         {
-            ContactInfoModel = UserFactory.PopulateContactInfo(user);
+            ContactInfoModel = UserFactory.PopulateContactInfo(User);
         }
 
     }
@@ -116,7 +111,7 @@
         var Phone = ContactInfoModel.Phone;
         var Bio = ContactInfoModel.Bio;
 
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        User = await UserAccessor.GetRequiredUserAsync(HttpContext);
         var model = new ContactInfoVM
         {
                 FirstName = FirstName,
@@ -125,7 +120,7 @@
                 Phone = Phone,
                 Bio = Bio
         };
-        var userToUpdate = UserFactory.PopulateUserEntity(model, user);
+        var userToUpdate = UserFactory.PopulateUserEntity(model, User);
         var result = await UserManager.UpdateAsync(userToUpdate);
 
         RedirectManager.RedirectTo("/account/details");

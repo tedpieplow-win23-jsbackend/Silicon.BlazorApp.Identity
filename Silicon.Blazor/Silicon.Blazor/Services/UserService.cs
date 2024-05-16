@@ -45,7 +45,10 @@ public class UserService(HttpClient httpClient, IConfiguration configuration, Us
 
     public async Task<ApplicationUser> GetUserAsync(HttpContext context)
     {
+        await Task.Delay(20);
         var user = await _userManager.GetUserAsync(context.User);
+        await Task.Delay(20);
+
         if (user != null)
             return user;
 

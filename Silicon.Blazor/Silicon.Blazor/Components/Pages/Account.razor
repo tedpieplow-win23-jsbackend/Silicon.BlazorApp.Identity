@@ -6,7 +6,7 @@
 
 <PageTitle>Account</PageTitle>
 
-<CascadingValue Value="user">
+@* <CascadingValue Value="user"> *@
 <section id="details">
     <div class="container">
        
@@ -23,9 +23,9 @@
         </div>
     </div>
 </section>
-</CascadingValue>
+@* </CascadingValue> *@
 
-@code {
+@* @code {
 
     [CascadingParameter]
     private HttpContext? HttpContext { get; set; }
@@ -38,3 +38,4 @@
             user = await UserService.GetUserAsync(HttpContext);
     }
 }
+ *@

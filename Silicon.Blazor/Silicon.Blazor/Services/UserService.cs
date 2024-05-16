@@ -10,12 +10,13 @@ using System.Security.Claims;
 
 namespace Silicon.Blazor.Services;
 
-public class UserService(HttpClient httpClient, IConfiguration configuration, UserManager<ApplicationUser> userManager, AuthenticationStateProvider stateProvider)
+public class UserService(HttpClient httpClient, IConfiguration configuration, UserManager<ApplicationUser> userManager, AuthenticationStateProvider stateProvider, IServiceScopeFactory scopeFactory)
 {
     private readonly HttpClient _httpClient = httpClient;
     private readonly IConfiguration _configuration = configuration;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly AuthenticationStateProvider _stateProvider = stateProvider;
+    private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
 
     public async Task<ResponseResult> ManageSubscription(bool isSubscribed, string email)
     {
@@ -45,11 +46,12 @@ public class UserService(HttpClient httpClient, IConfiguration configuration, Us
         }
     }
 
-    public async Task<ApplicationUser> GetUserAsync(HttpContext context)
+    public async Task<ApplicationUser> GetUserAsync()
     {
-        await Task.Delay(20);
-        var user = await _userManager.GetUserAsync(context.User);
-        await Task.Delay(20);
+        var scope = _scopeFactory.CreateAsyncScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var userclaims = await GetUserClaimsAsync();
+        var user = await userManager.GetUserAsync(userclaims);
 
         if (user != null)
             return user;
@@ -66,7 +68,6 @@ public class UserService(HttpClient httpClient, IConfiguration configuration, Us
         {
             return user;
         }
-
         return null!;
     }
 }

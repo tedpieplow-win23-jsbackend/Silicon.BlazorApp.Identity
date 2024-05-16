@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @layout Silicon.Blazor.Components.Layout.MainLayout
 @inject NavigationManager NavigationManager
+@inject IdentityUserAccessor UserAccessor
 
 @if (HttpContext is null)
 {

@@ -1,5 +1,12 @@
-﻿@page "/account"
+﻿@page "/account/details"
+@using Silicon.Blazor.Components.Components.Account.Shared
+@layout AccountLayout
+@inject UserService UserService
+@inject UserManager<ApplicationUser> UserManager
+
 <PageTitle>Account</PageTitle>
+
+@* <CascadingValue Value="user"> *@
 <section id="details">
     <div class="container">
        
@@ -9,10 +16,26 @@
 
         <div class="account-details">
 
-            <AddressInfo />
+            <ContactInfo />
 
             <div class="divider"></div>
-            <ContactInfo />
+            <AddressInfo />
         </div>
     </div>
 </section>
+@* </CascadingValue> *@
+
+@* @code {
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private ApplicationUser user { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(HttpContext != null)
+            user = await UserService.GetUserAsync(HttpContext);
+    }
+}
+ *@

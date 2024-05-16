@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Silicon.Blazor.Data;
 using Silicon.Blazor.Models;
+using Silicon.Blazor.ViewModels.Account;
 using System.Text;
 
 namespace Silicon.Blazor.Factories;
@@ -18,6 +19,30 @@ public class UserFactory(IConfiguration configuration)
             Email = model.Email,
             UserName = model.Email,
             IsSubscribed = await CheckIfSubscribed(model.Email),
+        };
+    }
+
+    public ApplicationUser PopulateUserEntity(ContactInfoVM model, ApplicationUser user)
+    {
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.Email = model.Email;
+        user.PhoneNumber = model.Phone;
+        user.Biography = model.Bio;
+
+        return user;
+    }
+
+    public ContactInfoVM PopulateContactInfo(ApplicationUser user)
+    {
+        return new ContactInfoVM
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email!,
+            Phone = user.PhoneNumber,
+            Bio = user.Biography,
+            IsExternalAccount = user.IsExternalAccount
         };
     }
 

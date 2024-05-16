@@ -36,5 +36,6 @@
 </form>
 
 @code {
-    AccountDetailsVM VM { get; set; } = new();
+    [SupplyParameterFromForm]
+    private AccountDetailsVM AccountDetailsModel { get; set; } = new();
 }

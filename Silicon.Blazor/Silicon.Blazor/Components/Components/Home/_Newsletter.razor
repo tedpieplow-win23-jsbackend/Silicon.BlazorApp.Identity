@@ -50,7 +50,18 @@
                 <ValidationMessage For="() => SubscribeForm.Email" class="text-danger" />
             </div>
         </EditForm>
-        <div class="alert">@SuccessMessage</div>
+        @if (!string.IsNullOrEmpty(SuccessMessage))
+        {
+            <div class="alert alert-success w-50 text-lg-center" style="margin:5px">
+                @SuccessMessage
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger w-50 text-lg-center" style="margin:5px">
+                @ErrorMessage
+            </div>
+        }
     </div>
 </section>
 
@@ -62,6 +73,8 @@
     [SupplyParameterFromQuery]
     public string SuccessMessage { get; set; } = "";
 
+    [SupplyParameterFromQuery]
+    public string ErrorMessage { get; set; } = "";
 
     public async Task OnSubmit()
     {
@@ -77,21 +90,21 @@
             else if (result.StatusCode == HttpStatusCode.Conflict)
             {
                 SubscribeForm = new SubscribeFormModel();
-                SuccessMessage = "This user already exists!";
+                ErrorMessage = "This user already exists!";
                 DisposeMessage();
 
             }
             else if (result.StatusCode == HttpStatusCode.BadRequest)
             {
                 SubscribeForm = new SubscribeFormModel();
-                SuccessMessage = "Skriv rätt";
+                ErrorMessage = "Skriv rätt";
                 DisposeMessage();
             }
         }
         catch
         {
             SubscribeForm = new SubscribeFormModel();
-            SuccessMessage = "Something went wrong. Try again later";
+            ErrorMessage = "Something went wrong. Try again later";
         }
     }
 
@@ -101,6 +114,7 @@
         timerMessage = new Timer((state) =>
         {
             SuccessMessage = "";
+            ErrorMessage = "";
             InvokeAsync(() => StateHasChanged());
             timerMessage.Dispose();
         }, null, 4000, Timeout.Infinite);

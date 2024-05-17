@@ -1,4 +1,5 @@
 @using Microsoft.EntityFrameworkCore
+@rendermode InteractiveAuto
 @inject UserManager<ApplicationUser> UserManager
 @inject UserFactory UserFactory
 @inject IdentityUserAccessor UserAccessor
@@ -28,7 +29,6 @@
             <h5>Basic Info</h5>
         </div>
         <div class="name">
-
             <div class="firstname">
                 <div class="validation">
                     <label asp-for="Details.FirstName">First name</label>
@@ -61,7 +61,7 @@
                     <label asp-for="Details.Phone">Phone</label>
                     <ValidationMessage For="() => ContactInfoModel.Phone" />
                 </div>
-                <InputText @bind-Value="ContactInfoModel.Phone" />
+                <input @bind-value="ContactInfoModel.Phone" />
             </div>
 
         </div>
@@ -87,14 +87,11 @@
     private ContactInfoVM ContactInfoModel { get; set; } = new();
 
     [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
-    [CascadingParameter]
     private ApplicationUser User { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
-        User = await UserService.GetUserAsync(HttpContext);
+        User = await UserService.GetUserAsync();
 
         if (User != null)
         {
@@ -104,24 +101,35 @@
 
     private async Task UpdateBasicInfo()
     {
-        var FirstName = ContactInfoModel.FirstName;
-        var LastName = ContactInfoModel.LastName;
-        var Email = ContactInfoModel.Email;
-        var Phone = ContactInfoModel.Phone;
-        var Bio = ContactInfoModel.Bio;
+        var model = ContactInfoModel;
 
-        User = await UserService.GetUserAsync(HttpContext);
-        var model = new ContactInfoVM
-        {
-                FirstName = FirstName,
-                LastName = LastName,
-                Email = Email,
-                Phone = Phone,
-                Bio = Bio
-        };
+        User = await UserService.GetUserAsync();
+
+        //Denna (userToUpdate) får in alla värden rätt, när jag körde UserManager.UpdateAsync så disposea den bara :(.. Hitta en bra lösning!
         var userToUpdate = UserFactory.PopulateUserEntity(model, User);
-        var result = await UserManager.UpdateAsync(userToUpdate);
 
-        RedirectManager.RedirectTo("/account/details");
+
+
+        //Det här behövs inte men behöll om du hade tänkt använda något av det!
+        // var FirstName = ContactInfoModel.FirstName;
+        // var LastName = ContactInfoModel.LastName;
+        // var Email = ContactInfoModel.Email;
+        // var Phone = ContactInfoModel.Phone;
+        // var Bio = ContactInfoModel.Bio;
+
+        // User = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        // var model = new ContactInfoVM
+        // {
+        //         FirstName = FirstName,
+        //         LastName = LastName,
+        //         Email = Email,
+        //         Phone = Phone,
+        //         Bio = Bio
+        // };
+        // var userToUpdate = UserFactory.PopulateUserEntity(model, User);
+        // var result = await UserManager.UpdateAsync(userToUpdate);
+
+        // RedirectManager.RedirectTo("/account/details");
     }
+
 }

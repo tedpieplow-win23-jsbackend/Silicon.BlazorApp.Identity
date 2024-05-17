@@ -1,7 +1,9 @@
 ﻿@using System.Text.Json
 @using Azure.Messaging.ServiceBus
 @inject ICoursesVM ViewModel
+@inject IConfiguration Configuration
 
+@attribute [StreamRendering]
 
 <PageTitle>Courses</PageTitle>
 
@@ -18,13 +20,13 @@
 
                         <div class="option" data-value="all">All Categories</div>
 
-                        @if (ViewModel.Categories != null)
+                        @*  @if (courses.Categories != null)
                         {
-                            foreach (var category in ViewModel.Categories)
-                            {
-                                <div class="option" data-value="(@category.CategoryName)">@category.CategoryName</div>
-                            }
+                        foreach (var category in courses.Categories)
+                        {
+                        <div class="option" data-value="(@category.CategoryName)">@category.CategoryName</div>
                         }
+                        } *@
 
                     </div>
                 </div>
@@ -35,38 +37,38 @@
             </div>
         </div>
 
-        @if (ViewModel.AllCourses != null)
+        @if (courses != null)
         {
             <div class="items">
 
-                @foreach (var course in ViewModel.AllCourses!)
+                @foreach (var course in courses!)
                 {
-                    <div class="course-card" @onclick="() => ViewModel.GoToCourseDetails(course.Id)">
+                    <div class="course-card" @* @onclick="() => ViewModel.GoToCourseDetails(course.Id) *@">
                         <div class="image">
-                            <img src="~/images/@course.CourseImage" alt="" />
+                            <img src="@course.ImageUri" alt="" />
 
-                            @if (course.IsBestSeller)
+                            @if (course.IsBestseller)
                             {
                                 <span class="best-seller">Best Seller</span>
                             }
 
-                            <NavLink href="#" data-course-id="@course.Id" class="bookmark" @onclick="() => ViewModel.SaveCourse(course.Id)"> <i class="fa-sharp fa-regular fa-bookmark" title="Join Course"></i></NavLink>
+                            @*   <NavLink href="#" data-course-id="@course.Id" class="bookmark" @onclick="() => course.SaveCourse(course.Id)"> <i class="fa-sharp fa-regular fa-bookmark" title="Join Course"></i></NavLink> *@
                         </div>
 
                         <div class="course-info">
                             <h5 class="title">@course.Title</h5>
-                            <p class="author">By @course.AuthorName</p>
+                            <p class="author">By @course.Author</p>
 
-                            @if (course.DiscountPrice != null)
+                            @if (course?.DiscountPrice != 0)
                             {
                                 <div class="discount-div">
-                                    <p class="discount-price">$ @course.DiscountPrice</p>
-                                    <p class="original-price">$ @course.Price</p>
+                                    <p class="discount-price">$ @course!.DiscountPrice</p>
+                                    <p class="original-price">$ @course!.Price</p>
                                 </div>
                             }
                             else
                             {
-                                <p class="price">$ @course.Price</p>
+                                <p class="price">$ @course?.Price</p>
                             }
 
                         </div>
@@ -74,49 +76,75 @@
                         <footer>
                             <div>
                                 <i class="fa-sharp fa-solid fa-clock"></i>
-                                <p>@course.ViewHours hours</p>
+                                <p>@course?.Hours hours</p>
                             </div>
                             <div>
                                 <i class="fa-sharp fa-light fa-thumbs-up"></i>
-                                <p>@course.LikesInPercent % (@course.LikesInNumbers K)</p>
+                                <p>@course?.LikesInPercent % (@course?.LikesInNumbers K)</p>
                             </div>
                         </footer>
                     </div>
                 }
             </div>
-
-            if (ViewModel.Pagination != null && ViewModel.Pagination.TotalPages > 1)
-            {
-
-                <div class="pagination">
-                    @for (int i = 1; i <= ViewModel.Pagination.TotalPages; i++)
-                    {
-                        if (i == ViewModel.Pagination.CurrentPage)
-                        {
-                            <span class="number active">@i</span>
-                        }
-                        else
-                        {
-                            <NavLink class="number" href="@($"?pageNumber={i}&pageSize={ViewModel.Pagination.PageSize}")">@i</NavLink>
-                        }
-                    }
-                </div>
-            }
         }
 
-        @if (ViewModel.GetConnectionFailedStatus())
+        @*        if (courses.GetConnectionFailedStatus())
         {
-            <span class="alert alert-danger">Failed to contact server. Please try again later...</span>
-        }
+        <span class="alert alert-danger">Failed to contact server. Please try again later...</span>
+        } *@
 
     </div>
 </section>
 
 
 @code {
+    private List<CourseCard>? courses;
+    private Pagination pagination;
+
     protected override async Task OnInitializedAsync()
+    {  
+        var query = new GraphQLQuery { Query = "{ getCourses { id title isBestseller categories title imageHeaderUri imageUri likesInPercent likes hours authors { name } prices { currency price discount } } }" };
+        var response = await Http.PostAsJsonAsync(Configuration.GetValue<string>("ConnectionStrings:GetCoursesProvider"), query);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<DynamicGraphQLResponse>();
+            courses = result?.Data.GetProperty("getCourses").EnumerateArray()
+            .Where(course => !string.IsNullOrEmpty(course.GetProperty("id").GetString()))
+            .Select(course => new CourseCard
+                {
+                    Id = course.TryGetProperty("id", out var idValue) ? idValue.GetString() ?? "" : "",
+                    Title = course.GetProperty("title").GetString(),
+                    IsBestseller = course.GetProperty("isBestseller").GetBoolean(),
+                    ImageHeaderUri = course.TryGetProperty("imageHeaderUri", out var imageUriValue) ? imageUriValue.GetString() ?? "" : "",
+                    ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() ?? "" : "",
+                    Author = course.TryGetProperty("authors", out var authors) && authors.GetArrayLength() > 0
+                        ? authors[0].GetProperty("name").GetString() ?? ""
+                        : "",
+                    Price = $"{course.GetProperty("prices").GetProperty("currency").GetString()} {course.GetProperty("prices").GetProperty("price").GetDouble()}",
+                    DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal() > 0
+                                  ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
+                                  : 0m,
+                    Hours = course.GetProperty("hours").GetString(),
+                    LikesInPercent = course.GetProperty("likesInPercent").GetString(),
+                    LikesInNumbers = course.GetProperty("likes").GetString()
+                })
+              .ToList();
+        }
+
+        pagination = new Pagination
+            {
+                TotalPages = 3,
+                CurrentPage = 1,
+                PageSize = 3
+            };
+    }
+
+    public class Pagination
     {
-        await ViewModel.OnInitializedAsync();
+        public int TotalPages { get; set; }
+        public int CurrentPage { get; set; }
+        public int PageSize { get; set; }
     }
 }
 @*

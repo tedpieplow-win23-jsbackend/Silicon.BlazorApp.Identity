@@ -26,8 +26,9 @@ namespace Silicon.Blazor.ViewModels.Account
         public string Email { get; set; } = null!;
 
         [DataType(DataType.PhoneNumber)]
+        [Required(ErrorMessage = "Required")]
         [Display(Name = "Phone", Prompt = "Phone number", Order = 3)]
-        public string? Phone { get; set; }
+        public string Phone { get; set; } = null!;
 
         [DataType(DataType.Text)]
         [Display(Name = "Bio", Prompt = "Add a short Bio", Order = 4)]

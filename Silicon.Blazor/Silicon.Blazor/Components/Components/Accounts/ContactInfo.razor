@@ -100,7 +100,6 @@
         {
             ContactInfoModel = UserFactory.PopulateContactInfo(User);
         }
-
     }
 
     private async Task UpdateBasicInfo()
@@ -111,7 +110,7 @@
         var Phone = ContactInfoModel.Phone;
         var Bio = ContactInfoModel.Bio;
 
-        User = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        User = await UserService.GetUserAsync(HttpContext);
         var model = new ContactInfoVM
         {
                 FirstName = FirstName,

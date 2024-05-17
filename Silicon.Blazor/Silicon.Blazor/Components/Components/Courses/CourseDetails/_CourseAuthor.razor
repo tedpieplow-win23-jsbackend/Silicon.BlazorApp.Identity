@@ -1,29 +1,34 @@
 ﻿@using Silicon.Blazor.ViewModels.Courses
 
-<section id="course-author" class="container">
-    <div class="author-content">
-        <img class="squiggly" src="~/images/background-squiggly-pattern.svg" alt="background-design" />
-        <div class="author-image">
-            <img src="~/images/@Model.AuthorImage" alt="" />
-        </div>
-        <div class="author-box">
-            <div class="author-info">
-                <span class="learn-from"> Learn from the best</span>
-                <span class="author-name">@Model.AuthorName</span>
-                <span class="author-description">@Model.AutherBio</span>
+@if (selectedCourse != null)
+{
+    <section id="course-author" class="container">
+        <div class="author-content">
+            <img class="squiggly" src="~/images/background-squiggly-pattern.svg" alt="background-design" />
+            <div class="author-image">
+                <img src="~/images/@selectedCourse.ImageHeaderUri" alt="" />
+            </div>
+            <div class="author-box">
+                <div class="author-info">
+                    <span class="learn-from"> Learn from the best</span>
+                    <span class="author-name">@selectedCourse.Authors</span>
+                    <span class="author-description"></span>
 
-                <div class="social">
-                    <div class="youtube-btn">
-                        <NavLink class="btn-theme"><i class="fa-brands fa-youtube"></i> @Model.YouTubeSubscribers subscribers</NavLink>
-                    </div>
-                    <div class="fb-btn">
-                        <NavLink class="btn-theme"><i class="fa-brands fa-square-facebook"></i> @Model.FaceBookFollowers followers</NavLink>
+                    <div class="social">
+                        <div class="youtube-btn">
+                            <NavLink class="btn-theme"><i class="fa-brands fa-youtube"></i> @selectedCourse.Likes</NavLink>
+                        </div>
+                        <div class="fb-btn">
+                            <NavLink class="btn-theme"><i class="fa-brands fa-square-facebook"></i> @selectedCourse.LikesInPercent followers</NavLink>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+}
+
 @code {
-    Course Model { get; set; } = new Course();
+    [Parameter]
+    public CourseCardWithDetails selectedCourse { get; set; }
 }

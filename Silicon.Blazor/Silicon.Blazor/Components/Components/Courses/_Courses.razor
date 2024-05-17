@@ -2,13 +2,14 @@
 @using Azure.Messaging.ServiceBus
 @inject ICoursesVM ViewModel
 @inject IConfiguration Configuration
+@inject NavigationManager Navigation
 
 @attribute [StreamRendering]
 
 <PageTitle>Courses</PageTitle>
 
 <section>
-    <div class="courses container">
+    <div class="courses container"> 
         @*There's a script tied to this span*@
         <span id="statusMessage" class="message-container"></span>
         <div class="section-title">
@@ -17,17 +18,21 @@
                 <div class="dropdown select">
                     <div class="selected" data-value="all">All categories<i class="fa-sharp fa-light fa-circle-caret-down"></i></div>
                     <div class="select-options">
-
                         <div class="option" data-value="all">All Categories</div>
 
-                        @*  @if (courses.Categories != null)
+                        @if (courses != null)
                         {
-                        foreach (var category in courses.Categories)
-                        {
-                        <div class="option" data-value="(@category.CategoryName)">@category.CategoryName</div>
-                        }
-                        } *@
+                            foreach (var course in courses)
+                            {
+                                @foreach (var category in course.Categories!)
+                                {
+                                    <div class="option" data-value="@category">
+                                        @category
 
+                                    </div>
+                                }
+                            }
+                        }
                     </div>
                 </div>
                 <div class="search">
@@ -43,7 +48,7 @@
 
                 @foreach (var course in courses!)
                 {
-                    <div class="course-card" @* @onclick="() => ViewModel.GoToCourseDetails(course.Id) *@">
+                    <a class="course-card" href="course/@course.Id">
                         <div class="image">
                             <img src="@course.ImageUri" alt="" />
 
@@ -83,15 +88,15 @@
                                 <p>@course?.LikesInPercent % (@course?.LikesInNumbers K)</p>
                             </div>
                         </footer>
-                    </div>
+                    </a>
                 }
             </div>
         }
-
-        @*        if (courses.GetConnectionFailedStatus())
+        else
         {
-        <span class="alert alert-danger">Failed to contact server. Please try again later...</span>
-        } *@
+            <p>Loading ...</p>
+        }
+
 
     </div>
 </section>
@@ -99,10 +104,11 @@
 
 @code {
     private List<CourseCard>? courses;
-    private Pagination pagination;
+    private List<CourseCard>? displayedCourses;
+    private Pagination pagination = new Pagination();
 
     protected override async Task OnInitializedAsync()
-    {  
+    {
         var query = new GraphQLQuery { Query = "{ getCourses { id title isBestseller categories title imageHeaderUri imageUri likesInPercent likes hours authors { name } prices { currency price discount } } }" };
         var response = await Http.PostAsJsonAsync(Configuration.GetValue<string>("ConnectionStrings:GetCoursesProvider"), query);
 
@@ -119,35 +125,65 @@
                     ImageHeaderUri = course.TryGetProperty("imageHeaderUri", out var imageUriValue) ? imageUriValue.GetString() ?? "" : "",
                     ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() ?? "" : "",
                     Author = course.TryGetProperty("authors", out var authors) && authors.GetArrayLength() > 0
-                        ? authors[0].GetProperty("name").GetString() ?? ""
-                        : "",
+                                        ? authors[0].GetProperty("name").GetString() ?? ""
+                                        : "",
                     Price = $"{course.GetProperty("prices").GetProperty("currency").GetString()} {course.GetProperty("prices").GetProperty("price").GetDouble()}",
                     DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal() > 0
-                                  ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
-                                  : 0m,
+                                                  ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
+                                                  : 0m,
                     Hours = course.GetProperty("hours").GetString(),
                     LikesInPercent = course.GetProperty("likesInPercent").GetString(),
-                    LikesInNumbers = course.GetProperty("likes").GetString()
+                    LikesInNumbers = course.GetProperty("likes").GetString(),
+                    Categories = course.TryGetProperty("categories", out var categories) && categories.GetArrayLength() > 0
+                                    ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
+                                    : new List<string>()
                 })
               .ToList();
-        }
 
-        pagination = new Pagination
-            {
-                TotalPages = 3,
-                CurrentPage = 1,
-                PageSize = 3
-            };
+            pagination.TotalItems = courses?.Count ?? 0;
+            UpdateDisplayedCourses();
+        }
+    }
+
+    private void NavigateToCourseDetail(string courseId)
+    {
+        Navigation.NavigateTo($"/course/{courseId}");
     }
 
     public class Pagination
     {
-        public int TotalPages { get; set; }
-        public int CurrentPage { get; set; }
-        public int PageSize { get; set; }
+        public int CurrentPage { get; set; } = 1;
+        public int ItemsPerPage { get; set; } = 3;
+        public int TotalItems { get; set; }
+
+        public int TotalPages => (int)Math.Ceiling((double)TotalItems / ItemsPerPage);
+    }
+
+    private void UpdateDisplayedCourses()
+    {
+        if (courses != null)
+        {
+            displayedCourses = courses.Skip((pagination.CurrentPage - 1) * pagination.ItemsPerPage)
+                                      .Take(pagination.ItemsPerPage)
+                                      .ToList();
+        }
+    }
+
+    private void NextPage()
+    {
+        if (pagination.CurrentPage < pagination.TotalPages)
+        {
+            pagination.CurrentPage++;
+            UpdateDisplayedCourses();
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (pagination.CurrentPage > 1)
+        {
+            pagination.CurrentPage--;
+            UpdateDisplayedCourses();
+        }
     }
 }
-@*
-@await Html.PartialAsync("_FilterAndQueryPartial")
-@await Html.PartialAsync("_SaveCourseAndMessage")
-*@

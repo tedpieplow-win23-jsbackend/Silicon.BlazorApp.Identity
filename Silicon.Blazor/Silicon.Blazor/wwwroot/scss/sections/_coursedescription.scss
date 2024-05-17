@@ -6,6 +6,7 @@ html, body{
 .course-content {
     @include xxxl {
         padding-top: 100px;
+        background-color: var(--color-gray-001);
     }
 
     .description-section {

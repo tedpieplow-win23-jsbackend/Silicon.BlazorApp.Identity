@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Silicon.Blazor.Components.Account;
 using Silicon.Blazor.Data;
 using Silicon.Blazor.Factories;
+using Silicon.Blazor.Repositories;
 using Silicon.Blazor.Services;
 using Silicon.Blazor.ViewModels.Courses;
 using System.Security.Claims;
@@ -31,6 +32,9 @@ public static class ServiceConfiguration
         services.AddScoped<UserFactory>();
         services.AddScoped<ServiceBusHandler>();
         services.AddScoped<DarkModeService>();
+        services.AddScoped<AddressService>();
+        services.AddScoped<AddressFactory>();
+        services.AddScoped<AddressRepository>();
         services.AddBlazoredLocalStorage();
 
 
@@ -50,19 +54,8 @@ public static class ServiceConfiguration
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(connectionString);
+            options.EnableSensitiveDataLogging();
         });
-
-        //services.AddPooledDbContextFactory<ApplicationDbContext>(options =>
-        //{
-        //    options.UseSqlServer(connectionString)
-        //    .UseLazyLoadingProxies();
-        //});
-
-        //var sp = services.BuildServiceProvider();
-        //using var scope = sp.CreateScope();
-        //var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
-        //using var context = dbContextFactory.CreateDbContext();
-        //context.Database.EnsureCreated();
 
         services.AddDatabaseDeveloperPageExceptionFilter();
 

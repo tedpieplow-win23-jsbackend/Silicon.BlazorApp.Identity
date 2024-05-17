@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Silicon.Blazor.Data.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace Silicon.Blazor.Data;
@@ -23,5 +22,7 @@ public class ApplicationUser : IdentityUser
     public bool IsDarkMode { get; set; } = false;
     public bool IsSubscribed { get; set; } = false;
 
-    public ICollection<UserAddressEntity> UserAddresses { get; set; } = new List<UserAddressEntity>();
+
+    public string? AddressId { get; set; } = null!;
+    public AddressEntity? Address { get; set; } = null!;
 }

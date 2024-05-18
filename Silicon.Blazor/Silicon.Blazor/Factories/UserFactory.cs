@@ -40,7 +40,7 @@ public class UserFactory(IConfiguration configuration)
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email!,
-            Phone = user.PhoneNumber,
+            Phone = user.PhoneNumber!,
             Bio = user.Biography,
             IsExternalAccount = user.IsExternalAccount
         };

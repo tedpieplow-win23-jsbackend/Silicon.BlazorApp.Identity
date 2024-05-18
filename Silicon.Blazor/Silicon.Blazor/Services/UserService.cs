@@ -7,16 +7,18 @@ using Silicon.Blazor.Models;
 using System.Net;
 using System.Text;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace Silicon.Blazor.Services;
 
-public class UserService(HttpClient httpClient, IConfiguration configuration, UserManager<ApplicationUser> userManager, AuthenticationStateProvider stateProvider, IServiceScopeFactory scopeFactory)
+public class UserService(HttpClient httpClient, IConfiguration configuration, UserManager<ApplicationUser> userManager, AuthenticationStateProvider stateProvider, IServiceScopeFactory scopeFactory, ApplicationDbContext context)
 {
     private readonly HttpClient _httpClient = httpClient;
     private readonly IConfiguration _configuration = configuration;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly AuthenticationStateProvider _stateProvider = stateProvider;
     private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
+    private readonly ApplicationDbContext _context = context;
 
     public async Task<ResponseResult> ManageSubscription(bool isSubscribed, string email)
     {
@@ -69,5 +71,19 @@ public class UserService(HttpClient httpClient, IConfiguration configuration, Us
             return user;
         }
         return null!;
+    }
+
+    public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user)
+    {
+        var existingUser = _context.Users.FirstOrDefault(u => u.Id == user.Id);
+        if (existingUser != null)
+        {
+            _context.Entry(existingUser).State = EntityState.Detached;
+        }
+
+        _context.Users.Attach(user);
+        _context.Entry(user).State = EntityState.Modified;
+
+        return await _userManager.UpdateAsync(user);
     }
 }

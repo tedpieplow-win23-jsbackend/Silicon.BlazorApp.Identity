@@ -1,6 +1,4 @@
-﻿using Silicon.Blazor.Data.Entities;
-
-namespace Silicon.Blazor.Data;
+﻿namespace Silicon.Blazor.Data;
 
 public class AddressEntity
 {
@@ -10,5 +8,5 @@ public class AddressEntity
     public string PostalCode { get; set; } = null!;
     public string City { get; set; } = null!;
 
-    public ICollection<UserAddressEntity> UserAddresses { get; set; } = new List<UserAddressEntity>();
+    public ICollection<ApplicationUser> Users { get; set; } = [];
 }

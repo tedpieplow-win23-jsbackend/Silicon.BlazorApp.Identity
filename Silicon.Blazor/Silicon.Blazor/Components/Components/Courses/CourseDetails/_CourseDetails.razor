@@ -17,9 +17,9 @@
                         @if (selectedCourse.Content != null && selectedCourse.Content.ProgramDetails != null && selectedCourse.Content.ProgramDetails.Any())
                         {
                             <ul>
-                                @foreach (var detail in selectedCourse.Content.ProgramDetails)
+                                @foreach (var learnpoint in selectedCourse.Content.LearnPoints)
                                 {
-                                    <li>@detail.Title</li>
+                                    <li>@learnpoint</li>
                                 }
                             </ul>
                         }

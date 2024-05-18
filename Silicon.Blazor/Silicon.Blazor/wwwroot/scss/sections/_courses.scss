@@ -98,6 +98,7 @@ section {
             grid-template-columns: repeat(1, 1fr);
             gap: 2rem 1rem;
 
+
             @include md {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -109,6 +110,7 @@ section {
             .course-card {
                 background-color: var(--color-gray-100);
                 box-shadow: 0 3px 10px #0000000f, 0 4px 5px #0000000c;
+                text-decoration: none;
                 border-radius: 1.1rem;
                 overflow: hidden;
                 padding: 5px;

@@ -1264,6 +1264,7 @@ section .courses .items {
 section .courses .items .course-card {
   background-color: var(--color-gray-100);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.0588235294), 0 4px 5px rgba(0, 0, 0, 0.0470588235);
+  text-decoration: none;
   border-radius: 1.1rem;
   overflow: hidden;
   padding: 5px;

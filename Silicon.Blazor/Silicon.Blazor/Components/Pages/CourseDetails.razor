@@ -50,6 +50,7 @@
                         title
                         description
                       }
+                      learnpoints
                     }
                     prices {
                       currency
@@ -84,26 +85,30 @@
                         StarRating = courseData.GetProperty("starRating").GetDecimal(),
                         Title = courseData.GetProperty("title").GetString() ?? "",
                         Authors = courseData.TryGetProperty("authors", out var authors) && authors.GetArrayLength() > 0
-                                ? authors.EnumerateArray().Select(a => new Author { Name = a.GetProperty("name").GetString() ?? "" }).ToList()
-                                : new List<Author>(),
+                                    ? authors.EnumerateArray().Select(a => new Author { Name = a.GetProperty("name").GetString() ?? "" }).ToList()
+                                    : new List<Author>(),
                         Content = new Content
                         {
                             Description = courseData.GetProperty("content").GetProperty("description").GetString() ?? "",
                             Includes = courseData.TryGetProperty("content", out var content) && content.GetProperty("includes").GetArrayLength() > 0
-                                        ? content.GetProperty("includes").EnumerateArray().Select(i => i.GetString()).ToList()!
-                                        : new List<string>(),
+                                            ? content.GetProperty("includes").EnumerateArray().Select(i => i.GetString()).ToList()!
+                                            : new List<string>(),
                             ProgramDetails = courseData.TryGetProperty("content", out var contentDetails)
-                                            && content.TryGetProperty("programDetails", out var programDetails)
-                                            && programDetails.GetArrayLength() > 0
-                                                ? programDetails.EnumerateArray().Select(pd =>
-                                                    new ProgramDetail
-                                                    {
-                                                        Id = pd.GetProperty("id").GetInt32(),
-                                                        Description = pd.GetProperty("description").GetString() ?? "",
-                                                        Title = pd.GetProperty("title").GetString() ?? ""
-                                                    }).ToList()
-                                                : new List<ProgramDetail>()
-                        },
+                                                && content.TryGetProperty("programDetails", out var programDetails)
+                                                && programDetails.GetArrayLength() > 0
+                                                    ? programDetails.EnumerateArray().Select(pd =>
+                                                        new ProgramDetail
+                                                        {
+                                                            Id = pd.GetProperty("id").GetInt32(),
+                                                            Description = pd.GetProperty("description").GetString() ?? "",
+                                                            Title = pd.GetProperty("title").GetString() ?? ""
+                                                        }).ToList()
+                                                    : new List<ProgramDetail>(),
+                            LearnPoints = courseData.GetProperty("content").TryGetProperty("learnpoints", out var learnpoints)
+                                              && learnpoints.GetArrayLength() > 0
+                                              ? learnpoints.EnumerateArray().Select(lp => lp.GetString() ?? "").ToList()
+                                              : new List<string>(),
+            },
                         Prices = new Prices
                         {
                             Currency = courseData.GetProperty("prices").GetProperty("currency").GetString() ?? "",

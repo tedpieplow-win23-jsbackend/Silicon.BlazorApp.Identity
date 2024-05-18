@@ -31,6 +31,7 @@ public class Content
     public string? Description { get; set; }
     public List<string>? Includes { get; set; }
     public List<ProgramDetail>? ProgramDetails { get; set; }
+    public List<string>? LearnPoints { get; set; }
 }
 
 public class Prices

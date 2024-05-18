@@ -31,6 +31,7 @@ public static class ServiceConfiguration
         services.AddScoped<UserFactory>();
         services.AddScoped<ServiceBusHandler>();
         services.AddScoped<DarkModeService>();
+        services.AddScoped<AuthService>();
         services.AddBlazoredLocalStorage();
 
 

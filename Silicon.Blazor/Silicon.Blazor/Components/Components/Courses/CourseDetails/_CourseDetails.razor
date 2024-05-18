@@ -9,7 +9,7 @@
             <div class="learn-points">
                 <div class="description">
                     <p>Course Description</p>
-                    <p>@selectedCourse.Content.ProgramDetails</p>
+                    <p>@selectedCourse.Ingress</p>
                 </div>
                 <div class="learn">
                     <p>What you'll learn</p>
@@ -17,9 +17,12 @@
                         @if (selectedCourse.Content != null && selectedCourse.Content.ProgramDetails != null && selectedCourse.Content.ProgramDetails.Any())
                         {
                             <ul>
-                                @foreach (var learnpoint in selectedCourse.Content.LearnPoints)
+                                @foreach (var detail in selectedCourse.Content.ProgramDetails)
                                 {
-                                    <li>@learnpoint</li>
+                                    <li>
+                                        <span class="checkmark"><i class="fa-solid fa-check-circle"></i></span>
+                                        @detail.Description
+                                    </li>
                                 }
                             </ul>
                         }

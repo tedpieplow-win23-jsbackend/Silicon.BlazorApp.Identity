@@ -1,105 +1,108 @@
 ﻿@using System.Text.Json
 @using Azure.Messaging.ServiceBus
+@using Microsoft.AspNetCore.Authorization
 @inject ICoursesVM ViewModel
 @inject IConfiguration Configuration
 @inject NavigationManager Navigation
 
+@attribute [Authorize]
 @attribute [StreamRendering]
 
 <PageTitle>Courses</PageTitle>
 
-<section>
-    <div class="courses container"> 
-        @*There's a script tied to this span*@
-        <span id="statusMessage" class="message-container"></span>
-        <div class="section-title">
-            <h1 class="h1">Courses</h1>
-            <div class="search-div">
-                <div class="dropdown select">
-                    <div class="selected" data-value="all">All categories<i class="fa-sharp fa-light fa-circle-caret-down"></i></div>
-                    <div class="select-options">
-                        <div class="option" data-value="all">All Categories</div>
+        <section>
+            <div class="courses container">
+                @*There's a script tied to this span*@
+                <span id="statusMessage" class="message-container"></span>
+                <div class="section-title">
+                    <h1 class="h1">Courses</h1>
+                    <div class="search-div">
+                        <div class="dropdown select">
+                            <div class="selected" data-value="all">All categories<i class="fa-sharp fa-light fa-circle-caret-down"></i></div>
+                            <div class="select-options">
+                                <div class="option" data-value="all">All Categories</div>
 
-                        @if (courses != null)
-                        {
-                            foreach (var course in courses)
-                            {
-                                @foreach (var category in course.Categories!)
+                                @if (courses != null)
                                 {
-                                    <div class="option" data-value="@category">
-                                        @category
+                                    foreach (var course in courses)
+                                    {
+                                        @foreach (var category in course.Categories!)
+                                        {
+                                            <div class="option" data-value="@category">
+                                                @category
 
-                                    </div>
+                                            </div>
+                                        }
+                                    }
                                 }
-                            }
-                        }
+                            </div>
+                        </div>
+                        <div class="search">
+                            <input id="searchQuery" type="search" name="searchQuery" placeholder="Search courses" />
+                            <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                        </div>
                     </div>
                 </div>
-                <div class="search">
-                    <input id="searchQuery" type="search" name="searchQuery" placeholder="Search courses" />
-                    <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
-                </div>
-            </div>
-        </div>
 
-        @if (courses != null)
-        {
-            <div class="items">
-
-                @foreach (var course in courses!)
+                @if (courses != null)
                 {
-                    <a class="course-card" href="course/@course.Id">
-                        <div class="image">
-                            <img src="@course.ImageUri" alt="" />
+                    <div class="items">
 
-                            @if (course.IsBestseller)
-                            {
-                                <span class="best-seller">Best Seller</span>
-                            }
+                        @foreach (var course in courses!)
+                        {
+                            <a class="course-card" href="course/@course.Id">
+                                <div class="image">
+                                    <img src="@course.ImageUri" alt="" />
 
-                            @*   <NavLink href="#" data-course-id="@course.Id" class="bookmark" @onclick="() => course.SaveCourse(course.Id)"> <i class="fa-sharp fa-regular fa-bookmark" title="Join Course"></i></NavLink> *@
-                        </div>
+                                    @if (course.IsBestseller)
+                                    {
+                                        <span class="best-seller">Best Seller</span>
+                                    }
 
-                        <div class="course-info">
-                            <h5 class="title">@course.Title</h5>
-                            <p class="author">By @course.Author</p>
-
-                            @if (course?.DiscountPrice != 0)
-                            {
-                                <div class="discount-div">
-                                    <p class="discount-price">$ @course!.DiscountPrice</p>
-                                    <p class="original-price">$ @course!.Price</p>
+                                    @*   <NavLink href="#" data-course-id="@course.Id" class="bookmark" @onclick="() => course.SaveCourse(course.Id)"> <i class="fa-sharp fa-regular fa-bookmark" title="Join Course"></i></NavLink> *@
                                 </div>
-                            }
-                            else
-                            {
-                                <p class="price">$ @course?.Price</p>
-                            }
 
-                        </div>
-                        <div class="divider"></div>
-                        <footer>
-                            <div>
-                                <i class="fa-sharp fa-solid fa-clock"></i>
-                                <p>@course?.Hours hours</p>
-                            </div>
-                            <div>
-                                <i class="fa-sharp fa-light fa-thumbs-up"></i>
-                                <p>@course?.LikesInPercent % (@course?.LikesInNumbers K)</p>
-                            </div>
-                        </footer>
-                    </a>
+                                <div class="course-info">
+                                    <h5 class="title">@course.Title</h5>
+                                    <p class="author">By @course.Author</p>
+
+                                    @if (course?.DiscountPrice != 0)
+                                    {
+                                        <div class="discount-div">
+                                            <p class="discount-price">$ @course!.DiscountPrice</p>
+                                            <p class="original-price">$ @course!.Price</p>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="price">$ @course?.Price</p>
+                                    }
+
+                                </div>
+                                <div class="divider"></div>
+                                <footer>
+                                    <div>
+                                        <i class="fa-sharp fa-solid fa-clock"></i>
+                                        <p>@course?.Hours hours</p>
+                                    </div>
+                                    <div>
+                                        <i class="fa-sharp fa-light fa-thumbs-up"></i>
+                                        <p>@course?.LikesInPercent % (@course?.LikesInNumbers K)</p>
+                                    </div>
+                                </footer>
+                            </a>
+                        }
+                    </div>
                 }
+                else
+                {
+                    <p>Loading ...</p>
+                }
+
+
             </div>
-        }
-        else
-        {
-            <p>Loading ...</p>
-        }
+        </section>
 
-
-    </div>
-</section>
 
 
 @code {
@@ -125,18 +128,18 @@
                     ImageHeaderUri = course.TryGetProperty("imageHeaderUri", out var imageUriValue) ? imageUriValue.GetString() ?? "" : "",
                     ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() ?? "" : "",
                     Author = course.TryGetProperty("authors", out var authors) && authors.GetArrayLength() > 0
-                                        ? authors[0].GetProperty("name").GetString() ?? ""
-                                        : "",
+                                            ? authors[0].GetProperty("name").GetString() ?? ""
+                                            : "",
                     Price = $"{course.GetProperty("prices").GetProperty("currency").GetString()} {course.GetProperty("prices").GetProperty("price").GetDouble()}",
                     DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal() > 0
-                                                  ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
-                                                  : 0m,
+                                                      ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
+                                                      : 0m,
                     Hours = course.GetProperty("hours").GetString(),
                     LikesInPercent = course.GetProperty("likesInPercent").GetString(),
                     LikesInNumbers = course.GetProperty("likes").GetString(),
                     Categories = course.TryGetProperty("categories", out var categories) && categories.GetArrayLength() > 0
-                                    ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
-                                    : new List<string>()
+                                        ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
+                                        : new List<string>()
                 })
               .ToList();
 

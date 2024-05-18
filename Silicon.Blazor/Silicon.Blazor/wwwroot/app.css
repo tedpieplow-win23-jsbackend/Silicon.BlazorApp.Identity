@@ -2726,14 +2726,16 @@ section .courses .pagination .active {
   background-color: black;
 }
 
-html, body {
+html, body, main {
   background-color: var(--color-gray-001);
 }
 
+.course-content {
+  background-color: var(--color-gray-001);
+}
 @media (min-width: 1600px) {
   .course-content {
-    padding-top: 100px;
-    background-color: var(--color-gray-001);
+    padding-top: 10px;
   }
 }
 .course-content .description-section {
@@ -2757,10 +2759,11 @@ html, body {
   font-weight: 800;
 }
 .course-content .description-section .learn-points .description p:nth-child(2) {
+  color: var(--color-gray-700);
   margin-top: 40px;
 }
 .course-content .description-section .learn-points .learn p:nth-child(1) {
-  color: var(--color-gray-900);
+  color: var(--color-gray-700);
   font-size: 28px;
   font-weight: 800;
   margin-top: 50px;
@@ -2769,11 +2772,18 @@ html, body {
 .course-content .description-section .learn-points .learn .list {
   padding: 0px;
 }
-.course-content .description-section .learn-points .learn .list li:not(:last-child) {
+.course-content .description-section .learn-points .learn .list li {
+  color: var(--color-gray-700);
+  display: flex;
+  align-items: center;
   margin-bottom: 10px;
 }
-.course-content .description-section .learn-points .learn .list i {
+.course-content .description-section .learn-points .learn .list li .checkmark {
+  margin-right: 10px;
+}
+.course-content .description-section .learn-points .learn .list li i {
   color: var(--color-theme);
+  font-size: 20px;
 }
 .course-content .description-section .course-info .course-box {
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.0588235294), 0 4px 5px rgba(0, 0, 0, 0.0470588235);
@@ -2783,6 +2793,7 @@ html, body {
   width: 430px;
   padding: 50px 50px 35px 50px;
   margin-top: 50px;
+  color: var(--color-gray-700);
 }
 .course-content .description-section .course-info .course-box .title {
   font-size: 24px;
@@ -2831,6 +2842,7 @@ html, body {
   margin-top: 60px;
 }
 .course-content .details-section .detail-list {
+  color: var(--color-gray-600);
   counter-reset: point;
   list-style: none;
   margin-left: 40px;
@@ -2850,6 +2862,7 @@ html, body {
   counter-increment: point;
   position: relative;
   margin-top: 40px;
+  color: var(--color-gray-900);
 }
 .course-content .details-section .detail-list .item::before {
   content: counter(point);

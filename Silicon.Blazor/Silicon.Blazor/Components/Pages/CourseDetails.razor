@@ -2,9 +2,13 @@
 
 @inject IConfiguration Configuration
 
-<_CourseShowcase selectedCourse="selectedCourse" />
-<_CourseDetails selectedCourse="selectedCourse" />
-<_CourseAuthor selectedCourse="selectedCourse" />
+<AuthorizeView>
+    <Authorized>
+        <_CourseShowcase selectedCourse="selectedCourse" />
+        <_CourseDetails selectedCourse="selectedCourse" />
+    </Authorized>
+</AuthorizeView>
+
 
 
 @code {
@@ -16,6 +20,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+
         await GetCoursesWithGraphQLAsync();
     }
 
@@ -50,7 +55,6 @@
                         title
                         description
                       }
-                      learnpoints
                     }
                     prices {
                       currency
@@ -103,12 +107,8 @@
                                                             Description = pd.GetProperty("description").GetString() ?? "",
                                                             Title = pd.GetProperty("title").GetString() ?? ""
                                                         }).ToList()
-                                                    : new List<ProgramDetail>(),
-                            LearnPoints = courseData.GetProperty("content").TryGetProperty("learnpoints", out var learnpoints)
-                                              && learnpoints.GetArrayLength() > 0
-                                              ? learnpoints.EnumerateArray().Select(lp => lp.GetString() ?? "").ToList()
-                                              : new List<string>(),
-            },
+                                                    : new List<ProgramDetail>()
+                        },
                         Prices = new Prices
                         {
                             Currency = courseData.GetProperty("prices").GetProperty("currency").GetString() ?? "",

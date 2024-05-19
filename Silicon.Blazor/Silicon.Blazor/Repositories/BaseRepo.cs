@@ -128,7 +128,7 @@ public abstract class BaseRepo<TEntity>(ApplicationDbContext context) where TEnt
         {
             var result = await _context.Set<TEntity>().AnyAsync(predicate);
             if (result)
-                return ResponseFactory.Exists();
+                return ResponseFactory.Exists("");
             return ResponseFactory.NotFound();
         }
         catch (Exception ex)

@@ -1,4 +1,5 @@
 ﻿@using Blazored.LocalStorage
+@using System.Text
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject UserService userService
 @inject ApplicationDbContext Context
@@ -6,6 +7,9 @@
 @inject DarkModeService DarkModeService
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
+@inject SubscriptionService Subscription
+@inject HttpClient Http
+
 
 @rendermode InteractiveServer
 
@@ -15,13 +19,13 @@
         <h2>Notifications</h2>
         <div class="pref-email">
             <p>Preferred email for notifications</p>
-            <input @bind="email" placeholder="example@gmail.com" />
+            <InputText @bind-Value="email" placeholder="example@gmail.com" />
         </div>
     </div>
 
     <div class="@GetSwitchState()">
         <label class="switch" for="switch-mode-1">
-            <input type="checkbox" id="switch-mode-1" checked="@resetSwitch" @onchange="ToggleCheckbox" />
+            <input type="checkbox" id="switch-mode-1" @bind="isSubscribed" />
             <span class="slider round" id="slider"></span>
         </label>
         <div class="switch-text">
@@ -70,6 +74,12 @@
         }
     }
 
+    // Kanske måste sätta in metoden i OnAfterRenderAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        isSubscribed = await CheckIfUserIsSubscribedAsync();
+    }
+
     private async Task ToggleDarkMode(ChangeEventArgs e)
     {
         isDarkMode = (bool)e.Value!;
@@ -78,22 +88,58 @@
         NavigationManager.NavigateTo("/Account/Notifications");
     }
     #endregion
-    
+
     #region Subscription
+    private async Task<bool> CheckIfUserIsSubscribedAsync()
+    {
+        var user = await userService.GetUserAsync();
+        if (email == null)
+        {
+            email = user.Email;
+        }
+
+        isSubscribed = await Subscription.CheckSubscription(email!);
+        if (isSubscribed)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     private async Task ToggleSettings()
     {
-        var userClaims = await userService.GetUserClaimsAsync();
+        // var userClaims = await userService.GetUserClaimsAsync();
+        var user = await userService.GetUserAsync();
+        if (email != user.Email)
+        {
+            var requestData = new { Email = email };
+            var jsonContent = JsonConvert.SerializeObject(requestData);
+            var content = new StringContent(jsonContent, Encoding.UTF8, "appliction/json");
+            var httpResponse = await Http.PostAsync("https://subscriptionprovider-silicon.azurewebsites.net/api/SubscribeFunction?code=-aN4VeTZphDS5C4POoEP-Nycz7KCqohb6lnUmFj36o8uAzFuiGfTow==", content);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                infoMessage = "OK";
+            }
+            return;
+        }
+
         var response = await userService.ManageSubscription(isSubscribed, email!);
+
 
         if (response.StatusCode == StatusCode.OK)
         {
-            isSubscribed = true;
+            isSubscribed = response.IsSubscribed!.Value;
             infoMessage = "OK";
             GetSwitchState();
             DisposeMessage();
+            NavigationManager.NavigateTo("/account/notifications");
         }
         else if (response.StatusCode == StatusCode.EXISTS)
         {
+            isSubscribed = response.IsSubscribed!.Value;
             infoMessage = "Exists";
             DisposeMessage();
         }
@@ -102,7 +148,6 @@
             resetSwitch = true;
             infoMessage = "Error";
             DisposeMessage();
-            StateHasChanged();
 
             Timer timerSwitch = null!;
             timerSwitch = new Timer((state) =>
@@ -112,6 +157,7 @@
                 timerSwitch.Dispose();
             }, null, 10, Timeout.Infinite);
         }
+        StateHasChanged();
     }
 
     private void DisposeMessage()
@@ -142,19 +188,14 @@
         }
     }
 
-    private void ToggleCheckbox()
-    {
-        isSubscribed = !resetSwitch;
-    }
-
     private string GetMessageText(string message)
     {
         return message switch
         {
-            "OK" => "You successfully subscribed to the newsletter!",
-            "Exists" => "You have already subscribed.",
+            "OK" => "Subscription updated",
+            "Exists" => "Subscription updated",
             "Error" => "Internal error, please try again later.",
-            _ => ""
+            _ => "Internal error, please try again later."
         };
     }
     #endregion

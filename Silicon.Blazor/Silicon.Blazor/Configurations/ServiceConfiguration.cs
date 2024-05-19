@@ -36,6 +36,7 @@ public static class ServiceConfiguration
         services.AddScoped<AddressService>();
         services.AddScoped<AddressFactory>();
         services.AddScoped<AddressRepository>();
+        services.AddScoped<SubscriptionService>();
         services.AddBlazoredLocalStorage();
 
 

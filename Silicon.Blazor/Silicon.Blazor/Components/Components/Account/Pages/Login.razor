@@ -1,7 +1,5 @@
 ﻿@page "/signin"
 
-@* @rendermode InteractiveServer *@
-
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
@@ -31,7 +29,8 @@
 
         <div class="section-title">
             <h1>Welcome Back</h1>
-            <p>Don't have an account yet? <NavLink href="/signup">Sign up here.</NavLink></p>
+            <p>Don't have an account yet?</p>
+            <NavLink href="/signup">Sign up here.</NavLink>
         </div>
 
         <div class="login-box">

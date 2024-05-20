@@ -23,9 +23,9 @@ public static class ServiceConfiguration
 
         services.AddHttpClient();
         services.AddCascadingAuthenticationState();
-        services.AddScoped<IdentityUserAccessor>();
+        //services.AddScoped<IdentityUserAccessor>();
         services.AddScoped<IdentityRedirectManager>();
-        services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
+        //services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
         services.AddScoped<ICoursesVM, CoursesVM>();
         services.AddScoped<UserService>();
         services.AddScoped<ClaimsPrincipal>();

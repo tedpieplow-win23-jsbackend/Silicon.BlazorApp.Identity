@@ -1,6 +1,7 @@
 ﻿@inject AddressFactory AddressFactory
 @inject AddressService AddressService
 @inject UserService UserService
+@inject NavigationManager NavigationManager
 
 @rendermode InteractiveServer
 
@@ -91,6 +92,8 @@
         {
             ErrorMessage = ex.Message;
         }
+
+        DisposeMessage();
     }
 
     private async Task UpdateAddressInfoAsync()
@@ -101,18 +104,18 @@
             if (responseResult.StatusCode == StatusCode.OK)
             {
                 SuccessMessage = responseResult.Message;
-                DisposeMessage();
             }
             else
             {
                 ErrorMessage = responseResult.Message;
-                DisposeMessage();
             }
         }
         catch (Exception ex)
         {
             ErrorMessage = ex.Message;
         }
+
+        NavigationManager.NavigateTo($"/account/details?SuccessMessage={SuccessMessage}&ErrorMessage={ErrorMessage}", true);
     }
 
     private void DisposeMessage()

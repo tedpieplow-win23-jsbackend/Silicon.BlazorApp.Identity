@@ -53,7 +53,7 @@ public class AddressService(AddressRepository addressRepository, AddressFactory 
 
                 var updateResult = await _userService.UpdateUserAsync(user);
                 if (updateResult.Succeeded)
-                    return ResponseFactory.Ok("Updated successfully.");
+                    return ResponseFactory.Ok("Address information updated successfully.");
             }
 
             return ResponseFactory.Error("Something went wrong.");

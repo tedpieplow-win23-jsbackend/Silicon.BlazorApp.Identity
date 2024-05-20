@@ -1,10 +1,18 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityRedirectManager RedirectManager
+@inject UserService UserService
 
-<header @* class="@((ViewContext.RouteData.Values["Controller"]!.ToString() == "Contact") ? "background-contact" : "") *@">
+<header>
     <div class="container">
-        @* <NavLink id="logo" href="/"><img src="/images/icons/@(isDark ? "silicon-logo-dark.svg" : "silicon-logo-light_theme.svg")" alt="Silicon-logo"></NavLink> *@
+        @if(User != null)
+        {
+            <NavLink id="logo" href="/"><img src="/images/icons/@(User.IsDarkMode ? "silicon-logo-dark.svg" : "silicon-logo-light_theme.svg")" alt="Silicon-logo"></NavLink>
+        }
+        else
+        {
+            <NavLink id="logo" href="/"><img src="/images/icons/silicon-logo-light_theme.svg" alt="Silicon-logo"></NavLink>
+        }
 
         <div id="menu" class="hide">
             <nav>
@@ -20,27 +28,21 @@
 
                 <AuthorizeView Roles="SuperUser, Administrator, Author">
                     <Authorized>
-                        <NavLink href="/backoffice" class="menu-link">Courses</NavLink>
+                        <NavLink href="/backoffice" class="menu-link">Back Office</NavLink>
                     </Authorized>
                 </AuthorizeView>
 
             </nav>
         </div>
 
-@*         <div class="btn-switch">
-            <label>Light</label>
-            <label class="switch" for="switch-mode">
-                <input type="checkbox" id="switch-mode" />
-                <span class="slider round" id="slider"></span>
-            </label>
-            <label>Dark</label>
-        </div> *@
-
         <div class="account-buttons hide" id="account-buttons">
             <AuthorizeView>
                 <Authorized>
+                    @if(User != null)
+                    {
+                        <NavLink href="/account/details" title="Profile"><img class="profile-image" src="/images/profiles/@User!.ProfileImageUrl" /></NavLink>
+                    }
                     <NavLink href="/signout" class="sign-out" title="Sign Out"><i class="fa-regular fa-right-from-bracket "></i></NavLink>
-                    <NavLink href="/account/details" title="Profile">Account Details@* <img class="profile-image" src="/images/profiles/@user!.ProfileImageUrl" /> *@</NavLink>
                 </Authorized>
                 <NotAuthorized>
                     <NavLink href="/signin" class="btn-gray"><i class="fa-regular fa-right-to-bracket"></i><span>Sign In</span></NavLink>
@@ -58,5 +60,11 @@
 </header>
 
 @code {
+    [CascadingParameter]
+    private ApplicationUser User { get; set; } = null!;
 
+    protected override async Task OnInitializedAsync()
+    {
+        User = await UserService.GetUserAsync();
+    }
 }

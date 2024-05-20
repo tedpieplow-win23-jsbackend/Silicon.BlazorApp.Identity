@@ -3,7 +3,6 @@
 @inject ILogger<ContactInfo> Logger
 @inject UserManager<ApplicationUser> UserManager
 @inject UserFactory UserFactory
-@inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject AuthenticationStateProvider StateProvider
 @inject UserService UserService
@@ -17,18 +16,14 @@
     <div class="user-details">
         <div class="section-title">
 
-            @if (!string.IsNullOrEmpty(SuccessMessage))
-            {
-                <span class="alert alert-success" role="alert" id="userMessage">
-                    @SuccessMessage
-                </span>
-            }
-            @if (!string.IsNullOrEmpty(ErrorMessage))
-            {
-                <span class="alert alert-danger" role="alert" id="userMessage">
-                    @ErrorMessage
-                </span>
-            }
+            <span class="alert alert-success" role="alert" id="userMessage">
+                @SuccessMessage
+            </span>
+
+            <span class="alert alert-danger" role="alert" id="userMessage">
+                @ErrorMessage
+            </span>
+
             <h2>Account Details</h2>
             <h5>Basic Info</h5>
         </div>
@@ -84,8 +79,11 @@
 
 @code {
 
-    private string? SuccessMessage;
-    private string? ErrorMessage;
+    [SupplyParameterFromQuery]
+    private string? SuccessMessage { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? ErrorMessage { get; set; }
 
     [SupplyParameterFromForm]
     private ContactInfoVM ContactInfoModel { get; set; } = new();
@@ -101,6 +99,8 @@
         {
             ContactInfoModel = UserFactory.PopulateContactInfo(User);
         }
+
+        DisposeMessage();
     }
 
     private async Task UpdateBasicInfoAsync()
@@ -113,19 +113,20 @@
             if (result.Succeeded)
             {
                 SuccessMessage = "Contact information updated successfully!";
-                DisposeMessage();
             }
             else
             {
                 ErrorMessage = "Contact information failed to update.";
-                DisposeMessage();
             }
         }
         catch(Exception ex)
         {
             Logger.LogError($"UpdateBasicInfo ERROR: {ex.Message}");
         }
+
+        NavigationManager.NavigateTo($"/account/details?SuccessMessage={SuccessMessage}&ErrorMessage={ErrorMessage}", true);
     }
+
 
     private void DisposeMessage()
     {
@@ -138,5 +139,4 @@
             timerMessage.Dispose();
         }, null, 4000, Timeout.Infinite);
     }
-
 }

@@ -90,4 +90,17 @@ public class UserService(HttpClient httpClient, IConfiguration configuration, Us
 
         return await _userManager.UpdateAsync(user);
     }
+    public async Task<IdentityResult> UpdatePassUserAsync(ApplicationUser user, string oldPass, string newPass)
+    {
+        var existingUser = _context.Users.FirstOrDefault(u => u.Id == user.Id);
+        if (existingUser != null)
+        {
+            _context.Entry(existingUser).State = EntityState.Detached;
+        }
+
+        _context.Users.Attach(user);
+        _context.Entry(user).State = EntityState.Modified;
+
+        return await _userManager.ChangePasswordAsync(user, oldPass, newPass);
+    }
 }

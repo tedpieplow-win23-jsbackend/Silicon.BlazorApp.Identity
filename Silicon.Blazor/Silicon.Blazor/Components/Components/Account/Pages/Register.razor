@@ -107,7 +107,8 @@
 
     public async Task SignUp(EditContext editContext)
     {
-        try
+
+        if (SignUpForm.TermsAndConditions)
         {
             var existingUser = await UserManager.FindByEmailAsync(SignUpForm.Email);
             if (existingUser != null)
@@ -126,18 +127,17 @@
 
             var body = new { email = SignUpForm.Email };
             await ServiceBusHandler.SendServiceBusMessage(body, "VerificationServiceBus", "verification_request");
-        }
-        catch
-        {
-            StatusMessage = "An error occured while creating the account.";
-            return;
-        }
 
-        if (UserManager.Options.SignIn.RequireConfirmedAccount)
-        {
-            RedirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = SignUpForm.Email, ["returnUrl"] = ReturnUrl });
-        }
+            if (UserManager.Options.SignIn.RequireConfirmedAccount)
+            {
+                RedirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = SignUpForm.Email, ["returnUrl"] = ReturnUrl });
+            }
 
-        RedirectManager.RedirectTo("/signin");
+            RedirectManager.RedirectTo("/signin");
+        }
+        else
+        {
+            StatusMessage = "You must agree to the terms and conditions.";
+        }
     }
 }

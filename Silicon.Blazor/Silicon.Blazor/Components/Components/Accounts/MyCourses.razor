@@ -3,6 +3,7 @@
 @inject IConfiguration Configuration
 @inject NavigationManager Navigation
 @inject UserService UserService
+@inject IDbContextFactory DbContextFactory
 
 @rendermode InteractiveServer
 
@@ -26,7 +27,7 @@
                                 <img src="@course.ImageUri" />
                             </div>
 
-                            <a class="bookmark" @onclick:stopPropagation="@true" @onclick="() => RemoveSavedCourse(course.Id)">
+                            <a class="bookmark" @onclick:stopPropagation="@true" @onclick="() => RemoveSavedCourse(course.Id)" title=" Remove Course">
                                 <i class="fa-solid fa-bookmark"></i>
                             </a>
 
@@ -54,7 +55,7 @@
                 {
                     <div class="no-courses">
                         <h5>You don't have any saved courses yet.</h5>
-                        <p>Visit our <a asp-action="Index" asp-controller="Courses">course</a> page and find out what you're missing!</p>
+                        <p>Visit our <NavLink href="/courses">course</NavLink> page and find out what you're missing!</p>
                     </div>
                 }
             </div>
@@ -63,25 +64,36 @@
 </section>
 
 @code {
+    private static readonly SemaphoreSlim _dbSemaphore = new SemaphoreSlim(1, 1);
     private List<CourseCard>? savedCourses;
     private List<string>? savedCourseIds;
     private bool updatePage = false;
 
     protected override async Task OnInitializedAsync()
     {
-        savedCourseIds = await GetSavedCourseIdsAsync();
-        if (savedCourseIds != null && savedCourseIds.Count > 0)
-            await GetCoursesWithGraphQLQuery(savedCourseIds);
+        await _dbSemaphore.WaitAsync();
+        try
+        {
+            savedCourseIds = await GetSavedCourseIdsAsync();
+            if (savedCourseIds != null && savedCourseIds.Count > 0)
+                await GetCoursesWithGraphQLQuery(savedCourseIds);
+        }
+        finally
+        {
+            _dbSemaphore.Release();
+        }
+
     }
 
     private async Task<List<string>> GetSavedCourseIdsAsync()
     {
+        using var context = DbContextFactory.CreateDbContext();
         var user = await UserService.GetUserAsync();
 
         if (user != null)
         {
             var userId = user.Id;
-            var savedCourseIds = await Context.UserCourses
+            var savedCourseIds = await context.UserCourses
                     .Where(sc => sc.ApplicationUserId == userId)
                     .Select(sc => sc.CourseId)
                     .ToListAsync();
@@ -171,17 +183,18 @@
 
     private async Task RemoveSavedCourse(string courseId)
     {
+        using var context = DbContextFactory.CreateDbContext();
         var user = await UserService.GetUserAsync();
 
         if (user != null)
         {
             var userId = user.Id;
-            var userCourse = await Context.UserCourses
+            var userCourse = await context.UserCourses
             .FirstOrDefaultAsync(uc => uc.ApplicationUserId == userId && uc.CourseId == courseId);
 
             if (userCourse != null)
             {
-                Context.UserCourses.Remove(userCourse);
+                context.UserCourses.Remove(userCourse);
                 await Context.SaveChangesAsync();
 
                 savedCourses?.RemoveAll(c => c.Id == courseId);
@@ -193,19 +206,20 @@
 
     private async Task RemoveAllCourses()
     {
+        using var context = DbContextFactory.CreateDbContext();
         var user = await UserService.GetUserAsync();
 
         if (user != null)
         {
             var userId = user.Id;
-            var userCourses = await Context.UserCourses
+            var userCourses = await context.UserCourses
                 .Where(uc => uc.ApplicationUserId == userId)
                 .ToListAsync();
 
             if (userCourses.Count > 0)
             {
-                Context.UserCourses.RemoveRange(userCourses);
-                await Context.SaveChangesAsync();
+                context.UserCourses.RemoveRange(userCourses);
+                await context.SaveChangesAsync();
 
                 savedCourses?.Clear();
 

@@ -62,7 +62,7 @@
                                 <span class="best-seller">Best Seller</span>
                             }
 
-                            <a class="bookmark" @onclick:stopPropagation="@true" @onclick="() => SaveCourseAsync(course.Id)">
+                            <a class="bookmark" @onclick:stopPropagation="@true" @onclick="() => ToggleSaveCourseAsync(course.Id)">
                                 <i class="fa-sharp fa-regular fa-bookmark" title="Bookmark Course" style="background-color: @course.BookmarkColor"></i>
                             </a>
 
@@ -109,13 +109,10 @@
     </div>
 </section>
 
-
-
 @code {
     private List<CourseCard>? courses;
     private List<CourseCard>? displayedCourses;
     private Pagination pagination = new Pagination();
-    private bool isCourseSaved;
     private string? courseId;
 
     protected override async Task OnInitializedAsync()
@@ -123,7 +120,6 @@
         await GetCoursesAsync();
         await ColorBookmarkIfSaved();
     }
-
 
     private async Task GetCoursesAsync()
     {
@@ -200,6 +196,40 @@
         return;
     }
 
+    private async Task ToggleSaveCourseAsync(string courseId)
+    {
+        var user = await UserService.GetUserAsync();
+
+        if (user != null)
+        {
+            var userId = user.Id;
+            var isSaved = await IsCourseSaved(userId, courseId);
+
+            if (isSaved)
+            {
+                await RemoveSavedCourse(userId, courseId);
+            }
+            else
+            {
+                await SaveCourseAsync(courseId);
+            }
+
+            await ColorBookmarkIfSaved();
+        }
+    }
+
+    private async Task RemoveSavedCourse(string userId, string courseId)
+    {
+        var userCourse = await Context.UserCourses
+            .FirstOrDefaultAsync(uc => uc.ApplicationUserId == userId && uc.CourseId == courseId);
+
+        if (userCourse != null)
+        {
+            Context.UserCourses.Remove(userCourse);
+            await Context.SaveChangesAsync();
+        }
+    }
+
     private async Task<bool> IsCourseSaved(string userId, string courseId)
     {
         var savedCourse = await Context.UserCourses
@@ -207,7 +237,6 @@
 
         return savedCourse;
     }
-
 
     private async Task ColorBookmarkIfSaved()
     {
@@ -229,7 +258,6 @@
             }
         }
     }
-
 
     private string GetBookmarkColor(bool isSaved)
     {

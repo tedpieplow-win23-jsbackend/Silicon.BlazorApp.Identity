@@ -1,8 +1,18 @@
-﻿<PageTitle>Saved Courses</PageTitle>
-<MyCourses />
+﻿@page "/account/mycourses"
+<PageTitle>Account</PageTitle>
+<section id="details">
+    <div class="container">
+
+        <div class="menu-bar">
+            <NavBar />
+        </div>
+
+        <MyCourses />
+
+    </div>
+</section>
 
 
-<p></p>
 @code {
-    private Account account { get; set; }
+    private AccountDetailsVM? model { get; set; }
 }

@@ -3,117 +3,11 @@
     padding-bottom: 60px;
 
     .container {
-        display: grid;
+        display: flex;
         justify-content: center;
 
         @include lg {
-            grid-template-columns: 1fr 3fr;
             padding-right: 5rem;
-        }
-
-        .menu-bar {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 30px;
-            align-self: flex-start;
-            align-items: center;
-
-            @include md {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-            }
-
-            @include lg {
-                grid-template-columns: 1fr;
-            }
-
-            .profile {
-                text-align: center;
-
-                @include md {
-                    padding-right: 3rem;
-                }
-
-                h5 {
-                    color: var(--color-gray-900);
-                    margin-bottom: 0;
-                }
-
-                p {
-                    color: var(--color-gray-600);
-                    margin-bottom: 2rem;
-                }
-
-                .image {
-                    position: relative;
-
-                    img {
-                        clip-path: circle();
-                        max-width: 180px;
-                        max-height: 180px;
-                        border: 1px hidden;
-                    }
-
-                    .btn-upload {
-                        position: absolute;
-                        background-color: white;
-                        clip-path: circle();
-                        padding: 5px;
-                        bottom: 15px;
-                        right: 30px;
-
-                        @include xxl {
-                            right: 70px;
-                        }
-
-                        &:hover {
-                            background-color: black;
-                            cursor: pointer;
-                        }
-                    }
-                }
-            }
-
-            .options {
-                display: flex;
-                flex-direction: column;
-
-
-                @include md {
-                    padding-right: 1rem;
-                }
-
-                a {
-                    color: var(--color-gray-900);
-                    font-weight: 700;
-                    padding: 10px;
-                    max-width: 300px;
-                    width: auto;
-                    margin-bottom: 0.2rem;
-                    text-decoration: none;
-                    border-radius: .4rem;
-
-                    i {
-                        padding-right: 1rem;
-                        padding-left: 1.2rem;
-                    }
-
-                    &:hover,
-                    &:active,
-                    &:focus,
-                    .active {
-                        background-color: $theme;
-                        text-decoration: none;
-                        color: #fff;
-                    }
-                }
-
-                .active {
-                    background-color: $theme;
-                    color: #fff;
-                }
-            }
         }
 
         .content {
@@ -125,6 +19,16 @@
                 display: flex;
                 justify-content: space-between;
 
+                h2 {
+                    padding: 0 0 .5rem 1rem;
+                    color: var(--color-gray-900);
+
+
+                    @include md {
+                        padding: 0 0 2rem 5rem;
+                    }
+                }
+
                 .btn-delete {
                     display: flex;
                     justify-content: center;
@@ -134,7 +38,7 @@
                     border: 1px solid $danger;
                     border-radius: 0.2rem;
                     color: $danger;
-                    width: 147px;
+                    width: 290px !important;
                     height: 44px;
 
                     i {
@@ -151,17 +55,7 @@
                 }
             }
 
-            h2 {
-                padding: 0 0 .5rem 1rem;
-                color: var(--color-gray-900);
-
-                @include md {
-                    padding: 0 0 2rem 5rem;
-                }
-            }
-
             .saved-items {
-                padding: 0 1rem 1rem 1rem;
                 display: grid;
                 grid-template-columns: repeat(1, 1fr);
                 gap: 2.5rem 2rem;
@@ -174,13 +68,20 @@
                     grid-template-columns: repeat(2, 1fr);
                 }
 
-
-
                 .course-card {
-                    border-radius: 2%;
-                    @include shadow-m;
-                    position: relative;
                     background-color: var(--color-gray-100);
+                    box-shadow: 0 3px 10px #0000000f, 0 4px 5px #0000000c;
+                    text-decoration: none;
+                    border-radius: 1.1rem;
+                    overflow: hidden;
+                    padding: 5px;
+                    padding: 1px;
+                    position: relative;
+
+                    &:hover {
+                        box-shadow: 0 3px 10px rgba(99, 102, 241, 0.7), 0 4px 5px rgba(99, 102, 241, 0.5);
+                        cursor: pointer;
+                    }
 
                     .image {
                         img {
@@ -196,7 +97,7 @@
                         width: 2.1rem;
                         aspect-ratio: 1;
                         top: 2%;
-                        left: 90%;
+                        left: 85%;
                         background-color: $white;
                         border-radius: 50%;
 
@@ -211,7 +112,6 @@
                             color: $theme;
                         }
                     }
-
 
                     .hide {
                         display: none;
@@ -235,7 +135,20 @@
                     }
 
                     .course-info {
-                        padding: 2rem 2rem 0 2rem;
+                        padding-left: 15px;
+
+                        .title {
+                            margin-top: 1rem;
+                            font-weight: 800;
+                            padding-right: 32px;
+                            color: var(--color-gray-900);
+                        }
+
+                        .price {
+                            color: $theme;
+                            font-size: 1.2rem;
+                            font-weight: 700;
+                        }
 
                         h5 {
                             color: var(--color-gray-800);
@@ -243,12 +156,6 @@
 
                         p {
                             color: var(--color-gray-700);
-                        }
-
-                        .price {
-                            color: $theme;
-                            font-size: 1.2rem;
-                            font-weight: 700;
                         }
 
                         .divider {
@@ -295,6 +202,7 @@
                         text-decoration: underline;
                     }
                 }
+
                 .lottie {
                     display: none;
                 }

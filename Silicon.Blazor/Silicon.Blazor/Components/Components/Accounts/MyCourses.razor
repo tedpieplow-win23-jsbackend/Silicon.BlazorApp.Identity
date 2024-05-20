@@ -198,16 +198,16 @@
         if (user != null)
         {
             var userId = user.Id;
-            var savedCourses = await Context.UserCourses
+            var userCourses = await Context.UserCourses
                 .Where(uc => uc.ApplicationUserId == userId)
                 .ToListAsync();
 
-            if (savedCourses.Count > 0)
+            if (userCourses.Count > 0)
             {
-                Context.UserCourses.RemoveRange(savedCourses);
+                Context.UserCourses.RemoveRange(userCourses);
                 await Context.SaveChangesAsync();
 
-                savedCourses?.Clear(); 
+                savedCourses?.Clear();
 
                 updatePage = true;
                 await InvokeAsync(StateHasChanged); 

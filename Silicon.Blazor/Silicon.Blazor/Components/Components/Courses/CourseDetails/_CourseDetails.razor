@@ -1,20 +1,34 @@
-﻿<section id="course-description" class="container">
-    <div class="course-content">
+﻿@using System.Net.Http.Json
+
+@inject IConfiguration Configuration
+
+@if (selectedCourse != null)
+{
+    <div class="course-content container">
         <div class="description-section">
             <div class="learn-points">
                 <div class="description">
                     <p>Course Description</p>
-                    <p>@Model.CourseDescription</p>
+                    <p>@selectedCourse.Ingress</p>
                 </div>
                 <div class="learn">
                     <p>What you'll learn</p>
                     <ul class="list" style="list-style-type: none;">
-                        @if (Model.LearnPoints is not null)
+                        @if (selectedCourse.Content != null && selectedCourse.Content.ProgramDetails != null && selectedCourse.Content.ProgramDetails.Any())
                         {
-                            @foreach (var point in Model.LearnPoints)
-                            {
-                                <li><i class="fa-sharp fa-regular fa-circle-check"></i> @point</li>
-                            }
+                            <ul>
+                                @foreach (var detail in selectedCourse.Content.ProgramDetails)
+                                {
+                                    <li>
+                                        <span class="checkmark"><i class="fa-solid fa-check-circle"></i></span>
+                                        @detail.Description
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No program details available.</p>
                         }
                     </ul>
                 </div>
@@ -22,21 +36,21 @@
             <div class="course-info">
                 <div class="course-box">
                     <p class="title">This course includes:</p>
-                    <p><i class="fa-sharp fa-light fa-display"></i> @Model.ViewHours on-demand video</p>
-                    <p><i class="fa-thin fa-file"></i> @Model.Articles articles</p>
-                    <p><i class="fa-sharp fa-thin fa-download"></i> @Model.Resources downloadable resources</p>
-                    <p><i class="fa-regular fa-infinity"></i> @Model.AccessTime access</p>
+                    <p><i class="fa-sharp fa-light fa-display"></i> @selectedCourse.Hours on-demand video</p>
+                    <p><i class="fa-thin fa-file"></i> @selectedCourse.Content?.ProgramDetails?.Count articles</p>
+                    <p><i class="fa-sharp fa-thin fa-download"></i> @selectedCourse.Content?.ProgramDetails?.Count downloadable resources</p>
+                    <p><i class="fa-regular fa-infinity"></i> Full lifetime access</p>
                     <p><i class="fa-sharp fa-thin fa-trophy"></i> Certificate of completion</p>
 
                     <div class="course-price">
-                        @if (Model.DiscountPrice is null)
+                        @if (selectedCourse.Prices != null && selectedCourse.Prices.Discount > 0)
                         {
-                            <p style="text-decoration:none" class="ord-price">$@Model.Price</p>
+                            <p class="discount-price">$@selectedCourse.Prices.Discount</p>
+                            <p class="ord-price" style="text-decoration:line-through;">$@selectedCourse.Prices.Price</p>
                         }
                         else
                         {
-                            <p class="discount-price">$@Model.DiscountPrice</p>
-                            <p class="ord-price">$@Model.Price</p>
+                            <p style="text-decoration:none" class="ord-price">$@selectedCourse.Prices.Price</p>
                         }
                     </div>
                     <NavLink class="btn-theme">Join Course</NavLink>
@@ -46,20 +60,32 @@
         <div class="details-section">
             <p class="details-title">Program Details</p>
             <ol class="detail-list">
-                @if (Model.ProgramDetailsTitle is not null && Model.ProgramDetailsText is not null)
+                @if (selectedCourse.Content != null && selectedCourse.Content.ProgramDetails != null)
                 {
-                    @foreach (var (detail, detailText) in Model.ProgramDetailsTitle.Zip(Model.ProgramDetailsText))
+                    @foreach (var detail in selectedCourse.Content.ProgramDetails)
                     {
                         <li class="item">
-                            <p class="title">@detail</p>
-                            <p class="subtitle">@detailText</p>
+                            <p class="title">@detail.Title</p>
+                            <p class="subtitle">@detail.Description</p>
                         </li>
                     }
                 }
             </ol>
         </div>
     </div>
-</section>
+}
+else
+{
+    @if (ErrorMessage)
+    {
+        <p>NÅGOT ÄR FEL!</p>
+    }
+}
+
 @code {
-    Course Model { get; set; } = new Course();
+    [Parameter]
+    public CourseCardWithDetails selectedCourse { get; set; }
+
+    [Parameter]
+    public bool ErrorMessage { get; set; }
 }

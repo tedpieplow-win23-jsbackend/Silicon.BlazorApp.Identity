@@ -20,6 +20,7 @@ else
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
@@ -28,7 +29,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Silicon.Blazor.Client._Imports).Assembly);
 
-app.MapAdditionalIdentityEndpoints();
+//app.MapAdditionalIdentityEndpoints();
 await RoleConfiguration.RegisterRoles(app);
 
 app.Run();

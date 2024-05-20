@@ -32,11 +32,15 @@ public class UserService(HttpClient httpClient, IConfiguration configuration, Us
 
             if (httpResponse.IsSuccessStatusCode)
             {
-                return ResponseFactory.Ok();
+                var result = await httpResponse.Content.ReadAsStringAsync();
+                var subscriberStatus = JsonConvert.DeserializeObject<SubscriberModel>(result);
+                return ResponseFactory.Ok(subscriberStatus!.IsSubscribed);
             }
             else if (httpResponse.StatusCode == HttpStatusCode.Conflict)
             {
-                return ResponseFactory.Exists();
+                var result = await httpResponse.Content.ReadAsStringAsync();
+                var subscriberStatus = JsonConvert.DeserializeObject<SubscriberModel>(result);
+                return ResponseFactory.Exists(subscriberStatus!.IsSubscribed);
             }
             else
                 return ResponseFactory.Error();
@@ -86,7 +90,6 @@ public class UserService(HttpClient httpClient, IConfiguration configuration, Us
 
         return await _userManager.UpdateAsync(user);
     }
-
     public async Task<IdentityResult> UpdatePassUserAsync(ApplicationUser user, string oldPass, string newPass)
     {
         var existingUser = _context.Users.FirstOrDefault(u => u.Id == user.Id);

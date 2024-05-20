@@ -1,30 +1,29 @@
-@using Microsoft.EntityFrameworkCore
-@rendermode InteractiveAuto
+@rendermode InteractiveServer
+
+@inject ILogger<ContactInfo> Logger
 @inject UserManager<ApplicationUser> UserManager
 @inject UserFactory UserFactory
-@inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject AuthenticationStateProvider StateProvider
 @inject UserService UserService
+@inject NavigationManager NavigationManager
+@inject IServiceScopeFactory ScopeFactory
 
-<EditForm FormName="AccountDetailsForm" Model="ContactInfoModel" OnValidSubmit="UpdateBasicInfo" method="post">
+
+<EditForm FormName="ContactInfoForm" Model="ContactInfoModel" OnValidSubmit="UpdateBasicInfoAsync" method="post">
     <DataAnnotationsValidator />
 
     <div class="user-details">
         <div class="section-title">
 
-            @if (!string.IsNullOrEmpty(SuccessMessage))
-            {
-                <span class="alert alert-success" role="alert" id="userMessage">
-                    SuccessMessage
-                </span>
-            }
-            @if (!string.IsNullOrEmpty(ErrorMessage))
-            {
-                <span class="alert alert-danger" role="alert" id="userMessage">
-                    ErrorMessage
-                </span>
-            }
+            <span class="alert alert-success" role="alert" id="userMessage">
+                @SuccessMessage
+            </span>
+
+            <span class="alert alert-danger" role="alert" id="userMessage">
+                @ErrorMessage
+            </span>
+
             <h2>Account Details</h2>
             <h5>Basic Info</h5>
         </div>
@@ -80,8 +79,11 @@
 
 @code {
 
-    private string? SuccessMessage;
-    private string? ErrorMessage;
+    [SupplyParameterFromQuery]
+    private string? SuccessMessage { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? ErrorMessage { get; set; }
 
     [SupplyParameterFromForm]
     private ContactInfoVM ContactInfoModel { get; set; } = new();
@@ -97,39 +99,44 @@
         {
             ContactInfoModel = UserFactory.PopulateContactInfo(User);
         }
+
+        DisposeMessage();
     }
 
-    private async Task UpdateBasicInfo()
+    private async Task UpdateBasicInfoAsync()
     {
-        var model = ContactInfoModel;
+        try
+        {
+            var userToUpdate = UserFactory.PopulateUserEntity(ContactInfoModel, User);
+            var result = await UserService.UpdateUserAsync(userToUpdate);
 
-        User = await UserService.GetUserAsync();
+            if (result.Succeeded)
+            {
+                SuccessMessage = "Contact information updated successfully!";
+            }
+            else
+            {
+                ErrorMessage = "Contact information failed to update.";
+            }
+        }
+        catch(Exception ex)
+        {
+            Logger.LogError($"UpdateBasicInfo ERROR: {ex.Message}");
+        }
 
-        //Denna (userToUpdate) får in alla värden rätt, när jag körde UserManager.UpdateAsync så disposea den bara :(.. Hitta en bra lösning!
-        var userToUpdate = UserFactory.PopulateUserEntity(model, User);
-
-
-
-        //Det här behövs inte men behöll om du hade tänkt använda något av det!
-        // var FirstName = ContactInfoModel.FirstName;
-        // var LastName = ContactInfoModel.LastName;
-        // var Email = ContactInfoModel.Email;
-        // var Phone = ContactInfoModel.Phone;
-        // var Bio = ContactInfoModel.Bio;
-
-        // User = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        // var model = new ContactInfoVM
-        // {
-        //         FirstName = FirstName,
-        //         LastName = LastName,
-        //         Email = Email,
-        //         Phone = Phone,
-        //         Bio = Bio
-        // };
-        // var userToUpdate = UserFactory.PopulateUserEntity(model, User);
-        // var result = await UserManager.UpdateAsync(userToUpdate);
-
-        // RedirectManager.RedirectTo("/account/details");
+        NavigationManager.NavigateTo($"/account/details?SuccessMessage={SuccessMessage}&ErrorMessage={ErrorMessage}", true);
     }
 
+
+    private void DisposeMessage()
+    {
+        Timer timerMessage = null!;
+        timerMessage = new Timer((state) =>
+        {
+            SuccessMessage = "";
+            ErrorMessage = "";
+            InvokeAsync(() => StateHasChanged());
+            timerMessage.Dispose();
+        }, null, 4000, Timeout.Infinite);
+    }
 }

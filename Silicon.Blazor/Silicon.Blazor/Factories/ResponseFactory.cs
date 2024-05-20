@@ -13,6 +13,15 @@ public class ResponseFactory
         };
     }
 
+    public static ResponseResult Ok(bool? isSubscribed = null)
+    {
+        return new ResponseResult
+        {
+            StatusCode = StatusCode.OK,
+            IsSubscribed = isSubscribed
+        };
+    }
+
     public static ResponseResult Ok(string? message = null)
     {
         return new ResponseResult
@@ -56,6 +65,15 @@ public class ResponseFactory
         {
             Message = message ?? "Already exists",
             StatusCode = StatusCode.EXISTS
+        };
+    }
+
+    public static ResponseResult Exists(bool? isSubscribed = null)
+    {
+        return new ResponseResult
+        {
+            StatusCode = StatusCode.EXISTS,
+            IsSubscribed = isSubscribed
         };
     }
 }

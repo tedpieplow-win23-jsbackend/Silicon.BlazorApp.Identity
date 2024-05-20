@@ -1,3 +1,20 @@
 ﻿@page "/courses"
-<_Courses />
-<_Skills />
+
+@inject AuthService AuthService
+
+
+<AuthorizeView>
+    <Authorized>
+
+        <_Courses />
+        <_Skills />
+
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.EnsureAuthenticatedAsync();
+    }
+}

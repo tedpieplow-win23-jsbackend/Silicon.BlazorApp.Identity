@@ -1,108 +1,117 @@
 ﻿@using System.Text.Json
 @using Azure.Messaging.ServiceBus
+@using Microsoft.AspNetCore.Authorization
 @inject ICoursesVM ViewModel
 @inject IConfiguration Configuration
+@inject NavigationManager Navigation
 
+@attribute [Authorize]
 @attribute [StreamRendering]
 
 <PageTitle>Courses</PageTitle>
 
-<section>
-    <div class="courses container">
-        @*There's a script tied to this span*@
-        <span id="statusMessage" class="message-container"></span>
-        <div class="section-title">
-            <h1 class="h1">Courses</h1>
-            <div class="search-div">
-                <div class="dropdown select">
-                    <div class="selected" data-value="all">All categories<i class="fa-sharp fa-light fa-circle-caret-down"></i></div>
-                    <div class="select-options">
+        <section>
+            <div class="courses container">
+                @*There's a script tied to this span*@
+                <span id="statusMessage" class="message-container"></span>
+                <div class="section-title">
+                    <h1 class="h1">Courses</h1>
+                    <div class="search-div">
+                        <div class="dropdown select">
+                            <div class="selected" data-value="all">All categories<i class="fa-sharp fa-light fa-circle-caret-down"></i></div>
+                            <div class="select-options">
+                                <div class="option" data-value="all">All Categories</div>
 
-                        <div class="option" data-value="all">All Categories</div>
+                                @if (courses != null)
+                                {
+                                    foreach (var course in courses)
+                                    {
+                                        @foreach (var category in course.Categories!)
+                                        {
+                                            <div class="option" data-value="@category">
+                                                @category
 
-                        @*  @if (courses.Categories != null)
-                        {
-                        foreach (var category in courses.Categories)
-                        {
-                        <div class="option" data-value="(@category.CategoryName)">@category.CategoryName</div>
-                        }
-                        } *@
-
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="search">
+                            <input id="searchQuery" type="search" name="searchQuery" placeholder="Search courses" />
+                            <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                        </div>
                     </div>
                 </div>
-                <div class="search">
-                    <input id="searchQuery" type="search" name="searchQuery" placeholder="Search courses" />
-                    <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
-                </div>
-            </div>
-        </div>
 
-        @if (courses != null)
-        {
-            <div class="items">
-
-                @foreach (var course in courses!)
+                @if (courses != null)
                 {
-                    <div class="course-card" @* @onclick="() => ViewModel.GoToCourseDetails(course.Id) *@">
-                        <div class="image">
-                            <img src="@course.ImageUri" alt="" />
+                    <div class="items">
 
-                            @if (course.IsBestseller)
-                            {
-                                <span class="best-seller">Best Seller</span>
-                            }
+                        @foreach (var course in courses!)
+                        {
+                            <a class="course-card" href="course/@course.Id">
+                                <div class="image">
+                                    <img src="@course.ImageUri" alt="" />
 
-                            @*   <NavLink href="#" data-course-id="@course.Id" class="bookmark" @onclick="() => course.SaveCourse(course.Id)"> <i class="fa-sharp fa-regular fa-bookmark" title="Join Course"></i></NavLink> *@
-                        </div>
+                                    @if (course.IsBestseller)
+                                    {
+                                        <span class="best-seller">Best Seller</span>
+                                    }
 
-                        <div class="course-info">
-                            <h5 class="title">@course.Title</h5>
-                            <p class="author">By @course.Author</p>
-
-                            @if (course?.DiscountPrice != 0)
-                            {
-                                <div class="discount-div">
-                                    <p class="discount-price">$ @course!.DiscountPrice</p>
-                                    <p class="original-price">$ @course!.Price</p>
+                                    @*   <NavLink href="#" data-course-id="@course.Id" class="bookmark" @onclick="() => course.SaveCourse(course.Id)"> <i class="fa-sharp fa-regular fa-bookmark" title="Join Course"></i></NavLink> *@
                                 </div>
-                            }
-                            else
-                            {
-                                <p class="price">$ @course?.Price</p>
-                            }
 
-                        </div>
-                        <div class="divider"></div>
-                        <footer>
-                            <div>
-                                <i class="fa-sharp fa-solid fa-clock"></i>
-                                <p>@course?.Hours hours</p>
-                            </div>
-                            <div>
-                                <i class="fa-sharp fa-light fa-thumbs-up"></i>
-                                <p>@course?.LikesInPercent % (@course?.LikesInNumbers K)</p>
-                            </div>
-                        </footer>
+                                <div class="course-info">
+                                    <h5 class="title">@course.Title</h5>
+                                    <p class="author">By @course.Author</p>
+
+                                    @if (course?.DiscountPrice != 0)
+                                    {
+                                        <div class="discount-div">
+                                            <p class="discount-price">$ @course!.DiscountPrice</p>
+                                            <p class="original-price">$ @course!.Price</p>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="price">$ @course?.Price</p>
+                                    }
+
+                                </div>
+                                <div class="divider"></div>
+                                <footer>
+                                    <div>
+                                        <i class="fa-sharp fa-solid fa-clock"></i>
+                                        <p>@course?.Hours hours</p>
+                                    </div>
+                                    <div>
+                                        <i class="fa-sharp fa-light fa-thumbs-up"></i>
+                                        <p>@course?.LikesInPercent % (@course?.LikesInNumbers K)</p>
+                                    </div>
+                                </footer>
+                            </a>
+                        }
                     </div>
                 }
+                else
+                {
+                    <p>Loading ...</p>
+                }
+
+
             </div>
-        }
+        </section>
 
-        @*        if (courses.GetConnectionFailedStatus())
-        {
-        <span class="alert alert-danger">Failed to contact server. Please try again later...</span>
-        } *@
-
-    </div>
-</section>
 
 
 @code {
     private List<CourseCard>? courses;
-    private Pagination pagination;
+    private List<CourseCard>? displayedCourses;
+    private Pagination pagination = new Pagination();
 
     protected override async Task OnInitializedAsync()
-    {  
+    {
         var query = new GraphQLQuery { Query = "{ getCourses { id title isBestseller categories title imageHeaderUri imageUri likesInPercent likes hours authors { name } prices { currency price discount } } }" };
         var response = await Http.PostAsJsonAsync(Configuration.GetValue<string>("ConnectionStrings:GetCoursesProvider"), query);
 
@@ -119,35 +128,65 @@
                     ImageHeaderUri = course.TryGetProperty("imageHeaderUri", out var imageUriValue) ? imageUriValue.GetString() ?? "" : "",
                     ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() ?? "" : "",
                     Author = course.TryGetProperty("authors", out var authors) && authors.GetArrayLength() > 0
-                        ? authors[0].GetProperty("name").GetString() ?? ""
-                        : "",
+                                            ? authors[0].GetProperty("name").GetString() ?? ""
+                                            : "",
                     Price = $"{course.GetProperty("prices").GetProperty("currency").GetString()} {course.GetProperty("prices").GetProperty("price").GetDouble()}",
                     DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal() > 0
-                                  ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
-                                  : 0m,
+                                                      ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
+                                                      : 0m,
                     Hours = course.GetProperty("hours").GetString(),
                     LikesInPercent = course.GetProperty("likesInPercent").GetString(),
-                    LikesInNumbers = course.GetProperty("likes").GetString()
+                    LikesInNumbers = course.GetProperty("likes").GetString(),
+                    Categories = course.TryGetProperty("categories", out var categories) && categories.GetArrayLength() > 0
+                                        ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
+                                        : new List<string>()
                 })
               .ToList();
-        }
 
-        pagination = new Pagination
-            {
-                TotalPages = 3,
-                CurrentPage = 1,
-                PageSize = 3
-            };
+            pagination.TotalItems = courses?.Count ?? 0;
+            UpdateDisplayedCourses();
+        }
+    }
+
+    private void NavigateToCourseDetail(string courseId)
+    {
+        Navigation.NavigateTo($"/course/{courseId}");
     }
 
     public class Pagination
     {
-        public int TotalPages { get; set; }
-        public int CurrentPage { get; set; }
-        public int PageSize { get; set; }
+        public int CurrentPage { get; set; } = 1;
+        public int ItemsPerPage { get; set; } = 3;
+        public int TotalItems { get; set; }
+
+        public int TotalPages => (int)Math.Ceiling((double)TotalItems / ItemsPerPage);
+    }
+
+    private void UpdateDisplayedCourses()
+    {
+        if (courses != null)
+        {
+            displayedCourses = courses.Skip((pagination.CurrentPage - 1) * pagination.ItemsPerPage)
+                                      .Take(pagination.ItemsPerPage)
+                                      .ToList();
+        }
+    }
+
+    private void NextPage()
+    {
+        if (pagination.CurrentPage < pagination.TotalPages)
+        {
+            pagination.CurrentPage++;
+            UpdateDisplayedCourses();
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (pagination.CurrentPage > 1)
+        {
+            pagination.CurrentPage--;
+            UpdateDisplayedCourses();
+        }
     }
 }
-@*
-@await Html.PartialAsync("_FilterAndQueryPartial")
-@await Html.PartialAsync("_SaveCourseAndMessage")
-*@

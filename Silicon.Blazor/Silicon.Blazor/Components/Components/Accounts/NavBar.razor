@@ -1,27 +1,45 @@
-﻿@* @if (user is not null)
-{
-{ *@
-    <div class="profile">
+﻿@inject UserService UserService 
+@inject UserFactory UserFactory
+@rendermode InteractiveServer
+
+
+<div class="profile">
+    @if (User != null)
+    {
         <div class="profile">
             <div class="image">
-                @* <img src="~/images/profiles/@user.ProfileImageUrl" alt="@($"{user.FirstName} {@user.LastName}")" /> *@
-                <form enctype="multipart/form-data" method="post" asp-action="UploadImage" asp-controller="Account">
+                <img src="/images/profiles/@User.ProfileImageUrl" alt="@($"{User.FirstName} {User.LastName}")" />
+                <form enctype="multipart/form-data" method="post">
                     <input id="fileUploader" type="file" name="file" hidden />
                     <label for="fileUploader" class="btn-upload"><i class="fa-regular fa-refresh"></i></label>
                 </form>
             </div>
-            @* <h5 class="user-name"> @user.FirstName @user.LastName</h5> *@
-            @* <p>@user.Email</p> *@
+            <h5 class="user-name"> @User.FirstName @User.LastName</h5>
+            <p>@User.Email</p>
         </div>
-        <nav class="options">
-            <a class="@((Model.Navigation.ActiveAction == "Details") ? "active" : "") menu-link" asp-controller="Account" asp-action="Details"><i class="fa-regular fa-gear"></i>Account Details</a>
-            <a class="@((Model.Navigation.ActiveAction == "Security") ? "active" : "") menu-link" asp-controller="Account" asp-action="Security"><i class="fa-regular fa-lock"></i>Security</a>
-            <a class="@((Model.Navigation.ActiveAction == "SavedCourses") ? "active" : "") menu-link" asp-controller="Account" asp-action="SavedCourses"><i class="fa-sharp fa-regular fa-bookmark"></i>Saved Courses</a>
-            <a class="menu-link" asp-controller="Auth" asp-action="SignOut"><i class="fa-solid fa-right-from-bracket"></i>Sign Out</a>
-        </nav>
-    </div>
-@* } *@
+    }
+    <nav class="options">
+        <NavLink class=" menu-link" href="/Account/Details"><i class="fa-regular fa-gear"></i> Account Details
+        </NavLink>
+        <NavLink class=" menu-link" href="/Account/Security"><i class="fa-regular fa-lock"></i> Security
+        </NavLink>
+        <NavLink class="menu-link" href="/Account/Notifications"><i class="fa-regular fa-bell"></i> Notifications
+        </NavLink>
+        <NavLink class=" menu-link" href="/Account/Chat"><i class="fa-regular fa-envelope"></i> Messages
+        </NavLink>
+        <NavLink class="menu-link" href="/Account/SavedCourses"><i class="fa-sharp fa-regular fa-bookmark"></i> Saved Courses
+        </NavLink>
+        <NavLink class="menu-link" href="/signout"><i class="fa-solid fa-right-from-bracket"></i> Sign Out
+        </NavLink>
+    </nav>
+</div>
 
 @code {
-    public AccountDetailsVM Model = new AccountDetailsVM();
+    [CascadingParameter]
+    private ApplicationUser User { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        User = await UserService.GetUserAsync();
+    }
 }

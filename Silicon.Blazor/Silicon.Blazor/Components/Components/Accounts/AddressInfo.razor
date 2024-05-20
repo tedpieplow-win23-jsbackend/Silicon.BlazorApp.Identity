@@ -1,41 +1,132 @@
-﻿<form asp-controller="Account" asp-action="AccountAddressInfo" method="post" novalidate>
+﻿@inject AddressFactory AddressFactory
+@inject AddressService AddressService
+@inject UserService UserService
+@inject NavigationManager NavigationManager
+
+@rendermode InteractiveServer
+
+<EditForm FormName="AddressInfoForm" Model="AddressInfoModel" OnValidSubmit="UpdateAddressInfoAsync" method="post">
+    <DataAnnotationsValidator />
     <div class="address-fields">
+
+        <div class="section-title">
+
+            @if (!string.IsNullOrEmpty(SuccessMessage))
+            {
+                <span class="alert alert-success" role="alert" id="userMessage">
+                    @SuccessMessage
+                </span>
+            }
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <span class="alert alert-danger" role="alert" id="userMessage">
+                    @ErrorMessage
+                </span>
+            }
+        </div>
+
         <h5>Address</h5>
+
         <div class="address-fields">
+
             <div class="validation" id="first-address">
                 <label asp-for="AddressInfo.AddressLine1">Address line 1</label>
-                <span asp-validation-for="AddressInfo.AddressLine1"></span>
+                <ValidationMessage For="() => AddressInfoModel.AddressLine1"></ValidationMessage>
             </div>
-            <input asp-for="AddressInfo.AddressLine1" />
+            <InputText @bind-Value="AddressInfoModel.AddressLine1" />
+
             <div class="validation">
                 <label asp-for="AddressInfo.AddressLine2">Address line 2<span>(optional)</span></label>
             </div>
-            <input asp-for="AddressInfo.AddressLine2" />
+            <InputText @bind-Value="AddressInfoModel.AddressLine2" />
+
         </div>
+
         <div class="city-info">
+
             <div class="postal">
                 <div class="validation">
                     <label asp-for="AddressInfo.PostalCode">Postal Code</label>
-                    <span asp-validation-for="AddressInfo.PostalCode"></span>
+                    <ValidationMessage For="() => AddressInfoModel.PostalCode"></ValidationMessage>
                 </div>
-                <input asp-for="AddressInfo.PostalCode" />
+                <InputText @bind-Value="AddressInfoModel.PostalCode" />
             </div>
+
             <div class="city">
                 <div class="validation">
                     <label asp-for="AddressInfo.City">City</label>
-                    <span asp-validation-for="AddressInfo.City"></span>
+                    <ValidationMessage For="() => AddressInfoModel.City"></ValidationMessage>
                 </div>
-                <input asp-for="AddressInfo.City" />
+                <InputText @bind-Value="AddressInfoModel.City"/>
             </div>
+
         </div>
+
         <div class="address-button">
-            <NavLink asp-controller="Account" asp-action="Cancel" class="btn-gray">Cancel</NavLink>
+            <NavLink href="/account/details" class="btn-gray">Cancel</NavLink>
             <button type="submit" class="btn-theme">Save Changes</button>
         </div>
+
     </div>
-</form>
+</EditForm>
 
 @code {
+
+    private string? SuccessMessage;
+    private string? ErrorMessage;
+
     [SupplyParameterFromForm]
-    private AccountDetailsVM AccountDetailsModel { get; set; } = new();
+    private AddressInfoVM AddressInfoModel { get; set; } = new();
+
+    [CascadingParameter]
+    private ApplicationUser User { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            User = await UserService.GetUserAsync();
+            AddressInfoModel = await AddressFactory.PopulateAddressForm(User);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+
+        DisposeMessage();
+    }
+
+    private async Task UpdateAddressInfoAsync()
+    {
+        try
+        {
+            var responseResult = await AddressService.UpdateUserWithAddress(User, AddressInfoModel);
+            if (responseResult.StatusCode == StatusCode.OK)
+            {
+                SuccessMessage = responseResult.Message;
+            }
+            else
+            {
+                ErrorMessage = responseResult.Message;
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+
+        NavigationManager.NavigateTo($"/account/details?SuccessMessage={SuccessMessage}&ErrorMessage={ErrorMessage}", true);
+    }
+
+    private void DisposeMessage()
+    {
+        Timer timerMessage = null!;
+        timerMessage = new Timer((state) =>
+        {
+            SuccessMessage = "";
+            ErrorMessage = "";
+            InvokeAsync(() => StateHasChanged());
+            timerMessage.Dispose();
+        }, null, 4000, Timeout.Infinite);
+    }
 }

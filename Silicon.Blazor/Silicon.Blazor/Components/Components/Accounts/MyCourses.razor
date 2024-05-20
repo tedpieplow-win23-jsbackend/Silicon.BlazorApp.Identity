@@ -6,15 +6,13 @@
 
 @rendermode InteractiveServer
 
-
-
 <section id="saved-courses">
     <div class="container">
 
         <div class="content">
             <div class="section-title">
                 <h2>Saved Items</h2>
-                <button class="btn-delete"><p><i class="fa-solid fa-trash-can"></i>Delete all</p></button>
+                <button class="btn-delete" @onclick="() => RemoveAllCourses()"><p><i class="fa-solid fa-trash-can"></i>Delete all</p></button>
             </div>
 
             <div class="saved-items">
@@ -51,7 +49,6 @@
                             </div>
                         </div> <!-- Här är stängningen av course-card -->
                     }
-
                 }
                 else
                 {
@@ -190,6 +187,30 @@
                 savedCourses?.RemoveAll(c => c.Id == courseId);
                 updatePage = true;
                 await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
+    private async Task RemoveAllCourses()
+    {
+        var user = await UserService.GetUserAsync();
+
+        if (user != null)
+        {
+            var userId = user.Id;
+            var savedCourses = await Context.UserCourses
+                .Where(uc => uc.ApplicationUserId == userId)
+                .ToListAsync();
+
+            if (savedCourses.Count > 0)
+            {
+                Context.UserCourses.RemoveRange(savedCourses);
+                await Context.SaveChangesAsync();
+
+                savedCourses?.Clear(); 
+
+                updatePage = true;
+                await InvokeAsync(StateHasChanged); 
             }
         }
     }

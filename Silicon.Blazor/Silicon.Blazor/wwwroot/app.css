@@ -1339,6 +1339,7 @@ section .courses .items .course-card .image i {
   background-color: #fff;
   color: #000;
   padding: 0.7rem;
+  z-index: 9999;
 }
 section .courses .items .course-card .image i:hover {
   background-color: #6366F1;

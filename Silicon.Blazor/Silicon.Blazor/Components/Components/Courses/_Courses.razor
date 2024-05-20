@@ -1,107 +1,113 @@
 ﻿@using System.Text.Json
 @using Azure.Messaging.ServiceBus
 @using Microsoft.AspNetCore.Authorization
+@using Silicon.Blazor.Data.Entities
 @inject ICoursesVM ViewModel
 @inject IConfiguration Configuration
 @inject NavigationManager Navigation
+@inject UserService UserService
+@inject ApplicationDbContext Context
 
 @attribute [Authorize]
 @attribute [StreamRendering]
+@rendermode InteractiveServer
 
 <PageTitle>Courses</PageTitle>
 
-        <section>
-            <div class="courses container">
-                @*There's a script tied to this span*@
-                <span id="statusMessage" class="message-container"></span>
-                <div class="section-title">
-                    <h1 class="h1">Courses</h1>
-                    <div class="search-div">
-                        <div class="dropdown select">
-                            <div class="selected" data-value="all">All categories<i class="fa-sharp fa-light fa-circle-caret-down"></i></div>
-                            <div class="select-options">
-                                <div class="option" data-value="all">All Categories</div>
+<section>
+    <div class="courses container">
 
-                                @if (courses != null)
-                                {
-                                    foreach (var course in courses)
-                                    {
-                                        @foreach (var category in course.Categories!)
-                                        {
-                                            <div class="option" data-value="@category">
-                                                @category
+        <span id="statusMessage" class="message-container"></span>
+        <div class="section-title">
+            <h1 class="h1">Courses</h1>
+            <div class="search-div">
+                <div class="dropdown select">
+                    <div class="selected" data-value="all">All categories<i class="fa-sharp fa-light fa-circle-caret-down"></i></div>
+                    <div class="select-options">
+                        <div class="option" data-value="all">All Categories</div>
 
-                                            </div>
-                                        }
-                                    }
-                                }
-                            </div>
-                        </div>
-                        <div class="search">
-                            <input id="searchQuery" type="search" name="searchQuery" placeholder="Search courses" />
-                            <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
-                        </div>
-                    </div>
-                </div>
-
-                @if (courses != null)
-                {
-                    <div class="items">
-
-                        @foreach (var course in courses!)
+                        @if (courses != null)
                         {
-                            <a class="course-card" href="course/@course.Id">
-                                <div class="image">
-                                    <img src="@course.ImageUri" alt="" />
-
-                                    @if (course.IsBestseller)
-                                    {
-                                        <span class="best-seller">Best Seller</span>
-                                    }
-
-                                    @*   <NavLink href="#" data-course-id="@course.Id" class="bookmark" @onclick="() => course.SaveCourse(course.Id)"> <i class="fa-sharp fa-regular fa-bookmark" title="Join Course"></i></NavLink> *@
-                                </div>
-
-                                <div class="course-info">
-                                    <h5 class="title">@course.Title</h5>
-                                    <p class="author">By @course.Author</p>
-
-                                    @if (course?.DiscountPrice != 0)
-                                    {
-                                        <div class="discount-div">
-                                            <p class="discount-price">$ @course!.DiscountPrice</p>
-                                            <p class="original-price">$ @course!.Price</p>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <p class="price">$ @course?.Price</p>
-                                    }
-
-                                </div>
-                                <div class="divider"></div>
-                                <footer>
-                                    <div>
-                                        <i class="fa-sharp fa-solid fa-clock"></i>
-                                        <p>@course?.Hours hours</p>
+                            foreach (var course in courses)
+                            {
+                                @foreach (var category in course.Categories!)
+                                {
+                                    <div class="option" data-value="@category">
+                                        @category
                                     </div>
-                                    <div>
-                                        <i class="fa-sharp fa-light fa-thumbs-up"></i>
-                                        <p>@course?.LikesInPercent % (@course?.LikesInNumbers K)</p>
-                                    </div>
-                                </footer>
-                            </a>
+                                }
+                            }
                         }
                     </div>
-                }
-                else
-                {
-                    <p>Loading ...</p>
-                }
-
-
+                </div>
+                <div class="search">
+                    <input id="searchQuery" type="search" name="searchQuery" placeholder="Search courses" />
+                    <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                </div>
             </div>
-        </section>
+        </div>
+
+        @if (courses != null)
+        {
+            <div class="items">
+
+                @foreach (var course in courses!)
+                {
+                    <div class="course-card" @onclick="() => NavigateToCourseDetail(course!.Id)">
+                        <div class="image">
+                            <img src="@course.ImageUri" alt="" />
+
+                            @if (course.IsBestseller)
+                            {
+                                <span class="best-seller">Best Seller</span>
+                            }
+
+                            <a class="bookmark" @onclick:stopPropagation="@true" @onclick="() => SaveCourseAsync(course.Id)">
+                                <i class="fa-sharp fa-regular fa-bookmark" title="Bookmark Course" style="background-color: @course.BookmarkColor"></i>
+                            </a>
+
+                        </div>
+
+                        <div class="course-info">
+                            <h5 class="title">@course.Title</h5>
+                            <p class="author">By @course.Author</p>
+
+                            @if (course?.DiscountPrice != 0)
+                            {
+                                <div class="discount-div">
+                                    <p class="discount-price">$ @course!.DiscountPrice</p>
+                                    <p class="original-price">$ @course!.Price</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="price">$ @course?.Price</p>
+                            }
+
+                        </div>
+                        <div class="divider"></div>
+                        <footer>
+                            <div>
+                                <i class="fa-sharp fa-solid fa-clock"></i>
+                                <p>@course?.Hours hours</p>
+                            </div>
+                            <div>
+                                <i class="fa-sharp fa-light fa-thumbs-up"></i>
+                                <p>@course?.LikesInPercent % (@course?.LikesInNumbers K)</p>
+                            </div>
+                        </footer>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>Loading ...</p>
+        }
+
+
+    </div>
+</section>
 
 
 
@@ -109,8 +115,17 @@
     private List<CourseCard>? courses;
     private List<CourseCard>? displayedCourses;
     private Pagination pagination = new Pagination();
+    private bool isCourseSaved;
+    private string? courseId;
 
     protected override async Task OnInitializedAsync()
+    {
+        await GetCoursesAsync();
+        await ColorBookmarkIfSaved();
+    }
+
+
+    private async Task GetCoursesAsync()
     {
         var query = new GraphQLQuery { Query = "{ getCourses { id title isBestseller categories title imageHeaderUri imageUri likesInPercent likes hours authors { name } prices { currency price discount } } }" };
         var response = await Http.PostAsJsonAsync(Configuration.GetValue<string>("ConnectionStrings:GetCoursesProvider"), query);
@@ -128,23 +143,23 @@
                     ImageHeaderUri = course.TryGetProperty("imageHeaderUri", out var imageUriValue) ? imageUriValue.GetString() ?? "" : "",
                     ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() ?? "" : "",
                     Author = course.TryGetProperty("authors", out var authors) && authors.GetArrayLength() > 0
-                                            ? authors[0].GetProperty("name").GetString() ?? ""
-                                            : "",
+                                                                        ? authors[0].GetProperty("name").GetString() ?? ""
+                                                                        : "",
                     Price = $"{course.GetProperty("prices").GetProperty("currency").GetString()} {course.GetProperty("prices").GetProperty("price").GetDouble()}",
                     DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal() > 0
-                                                      ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
-                                                      : 0m,
+                                                                                  ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
+                                                                                  : 0m,
                     Hours = course.GetProperty("hours").GetString(),
                     LikesInPercent = course.GetProperty("likesInPercent").GetString(),
                     LikesInNumbers = course.GetProperty("likes").GetString(),
                     Categories = course.TryGetProperty("categories", out var categories) && categories.GetArrayLength() > 0
-                                        ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
-                                        : new List<string>()
+                                                                    ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
+                                                                    : new List<string>()
                 })
               .ToList();
 
             pagination.TotalItems = courses?.Count ?? 0;
-            UpdateDisplayedCourses();
+            // UpdateDisplayedCourses();
         }
     }
 
@@ -153,40 +168,109 @@
         Navigation.NavigateTo($"/course/{courseId}");
     }
 
-    public class Pagination
+    private async Task SaveCourseAsync(string courseId)
     {
-        public int CurrentPage { get; set; } = 1;
-        public int ItemsPerPage { get; set; } = 3;
-        public int TotalItems { get; set; }
+        var user = await UserService.GetUserAsync();
 
-        public int TotalPages => (int)Math.Ceiling((double)TotalItems / ItemsPerPage);
+        if (user != null)
+        {
+            var userId = user.Id;
+
+            var alreadySaved = await IsCourseSaved(userId, courseId);
+            if (!alreadySaved)
+            {
+                try
+                {
+                    var userCourse = new UserCourse
+                        {
+                            ApplicationUserId = userId,
+                            CourseId = courseId
+                        };
+                    Context.UserCourses.Add(userCourse);
+                    await Context.SaveChangesAsync();
+
+                    await ColorBookmarkIfSaved();
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+        }
+        return;
     }
 
-    private void UpdateDisplayedCourses()
+    private async Task<bool> IsCourseSaved(string userId, string courseId)
     {
-        if (courses != null)
+        var savedCourse = await Context.UserCourses
+            .AnyAsync(uc => uc.ApplicationUserId == userId && uc.CourseId == courseId);
+
+        return savedCourse;
+    }
+
+
+    private async Task ColorBookmarkIfSaved()
+    {
+        var user = await UserService.GetUserAsync();
+
+        if (user != null && courses != null)
         {
-            displayedCourses = courses.Skip((pagination.CurrentPage - 1) * pagination.ItemsPerPage)
-                                      .Take(pagination.ItemsPerPage)
-                                      .ToList();
+            var userId = user.Id;
+
+            var savedCourses = await Context.UserCourses
+                .Where(uc => uc.ApplicationUserId == userId)
+                .Select(uc => uc.CourseId)
+                .ToListAsync();
+
+            foreach (var course in courses)
+            {
+                course.IsSaved = savedCourses.Contains(course.Id);
+                course.BookmarkColor = GetBookmarkColor(course.IsSaved);
+            }
         }
     }
 
-    private void NextPage()
+
+    private string GetBookmarkColor(bool isSaved)
     {
-        if (pagination.CurrentPage < pagination.TotalPages)
-        {
-            pagination.CurrentPage++;
-            UpdateDisplayedCourses();
-        }
+        return isSaved ? "#6366F1" : "white";
     }
 
-    private void PreviousPage()
-    {
-        if (pagination.CurrentPage > 1)
-        {
-            pagination.CurrentPage--;
-            UpdateDisplayedCourses();
-        }
-    }
+
+    // public class Pagination
+    // {
+    //     public int CurrentPage { get; set; } = 1;
+    //     public int ItemsPerPage { get; set; } = 3;
+    //     public int TotalItems { get; set; }
+
+    //     public int TotalPages => (int)Math.Ceiling((double)TotalItems / ItemsPerPage);
+    // }
+
+    // private void UpdateDisplayedCourses()
+    // {
+    //     if (courses != null)
+    //     {
+    //         displayedCourses = courses.Skip((pagination.CurrentPage - 1) * pagination.ItemsPerPage)
+    //                                   .Take(pagination.ItemsPerPage)
+    //                                   .ToList();
+    //     }
+    // }
+
+    // private void NextPage()
+    // {
+    //     if (pagination.CurrentPage < pagination.TotalPages)
+    //     {
+    //         pagination.CurrentPage++;
+    //         UpdateDisplayedCourses();
+    //     }
+    // }
+
+    // private void PreviousPage()
+    // {
+    //     if (pagination.CurrentPage > 1)
+    //     {
+    //         pagination.CurrentPage--;
+    //         UpdateDisplayedCourses();
+    //     }
+    // }
 }

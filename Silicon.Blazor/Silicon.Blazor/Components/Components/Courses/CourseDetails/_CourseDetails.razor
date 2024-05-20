@@ -1,6 +1,5 @@
 ﻿@using System.Net.Http.Json
 
-@inject IConfiguration Configuration
 
 @if (selectedCourse != null)
 {
@@ -50,7 +49,7 @@
                         }
                         else
                         {
-                            <p style="text-decoration:none" class="ord-price">$@selectedCourse.Prices.Price</p>
+                            <p style="text-decoration:none" class="ord-price">$@selectedCourse.Prices!.Price</p>
                         }
                     </div>
                     <NavLink class="btn-theme">Join Course</NavLink>
@@ -78,13 +77,13 @@ else
 {
     @if (ErrorMessage)
     {
-        <p>NÅGOT ÄR FEL!</p>
+        <p>Something went wrong, please try again later ...</p>
     }
 }
 
 @code {
     [Parameter]
-    public CourseCardWithDetails selectedCourse { get; set; }
+    public CourseCardWithDetails? selectedCourse { get; set; }
 
     [Parameter]
     public bool ErrorMessage { get; set; }

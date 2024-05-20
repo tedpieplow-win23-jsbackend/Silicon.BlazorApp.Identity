@@ -31,7 +31,6 @@
     protected override async Task OnInitializedAsync()
     {
         IsDarkMode = await DarkModeService.UpdateDarkModeButtonSwitch();
-        StateHasChanged();
         DarkModeService.OnDarkModeChanged += OnDarkModeChangedHandler;
     }
 

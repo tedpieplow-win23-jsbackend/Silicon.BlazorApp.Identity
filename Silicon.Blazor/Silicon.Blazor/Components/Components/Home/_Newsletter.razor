@@ -3,7 +3,10 @@
 @using Silicon.Blazor.ViewModels.Home
 @using System.ComponentModel.DataAnnotations
 @using System.Net
+@inject UserService UserService
+@inject UserManager<ApplicationUser> UserManager
 @inject HttpClient Http
+@inject ApplicationDbContext Context
 @rendermode InteractiveServer
 <section id="newsletter" class="newsletter">
     <div class="container">
@@ -80,9 +83,11 @@
     {
         try
         {
+            var user = await UserService.GetUserAsync();
             var result = await Http.PostAsJsonAsync("https://subscriptionprovider-silicon.azurewebsites.net/api/SubscribeFunction?code=-aN4VeTZphDS5C4POoEP-Nycz7KCqohb6lnUmFj36o8uAzFuiGfTow==", SubscribeForm);
             if (result.IsSuccessStatusCode)
             {
+                user.IsSubscribed = true;
                 SubscribeForm = new SubscribeFormModel();
                 SuccessMessage = "You have been subscribed!";
                 DisposeMessage();
@@ -90,9 +95,8 @@
             else if (result.StatusCode == HttpStatusCode.Conflict)
             {
                 SubscribeForm = new SubscribeFormModel();
-                ErrorMessage = "This user already exists!";
+                ErrorMessage = "This subscriber already exists!";
                 DisposeMessage();
-
             }
             else if (result.StatusCode == HttpStatusCode.BadRequest)
             {

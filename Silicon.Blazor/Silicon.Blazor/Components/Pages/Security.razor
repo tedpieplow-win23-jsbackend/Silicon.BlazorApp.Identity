@@ -1,4 +1,14 @@
-﻿@* @page "/security"
+﻿@page "/Account/Security"
+@using System.ComponentModel.DataAnnotations
+@inject UserService UserService
+@inject UserManager<ApplicationUser> UserManager
+@inject ServiceBusHandler ServiceBusHandler
+@inject IConfiguration Configuration
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+
 
 <section id="security">
     <div class="container">
@@ -6,78 +16,190 @@
             <NavBar />
         </div>
         <div class="security-details">
-            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            @if (!string.IsNullOrEmpty(SuccessMessage))
             {
                 <div class="alert alert-success" id="userMessage" role="alert">
-                    @Model
+                    @SuccessMessage
                 </div>
             }
-            else if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            else if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 <div class="alert alert-danger" id="userMessage" role="alert">
-                    @Model.ErrorMessage
-                </div>
-            } 
-            <h2>Security</h2>
-            <h5>Password</h5>
-           @* @if (user!.IsExternalAccount)
-            {
-                <div class="external-message">
-                    <p>You are logged in via an external account. To change your password contact your authenticator</p>
+                    @ErrorMessage
                 </div>
             }
-            else
+            <h2>Security</h2>
+            <h5>Password</h5>
+            @*             @if (user!.IsExternalAccount)
             {
-                <form asp-controller="Account" asp-action="Security" method="post" novalidate>
+            <div class="external-message">
+            <p>You are logged in via an external account. To change your password contact your authenticator</p>
+            </div>
+            } *@
+            @if (!ShowInput)
+            {
+                <EditForm FormName="ChangePass" Model="ChangePassword" method="post" OnValidSubmit="OnValidSubmitAsync" novalidate>
+                    <DataAnnotationsValidator />
                     <div class="current-password">
                         <div class="input-group">
                             <div class="validation">
-                                <label asp-for="ChangePass.Password"></label>
-                                <span asp-validation-for="ChangePass.Password"></span>
+                                <label for="ChangePassword.OldPassword">Your password</label>
                             </div>
-                            <input asp-for="ChangePass.Password" />
+                            <InputText type="password" @bind-Value="ChangePassword.OldPassword" />
+                            <ValidationMessage For="() => ChangePassword.OldPassword" class="text-danger" />
                         </div>
                     </div>
                     <div class="confirm-password">
                         <div class="input-group">
                             <div class="validation">
-                                <label asp-for="ChangePass.NewPassword"></label>
-                                <span asp-validation-for="ChangePass.NewPassword"></span>
+                                <label for="ChangePassword.NewPassword">Your new password</label>
                             </div>
-                            <input asp-for="ChangePass.NewPassword" />
+                            <InputText type="password" @bind-Value="ChangePassword.NewPassword" />
+                            <ValidationMessage For="() => ChangePassword.NewPassword" class="text-danger" />
                         </div>
                         <div class="input-group">
                             <div class="validation">
-                                <label asp-for="ChangePass.ConfirmPassword"></label>
-                                <span asp-validation-for="ChangePass.ConfirmPassword"></span>
+                                <label for="ChangePassword.ConfirmPassword">Confirm your new password</label>
                             </div>
-                            <input asp-for="ChangePass.ConfirmPassword" />
+                            <InputText type="password" @bind-Value="ChangePassword.ConfirmPassword" />
+                            <ValidationMessage For="() => ChangePassword.ConfirmPassword" class="text-danger" />
                         </div>
                     </div>
                     <div class="buttons">
                         <button class="btn-theme" type="submit">Change password</button>
-                        <button class="btn-gray" asp-controller="Account" asp-action="Cancel">Cancel</button>
+                        <button class="btn-gray" onclick="Refresh()">Cancel</button>
                     </div>
-                </form>
-            } 
+                </EditForm>
+            }
+            @if (ShowInput)
+            {
+                <EditForm FormName="Verification" Model="Verification" OnValidSubmit="Verify" style="text-align: center">
+                    <div class="input-group" style="margin-left:auto; margin-right:auto; margin-bottom:15px;">
+                        <div class="validation">
+                            <ValidationMessage For="() => Verification.Code" class="text-danger" />
+                        </div>
+                        <InputText type="text" @bind-Value="Verification.Code" />
+                        <button class="btn-theme" type="submit">Verify code</button>
+                    </div>
+                </EditForm>
+            }
             <div class="delete-section">
-                <form asp-controller="Account" asp-action="Delete" method="post" novalidate>
+                <EditForm Model="DeleteForm" FormName="DeleteForm" OnValidSubmit="DeleteUser" method="post" novalidate>
                     <h5>Delete account</h5>
                     <p>When you delete your account, your public profile will be deactivated immediately. If you change your mind before the 14 days are up, sign in with your email and password, and we’ll send you a link to reactivate your account.</p>
                     <div id="form-terms" class="checkbox">
-                        <input type="checkbox" asp-for="Delete.DeleteAccount" />
+                        <InputCheckbox @bind-Value="DeleteForm.Delete" />
                         <label asp-for="Delete.DeleteAccount">Yes, I want to delete my account.</label>
-                        <span asp-validation-for="Delete.DeleteAccount"></span>
+                        <ValidationMessage For="() => DeleteForm.Delete" class="text-danger" />
                     </div>
                     <button class="btn-theme" type="submit">Delete</button>
-                </form>
+                </EditForm>
             </div>
         </div>
     </div>
-</section> 
+</section>
 
 
 @code {
-    private AccountDetailsVM Model { get; set; }
+
+    private string? ErrorMessage;
+    private string? SuccessMessage;
+
+    private ApplicationUser user { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    private ChangePassModel ChangePassword { get; set; } = new();
+
+    [SupplyParameterFromForm]
+    private VerifyFormModel Verification { get; set; } = new();
+
+    [SupplyParameterFromForm]
+    private DeleteModel DeleteForm { get; set; } = new();
+
+    private bool ShowInput { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await UserService.GetUserAsync();
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        var passwordCorrect = await UserManager.CheckPasswordAsync(user, ChangePassword.OldPassword);
+        if (passwordCorrect)
+        {
+            var body = new { email = user.Email };
+            await ServiceBusHandler.SendServiceBusMessage(body, "VerificationServiceBus", "verification_request");
+            SuccessMessage = "An email has been sent to you with a 6 digit code, please enter below.";
+            ShowInput = true;
+        }
+        else
+        {
+            ErrorMessage = "You have entered the wrong password";
+            DisposeMessage();
+        }
+    }
+
+    private async Task Verify()
+    {
+        var result = await Http.PostAsJsonAsync(Configuration.GetConnectionString("ValidateVerificationProvider"), new { Email = user.Email, Code = Verification.Code });
+        if (result.IsSuccessStatusCode)
+        {
+            var changePassResult = await UserService.UpdatePassUserAsync(user, ChangePassword.OldPassword, ChangePassword.NewPassword);
+            if (changePassResult.Succeeded)
+            {
+                SuccessMessage = "Password was updated!";
+                Refresh();
+                ShowInput = false;
+            }
+            else
+            {
+                ErrorMessage = "Something went wrong. Try again later";
+            }
+        }
+        else
+        {
+            ErrorMessage = "You have entered the wrong verification code!";
+        }
+        DisposeMessage();
+    }
+
+    private async Task DeleteUser()
+    {
+        if (DeleteForm.Delete)
+        {
+            var result = await UserManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                NavManager.NavigateTo("/SignOut");
+            }
+            else
+            {
+                ErrorMessage = "Something went wrong. Try again later";
+            }
+        }
+        else
+        {
+            ErrorMessage = "You must confirm that you want to delete your account";
+            DisposeMessage();
+        }
+    }
+
+    public void Refresh()
+    {
+        ChangePassword = new ChangePassModel();
+        Verification = new VerifyFormModel();
+    }
+
+    private void DisposeMessage()
+    {
+        Timer timerMessage = null!;
+        timerMessage = new Timer((state) =>
+        {
+            SuccessMessage = "";
+            ErrorMessage = "";
+            InvokeAsync(() => StateHasChanged());
+            timerMessage.Dispose();
+        }, null, 4000, Timeout.Infinite);
+    }
 }
- *@

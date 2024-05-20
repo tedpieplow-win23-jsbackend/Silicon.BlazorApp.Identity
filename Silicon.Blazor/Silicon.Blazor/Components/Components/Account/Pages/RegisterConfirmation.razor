@@ -83,7 +83,7 @@
 
     private async Task ResendCode()
     {
-        var result = await Http.PostAsJsonAsync("", new { Email = Email });
+        var result = await Http.PostAsJsonAsync("ValidateVerificationProvider", new { Email = Email });
         if (result.IsSuccessStatusCode)
         {
             StatusMessage = "Code resent.";

@@ -121,8 +121,6 @@ section {
                     cursor: pointer;
                 }
 
-
-
                 .course-info {
                     padding-left: 15px;
 
@@ -194,6 +192,7 @@ section {
                         background-color: #fff;
                         color: #000;
                         padding: .7rem;
+                        z-index: 9999;
 
                         &:hover {
                             background-color: $theme;

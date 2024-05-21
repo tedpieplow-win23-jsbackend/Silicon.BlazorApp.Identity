@@ -15,7 +15,7 @@
     [Parameter]
     public string Id { get; set; } = null!;
 
-    public CourseCardWithDetails selectedCourse;
+    public CourseCardWithDetails? selectedCourse;
     private bool ErrorMessage;
 
     protected override async Task OnInitializedAsync()
@@ -122,6 +122,6 @@
                 ErrorMessage = true;
             }
         }
-        return selectedCourse;
+        return selectedCourse ?? new CourseCardWithDetails();
     }
 }

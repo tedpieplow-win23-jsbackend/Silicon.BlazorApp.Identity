@@ -59,6 +59,9 @@ public static class ServiceConfiguration
             options.EnableSensitiveDataLogging();
         });
 
+
+        services.AddScoped<IDbContextFactory, DbContextFactory>();
+
         services.AddDatabaseDeveloperPageExceptionFilter();
 
         services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

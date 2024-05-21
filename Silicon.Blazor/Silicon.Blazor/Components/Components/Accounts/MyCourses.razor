@@ -19,7 +19,6 @@
             <div class="saved-items">
                 @if (savedCourses != null && savedCourses.Count() > 0)
                 {
-
                     @foreach (var course in savedCourses)
                     {
                         <div class="course-card" @onclick="() => NavigateToCourseDetail(course!.Id)">

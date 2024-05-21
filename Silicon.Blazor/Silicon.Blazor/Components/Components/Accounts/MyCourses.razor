@@ -48,7 +48,7 @@
                                     <p>@course.LikesInNumbers</p>
                                 </div>
                             </div>
-                        </div> <!-- Här är stängningen av course-card -->
+                        </div>
                     }
                 }
                 else
@@ -82,7 +82,6 @@
         {
             _dbSemaphore.Release();
         }
-
     }
 
     private async Task<List<string>> GetSavedCourseIdsAsync()

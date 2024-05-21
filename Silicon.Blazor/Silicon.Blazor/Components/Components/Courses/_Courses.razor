@@ -263,42 +263,4 @@
     {
         return isSaved ? "#6366F1" : "white";
     }
-
-
-    // public class Pagination
-    // {
-    //     public int CurrentPage { get; set; } = 1;
-    //     public int ItemsPerPage { get; set; } = 3;
-    //     public int TotalItems { get; set; }
-
-    //     public int TotalPages => (int)Math.Ceiling((double)TotalItems / ItemsPerPage);
-    // }
-
-    // private void UpdateDisplayedCourses()
-    // {
-    //     if (courses != null)
-    //     {
-    //         displayedCourses = courses.Skip((pagination.CurrentPage - 1) * pagination.ItemsPerPage)
-    //                                   .Take(pagination.ItemsPerPage)
-    //                                   .ToList();
-    //     }
-    // }
-
-    // private void NextPage()
-    // {
-    //     if (pagination.CurrentPage < pagination.TotalPages)
-    //     {
-    //         pagination.CurrentPage++;
-    //         UpdateDisplayedCourses();
-    //     }
-    // }
-
-    // private void PreviousPage()
-    // {
-    //     if (pagination.CurrentPage > 1)
-    //     {
-    //         pagination.CurrentPage--;
-    //         UpdateDisplayedCourses();
-    //     }
-    // }
 }

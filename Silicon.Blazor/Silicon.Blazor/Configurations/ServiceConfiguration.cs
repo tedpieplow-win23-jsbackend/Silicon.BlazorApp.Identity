@@ -23,9 +23,7 @@ public static class ServiceConfiguration
 
         services.AddHttpClient();
         services.AddCascadingAuthenticationState();
-        //services.AddScoped<IdentityUserAccessor>();
         services.AddScoped<IdentityRedirectManager>();
-        //services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
         services.AddScoped<ICoursesVM, CoursesVM>();
         services.AddScoped<UserService>();
         services.AddScoped<ClaimsPrincipal>();
@@ -37,6 +35,7 @@ public static class ServiceConfiguration
         services.AddScoped<AddressFactory>();
         services.AddScoped<AddressRepository>();
         services.AddScoped<SubscriptionService>();
+        services.AddScoped<CookieEvents>();
         services.AddBlazoredLocalStorage();
 
 
@@ -50,6 +49,11 @@ public static class ServiceConfiguration
             options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
         })
             .AddIdentityCookies();
+
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.EventsType = typeof(CookieEvents);
+        });
 
         var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 

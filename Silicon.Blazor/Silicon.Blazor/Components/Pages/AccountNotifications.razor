@@ -1,4 +1,6 @@
 ﻿@page "/account/notifications"
+@attribute [Authorize]
+
 <PageTitle>Account</PageTitle>
 <section id="details">
     <div class="container">
@@ -14,5 +16,4 @@
 
 
 @code {
-    private AccountDetailsVM model { get; set; }
 }

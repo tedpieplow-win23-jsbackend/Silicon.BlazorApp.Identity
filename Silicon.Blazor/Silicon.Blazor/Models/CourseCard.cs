@@ -17,5 +17,7 @@ public class CourseCard
     public string? LikesInNumbers { get; set; }
     public List<string>? Categories { get; set; }
     public string? Currency {  get; set; }
+    public bool IsSaved { get; set; }
+    public string? BookmarkColor { get; set; }
 }
 

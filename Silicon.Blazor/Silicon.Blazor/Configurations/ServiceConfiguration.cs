@@ -1,6 +1,4 @@
-﻿using Azure.Messaging.ServiceBus;
-using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +35,7 @@ public static class ServiceConfiguration
         services.AddScoped<AddressRepository>();
         services.AddScoped<SubscriptionService>();
         services.AddScoped<CookieEvents>();
+        services.AddScoped<CourseService>();
 
         services.AddBlazoredLocalStorage();
 

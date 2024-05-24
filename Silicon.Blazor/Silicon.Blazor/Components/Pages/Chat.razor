@@ -1,4 +1,8 @@
 ﻿@page "/account/chat"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.SignalR.Client
+@inject UserService UserService;
+@rendermode InteractiveAuto
 @attribute [Authorize]
 
 <section id="details">
@@ -6,11 +10,100 @@
         <div class="menu-bar">
             <NavBar />
         </div>
-        <h3>Chat</h3>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">Chat</div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            @foreach (var message in Messages)
+                            {
+                                <li class="mb-3 list-group-item @(message.UserName == userName ? "chat-bubble-right" : "chat-bubble-left")">
+                                    <div>
+                                        <strong>@message.UserName</strong> <span>@message.Created.ToString("HH:mm:ss")</span>
+                                    </div>
+                                    <div>@message.Message</div>
+                                </li>
+                            }
+                        </ul>
+
+                        <div class="mt-3" style="height: 20px;">
+                            @if (!string.IsNullOrEmpty(typingUser))
+                            {
+                                <div>@typingUser is typing <span class="typing-indicator">...</span></div>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="mt-2">
+                            <textarea class="form-control" placeholder="Message" @bind="currentMessage" @oninput="NotifyTyping"></textarea>
+                        </div>
+                        <div class="col-2 my-3">
+                            <button class="btn btn-success w-100" @onclick="Send">Send Message</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
 
 @code {
+    private HubConnection? hubConnection;
+    private bool isConnected => hubConnection?.State == HubConnectionState.Connected;
+    private List<ChatMessage> Messages = [];
+    private System.Timers.Timer? typingTimer;
+    private string? typingUser;
+    private string? userName;
+    private string? currentMessage;
+    private ApplicationUser? User;
 
+    private async Task NotifyTyping() => await hubConnection!.SendAsync("Typing", userName);
+
+    private async Task Send()
+    {
+        var message = new ChatMessage { UserName = userName, Message = currentMessage, Created = DateTime.Now };
+        await hubConnection!.SendAsync("SendMessageToAll", message.UserName, message.Message, message.Created);
+        currentMessage = string.Empty;
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        User = await UserService.GetUserAsync();
+        userName = User.FirstName;
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl("https://admin-win23jsbackend-tedpieplow.azurewebsites.net/chathub")
+        .Build();
+
+        hubConnection.On<string, string, DateTime>("ReceiveMessage", (fromUser, message, dateTime) =>
+        {
+            var newMessage = new ChatMessage()
+                {
+                    UserName = fromUser,
+                    Message = message
+                };
+            Messages.Add(newMessage);
+            InvokeAsync(StateHasChanged);
+        });
+
+        hubConnection.On<string>("UserTyping", (typingUserName) =>
+        {
+            typingUser = typingUserName;
+            InvokeAsync(StateHasChanged);
+
+            typingTimer?.Stop();
+            typingTimer = new System.Timers.Timer(2000);
+            typingTimer.Elapsed += (s, e) =>
+        {
+            typingUser = null;
+            InvokeAsync(StateHasChanged);
+        };
+
+            typingTimer.Start();
+        });
+
+        await hubConnection.StartAsync();
+    }
 }

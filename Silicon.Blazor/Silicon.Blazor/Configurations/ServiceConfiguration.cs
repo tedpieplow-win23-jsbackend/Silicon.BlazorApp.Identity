@@ -38,6 +38,7 @@ public static class ServiceConfiguration
         services.AddScoped<SubscriptionService>();
         services.AddScoped<CookieEvents>();
 
+        services.AddSignalR();
         services.AddBlazoredLocalStorage();
 
         services.AddHttpContextAccessor();

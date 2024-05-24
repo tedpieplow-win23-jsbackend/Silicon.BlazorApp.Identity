@@ -2,6 +2,7 @@
 @using Azure.Messaging.ServiceBus
 @using Microsoft.AspNetCore.Authorization
 @using Silicon.Blazor.Data.Entities
+@using System.Diagnostics
 @inject ICoursesVM ViewModel
 @inject IConfiguration Configuration
 @inject NavigationManager Navigation
@@ -129,33 +130,40 @@
 
         if (response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadFromJsonAsync<DynamicGraphQLResponse>();
-            courses = result?.Data.GetProperty("getCourses").EnumerateArray()
-            .Where(course => !string.IsNullOrEmpty(course.GetProperty("id").GetString()))
-            .Select(course => new CourseCard
-                {
-                    Id = course.TryGetProperty("id", out var idValue) ? idValue.GetString() ?? "" : "",
-                    Title = course.GetProperty("title").GetString(),
-                    IsBestseller = course.GetProperty("isBestseller").GetBoolean(),
-                    ImageHeaderUri = course.TryGetProperty("imageHeaderUri", out var imageUriValue) ? imageUriValue.GetString() ?? "" : "",
-                    ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() ?? "" : "",
-                    Author = course.TryGetProperty("authors", out var authors) && authors.GetArrayLength() > 0
-                                                                                    ? authors[0].GetProperty("name").GetString() ?? ""
-                                                                                    : "",
-                    Price = $"{course.GetProperty("prices").GetProperty("currency").GetString()} {course.GetProperty("prices").GetProperty("price").GetDouble()}",
-                    DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal() > 0
-                                                                                              ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
-                                                                                              : 0m,
-                    Hours = course.GetProperty("hours").GetString(),
-                    LikesInPercent = course.GetProperty("likesInPercent").GetString(),
-                    LikesInNumbers = course.GetProperty("likes").GetString(),
-                    Categories = course.TryGetProperty("categories", out var categories) && categories.GetArrayLength() > 0
-                                                                                ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
-                                                                                : new List<string>()
-                })
-              .ToList();
+            try
+            {
 
-            pagination.TotalItems = courses?.Count ?? 0;
+                var result = await response.Content.ReadFromJsonAsync<DynamicGraphQLResponse>();
+                courses = result?.Data.GetProperty("getCourses").EnumerateArray()
+                .Where(course => !string.IsNullOrEmpty(course.GetProperty("id").GetString()))
+                .Select(course => new CourseCard
+                    {
+                        Id = course.TryGetProperty("id", out var idValue) ? idValue.GetString() ?? "" : "",
+                        Title = course.GetProperty("title").GetString(),
+                        IsBestseller = course.GetProperty("isBestseller").GetBoolean(),
+                        ImageHeaderUri = course.TryGetProperty("imageHeaderUri", out var imageUriValue) ? imageUriValue.GetString() ?? "" : "",
+                        ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() ?? "" : "",
+                        Author = course.TryGetProperty("authors", out var authors) && authors.ValueKind == JsonValueKind.Array && authors.GetArrayLength() > 0
+                                ? authors[0].GetProperty("name").GetString() ?? ""
+                                : "",
+                        Price = $"{course.GetProperty("prices").GetProperty("currency").GetString()} {course.GetProperty("prices").GetProperty("price").GetDouble()}",
+                        DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal() > 0
+                                                                                                  ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
+                                                                                                  : 0m,
+                        Hours = course.GetProperty("hours").GetString(),
+                        LikesInPercent = course.GetProperty("likesInPercent").GetString(),
+                        LikesInNumbers = course.GetProperty("likes").GetString(),
+                        Categories = course.TryGetProperty("categories", out var categories) && categories.ValueKind == JsonValueKind.Array && categories.GetArrayLength() > 0
+                                ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
+                                : new List<string>()
+                    })
+                  .ToList();
+
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine("Something went wrong, please try again later.");
+            }
         }
     }
 
@@ -193,7 +201,7 @@
                 }
                 catch (Exception ex)
                 {
-
+                    Debug.WriteLine($"ERROR: {ex.Message}");
                 }
             }
         }
@@ -270,21 +278,28 @@
 
     private async Task CourseSignUpConfirmation(string courseId)
     {
-        var user = await UserService.GetUserAsync();
-
-        var course = displayedCourses?.FirstOrDefault(c => c.Id == courseId);
-        if (course != null)
+        try
         {
-            var courseTitle = course.Title;
-            var emailRequest = new EmailRequest()
-                {
-                    To = user.Email!,
-                    Subject = $"Successfully registered to course {courseTitle}",
-                    HtmlBody = $"Hello! Someone requested a verification-code for: {user.Email}.",
-                    PlainText = $"Hello! Someone requested a verification-code for: {user.Email}. "
-                };
+            var user = await UserService.GetUserAsync();
 
-            await Handler.SendServiceBusMessage(emailRequest, "VerificationServiceBus", "email_request");
+            var course = displayedCourses?.FirstOrDefault(c => c.Id == courseId);
+            if (course != null)
+            {
+                var courseTitle = course.Title;
+                var emailRequest = new EmailRequest()
+                    {
+                        To = user.Email!,
+                        Subject = $"Successfully registered to course {courseTitle}",
+                        HtmlBody = $"Hello! Someone requested a verification-code for: {user.Email}.",
+                        PlainText = $"Hello! Someone requested a verification-code for: {user.Email}. "
+                    };
+
+                await Handler.SendServiceBusMessage(emailRequest, "VerificationServiceBus", "email_request");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"ERROR: {ex.Message}");
         }
     }
 }

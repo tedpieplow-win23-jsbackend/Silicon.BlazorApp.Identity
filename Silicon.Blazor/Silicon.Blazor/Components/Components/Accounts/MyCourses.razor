@@ -156,18 +156,18 @@
                     ImageHeaderUri = course.TryGetProperty("imageHeaderUri", out var imageUriValue) ? imageUriValue.GetString() ?? "" : "",
                     ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() ?? "" : "",
                     Author = course.TryGetProperty("authors", out var authors) && authors.GetArrayLength() > 0
-                                                                ? authors[0].GetProperty("name").GetString() ?? ""
-                                                                : "",
+                                                                    ? authors[0].GetProperty("name").GetString() ?? ""
+                                                                    : "",
                     Price = $"{course.GetProperty("prices").GetProperty("currency").GetString()} {course.GetProperty("prices").GetProperty("price").GetDouble()}",
                     DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal() > 0
-                                                                 ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
-                                                                 : 0m,
+                                                                     ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
+                                                                     : 0m,
                     Hours = course.GetProperty("hours").GetString(),
                     LikesInPercent = course.GetProperty("likesInPercent").GetString(),
                     LikesInNumbers = course.GetProperty("likes").GetString(),
                     Categories = course.TryGetProperty("categories", out var categories) && categories.GetArrayLength() > 0
-                                                                ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
-                                                                : new List<string>()
+                                                                    ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
+                                                                    : new List<string>()
                 })
               .ToList();
         }
@@ -192,12 +192,15 @@
 
             if (userCourse != null)
             {
-                context.UserCourses.Remove(userCourse);
-                await Context.SaveChangesAsync();
 
-                savedCourses?.RemoveAll(c => c.Id == courseId);
-                updatePage = true;
-                await InvokeAsync(StateHasChanged);
+                context.UserCourses.Remove(userCourse);
+                var result = await context.SaveChangesAsync();
+                if (result > 0)
+                {
+                    savedCourses?.RemoveAll(c => c.Id == courseId);
+                    updatePage = true;
+                    await InvokeAsync(StateHasChanged);
+                }
             }
         }
     }
@@ -222,7 +225,7 @@
                 savedCourses?.Clear();
 
                 updatePage = true;
-                await InvokeAsync(StateHasChanged); 
+                await InvokeAsync(StateHasChanged);
             }
         }
     }

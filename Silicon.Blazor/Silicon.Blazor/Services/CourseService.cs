@@ -1,16 +1,19 @@
-﻿using Silicon.Blazor.Data;
+﻿using Silicon.Blazor.Components.Pages;
+using Silicon.Blazor.Data;
+using Silicon.Blazor.Data.Entities;
 using Silicon.Blazor.Models;
 using System.Diagnostics;
 using System.Text.Json;
 
 namespace Silicon.Blazor.Services;
 
-public class CourseService(HttpClient http, ApplicationDbContext context, UserService userService, IConfiguration configuration)
+public class CourseService(HttpClient http, ApplicationDbContext context, UserService userService, IConfiguration configuration, ApplicationDbContext applicationDbContext)
 {
     private readonly HttpClient _http = http;
     private readonly ApplicationDbContext _context = context;
     private readonly UserService _userService = userService;
     private readonly IConfiguration _configuration = configuration;
+    private readonly ApplicationDbContext _applicationDbContext = applicationDbContext;
 
     public async Task<List<CourseCard>> GetCoursesAsync()
     {
@@ -56,4 +59,6 @@ public class CourseService(HttpClient http, ApplicationDbContext context, UserSe
         }
         return courses!;
     }
+
+   
 }

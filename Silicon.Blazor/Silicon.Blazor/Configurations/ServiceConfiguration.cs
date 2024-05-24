@@ -37,6 +37,7 @@ public static class ServiceConfiguration
         services.AddScoped<CookieEvents>();
         services.AddScoped<CourseService>();
 
+        services.AddSignalR();
         services.AddBlazoredLocalStorage();
 
         services.AddHttpContextAccessor();

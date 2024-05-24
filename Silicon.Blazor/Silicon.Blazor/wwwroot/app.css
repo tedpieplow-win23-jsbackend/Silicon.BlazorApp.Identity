@@ -3463,3 +3463,20 @@ html, body, main {
   display: grid;
   grid-template-columns: 15% 85%;
 }
+
+.container .chat-bubble-right {
+  text-align: right;
+  background-color: #6366F1;
+  margin-left: auto;
+  border-radius: 15px;
+  padding: 10px;
+  max-width: 75%;
+}
+.container .chat-bubble-left {
+  text-align: left;
+  background-color: #FFFFFF;
+  margin-right: auto;
+  border-radius: 15px;
+  padding: 10px;
+  max-width: 75%;
+}

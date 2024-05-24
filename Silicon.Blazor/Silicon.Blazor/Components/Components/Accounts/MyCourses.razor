@@ -1,4 +1,5 @@
-﻿@inject UserService UserService
+﻿@using System.Text.Json
+@inject UserService UserService
 @inject ApplicationDbContext Context
 @inject IConfiguration Configuration
 @inject NavigationManager Navigation
@@ -155,9 +156,9 @@
                     IsBestseller = course.GetProperty("isBestseller").GetBoolean(),
                     ImageHeaderUri = course.TryGetProperty("imageHeaderUri", out var imageUriValue) ? imageUriValue.GetString() ?? "" : "",
                     ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() ?? "" : "",
-                    Author = course.TryGetProperty("authors", out var authors) && authors.GetArrayLength() > 0
-                                                                    ? authors[0].GetProperty("name").GetString() ?? ""
-                                                                    : "",
+                    Author = course.TryGetProperty("authors", out var authors) && authors.ValueKind == JsonValueKind.Array && authors.GetArrayLength() > 0
+                                    ? authors[0].GetProperty("name").GetString() ?? ""
+                                    : "",
                     Price = $"{course.GetProperty("prices").GetProperty("currency").GetString()} {course.GetProperty("prices").GetProperty("price").GetDouble()}",
                     DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal() > 0
                                                                      ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
@@ -165,9 +166,9 @@
                     Hours = course.GetProperty("hours").GetString(),
                     LikesInPercent = course.GetProperty("likesInPercent").GetString(),
                     LikesInNumbers = course.GetProperty("likes").GetString(),
-                    Categories = course.TryGetProperty("categories", out var categories) && categories.GetArrayLength() > 0
-                                                                    ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
-                                                                    : new List<string>()
+                    Categories = course.TryGetProperty("categories", out var categories) && categories.ValueKind == JsonValueKind.Array && categories.GetArrayLength() > 0
+                                    ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
+                                    : new List<string>()
                 })
               .ToList();
         }

@@ -19,7 +19,6 @@
             <div class="saved-items">
                 @if (savedCourses != null && savedCourses.Count() > 0)
                 {
-
                     @foreach (var course in savedCourses)
                     {
                         <div class="course-card" @onclick="() => NavigateToCourseDetail(course!.Id)">
@@ -48,7 +47,7 @@
                                     <p>@course.LikesInNumbers</p>
                                 </div>
                             </div>
-                        </div> <!-- Här är stängningen av course-card -->
+                        </div>
                     }
                 }
                 else
@@ -82,7 +81,6 @@
         {
             _dbSemaphore.Release();
         }
-
     }
 
     private async Task<List<string>> GetSavedCourseIdsAsync()

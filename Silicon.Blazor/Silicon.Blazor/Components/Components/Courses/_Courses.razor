@@ -7,6 +7,7 @@
 @inject NavigationManager Navigation
 @inject UserService UserService
 @inject ApplicationDbContext Context
+@inject ServiceBusHandler Handler
 
 @attribute [Authorize]
 @attribute [StreamRendering]
@@ -139,18 +140,18 @@
                     ImageHeaderUri = course.TryGetProperty("imageHeaderUri", out var imageUriValue) ? imageUriValue.GetString() ?? "" : "",
                     ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() ?? "" : "",
                     Author = course.TryGetProperty("authors", out var authors) && authors.GetArrayLength() > 0
-                                                                        ? authors[0].GetProperty("name").GetString() ?? ""
-                                                                        : "",
+                                                                                ? authors[0].GetProperty("name").GetString() ?? ""
+                                                                                : "",
                     Price = $"{course.GetProperty("prices").GetProperty("currency").GetString()} {course.GetProperty("prices").GetProperty("price").GetDouble()}",
                     DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal() > 0
-                                                                                  ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
-                                                                                  : 0m,
+                                                                                          ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
+                                                                                          : 0m,
                     Hours = course.GetProperty("hours").GetString(),
                     LikesInPercent = course.GetProperty("likesInPercent").GetString(),
                     LikesInNumbers = course.GetProperty("likes").GetString(),
                     Categories = course.TryGetProperty("categories", out var categories) && categories.GetArrayLength() > 0
-                                                                    ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
-                                                                    : new List<string>()
+                                                                            ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
+                                                                            : new List<string>()
                 })
               .ToList();
 
@@ -183,9 +184,13 @@
                             CourseId = courseId
                         };
                     Context.UserCourses.Add(userCourse);
-                    await Context.SaveChangesAsync();
+                    var result = await Context.SaveChangesAsync();
 
-                    await ColorBookmarkIfSaved();
+                    if (result > 0)
+                    {
+                        await CourseSignUpConfirmation();
+                        await ColorBookmarkIfSaved();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -264,41 +269,18 @@
         return isSaved ? "#6366F1" : "white";
     }
 
+    private async Task CourseSignUpConfirmation()
+    {
+        var user = await UserService.GetUserAsync();
 
-    // public class Pagination
-    // {
-    //     public int CurrentPage { get; set; } = 1;
-    //     public int ItemsPerPage { get; set; } = 3;
-    //     public int TotalItems { get; set; }
+        var emailRequest = new EmailRequest()
+            {
+                To = user.Email!,
+                Subject = $"Successfully registered to course",
+                HtmlBody = $"Hello! Someone requested a verification-code for: {user.Email}.",
+                PlainText = $"Hello! Someone requested a verification-code for: {user.Email}. "
+            };
 
-    //     public int TotalPages => (int)Math.Ceiling((double)TotalItems / ItemsPerPage);
-    // }
-
-    // private void UpdateDisplayedCourses()
-    // {
-    //     if (courses != null)
-    //     {
-    //         displayedCourses = courses.Skip((pagination.CurrentPage - 1) * pagination.ItemsPerPage)
-    //                                   .Take(pagination.ItemsPerPage)
-    //                                   .ToList();
-    //     }
-    // }
-
-    // private void NextPage()
-    // {
-    //     if (pagination.CurrentPage < pagination.TotalPages)
-    //     {
-    //         pagination.CurrentPage++;
-    //         UpdateDisplayedCourses();
-    //     }
-    // }
-
-    // private void PreviousPage()
-    // {
-    //     if (pagination.CurrentPage > 1)
-    //     {
-    //         pagination.CurrentPage--;
-    //         UpdateDisplayedCourses();
-    //     }
-    // }
+        await Handler.SendServiceBusMessage(emailRequest, "VerificationServiceBus", "email_request");
+    }
 }

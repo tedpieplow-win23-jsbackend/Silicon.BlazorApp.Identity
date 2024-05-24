@@ -1,5 +1,7 @@
 ﻿@page "/Account/Security"
 @using System.ComponentModel.DataAnnotations
+@attribute [Authorize]
+
 @inject UserService UserService
 @inject UserManager<ApplicationUser> UserManager
 @inject ServiceBusHandler ServiceBusHandler

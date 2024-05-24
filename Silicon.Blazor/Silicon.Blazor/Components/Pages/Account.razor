@@ -1,6 +1,7 @@
 ﻿@page "/account/details"
 @inject UserService UserService
 @inject UserManager<ApplicationUser> UserManager
+@attribute [Authorize]
 
 <PageTitle>Account</PageTitle>
 

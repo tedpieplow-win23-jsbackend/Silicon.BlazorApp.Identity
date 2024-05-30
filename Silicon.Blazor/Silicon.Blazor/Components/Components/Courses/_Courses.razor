@@ -239,7 +239,7 @@
         {
             var user = await UserService.GetUserAsync();
 
-            var course = displayedCourses?.FirstOrDefault(c => c.Id == courseId);
+            var course = courses?.FirstOrDefault(c => c.Id == courseId);
             if (course != null)
             {
                 var courseTitle = course.Title;
@@ -247,8 +247,8 @@
                     {
                         To = user.Email!,
                         Subject = $"Successfully registered to course {courseTitle}",
-                        HtmlBody = $"Hello! Someone requested a verification-code for: {user.Email}.",
-                        PlainText = $"Hello! Someone requested a verification-code for: {user.Email}. "
+                        HtmlBody = $"<html><body><p>Hello!</p><p>Someone has successfully registered for the course <strong>{courseTitle}</strong>.</p><p>If this was you, no further action is needed.</p></body></html>",
+                        PlainText = $"Hello!\n\nSomeone has successfully registered for the course: {courseTitle}.\n\nIf this was you, no further action is needed."
                     };
 
                 await Handler.SendServiceBusMessage(emailRequest, "VerificationServiceBus", "email_request");

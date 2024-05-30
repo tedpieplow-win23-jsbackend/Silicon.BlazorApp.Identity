@@ -167,64 +167,92 @@
 
     private async Task ToggleSaveCourseAsync(string courseId)
     {
-        var user = await UserService.GetUserAsync();
-
-        if (user != null)
+        try
         {
-            var userId = user.Id;
-            var isSaved = await IsCourseSaved(userId, courseId);
+            var user = await UserService.GetUserAsync();
 
-            if (isSaved)
+            if (user != null)
             {
-                await RemoveSavedCourse(userId, courseId);
-            }
-            else
-            {
-                await SaveCourseAsync(courseId);
-            }
+                var userId = user.Id;
+                var isSaved = await IsCourseSaved(userId, courseId);
 
-            await ColorBookmarkIfSaved();
+                if (isSaved)
+                {
+                    await RemoveSavedCourse(userId, courseId);
+                }
+                else
+                {
+                    await SaveCourseAsync(courseId);
+                }
+
+                await ColorBookmarkIfSaved();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"ERROR: {ex.Message}");
         }
     }
 
     private async Task RemoveSavedCourse(string userId, string courseId)
     {
-        var userCourse = await Context.UserCourses
-            .FirstOrDefaultAsync(uc => uc.ApplicationUserId == userId && uc.CourseId == courseId);
-
-        if (userCourse != null)
+        try
         {
-            Context.UserCourses.Remove(userCourse);
-            await Context.SaveChangesAsync();
+            var userCourse = await Context.UserCourses
+                .FirstOrDefaultAsync(uc => uc.ApplicationUserId == userId && uc.CourseId == courseId);
+
+            if (userCourse != null)
+            {
+                Context.UserCourses.Remove(userCourse);
+                await Context.SaveChangesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"ERROR: {ex.Message}");
         }
     }
 
     private async Task<bool> IsCourseSaved(string userId, string courseId)
     {
-        var savedCourse = await Context.UserCourses
-            .AnyAsync(uc => uc.ApplicationUserId == userId && uc.CourseId == courseId);
-
-        return savedCourse;
+        try
+        {
+            var savedCourse = await Context.UserCourses
+                .AnyAsync(uc => uc.ApplicationUserId == userId && uc.CourseId == courseId);
+            return savedCourse;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"ERROR: {ex.Message}");
+        }
+        return false;
     }
 
     private async Task ColorBookmarkIfSaved()
     {
-        var user = await UserService.GetUserAsync();
-
-        if (user != null && courses != null)
+        try
         {
-            var userId = user.Id;
+            var user = await UserService.GetUserAsync();
 
-            var savedCourses = await Context.UserCourses
-                .Where(uc => uc.ApplicationUserId == userId)
-                .Select(uc => uc.CourseId)
-                .ToListAsync();
-
-            foreach (var course in courses)
+            if (user != null && courses != null)
             {
-                course.IsSaved = savedCourses.Contains(course.Id);
-                course.BookmarkColor = GetBookmarkColor(course.IsSaved);
+                var userId = user.Id;
+
+                var savedCourses = await Context.UserCourses
+                    .Where(uc => uc.ApplicationUserId == userId)
+                    .Select(uc => uc.CourseId)
+                    .ToListAsync();
+
+                foreach (var course in courses)
+                {
+                    course.IsSaved = savedCourses.Contains(course.Id);
+                    course.BookmarkColor = GetBookmarkColor(course.IsSaved);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"ERROR: {ex.Message}");
         }
     }
 
@@ -240,16 +268,10 @@
             var user = await UserService.GetUserAsync();
 
             var course = courses?.FirstOrDefault(c => c.Id == courseId);
-            if (course != null)
+            if (course != null && !string.IsNullOrEmpty(user.Email) && !string.IsNullOrEmpty(course.Title))
             {
                 var courseTitle = course.Title;
-                var emailRequest = new EmailRequest()
-                    {
-                        To = user.Email!,
-                        Subject = $"Successfully registered to course {courseTitle}",
-                        HtmlBody = $"<html><body><p>Hello!</p><p>Someone has successfully registered for the course <strong>{courseTitle}</strong>.</p><p>If this was you, no further action is needed.</p></body></html>",
-                        PlainText = $"Hello!\n\nSomeone has successfully registered for the course: {courseTitle}.\n\nIf this was you, no further action is needed."
-                    };
+                var emailRequest = CourseService.SendConfirmation(user.Email, courseTitle);
 
                 await Handler.SendServiceBusMessage(emailRequest, "VerificationServiceBus", "email_request");
             }

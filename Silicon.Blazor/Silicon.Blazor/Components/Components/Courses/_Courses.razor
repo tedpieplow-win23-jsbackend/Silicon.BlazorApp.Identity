@@ -114,14 +114,21 @@
 
 @code {
     private List<CourseCard>? courses;
-    private List<CourseCard>? displayedCourses;
     private Pagination pagination = new Pagination();
     private string? courseId;
+    public bool coursesLoaded = false;
+    public bool firstRender = true;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        courses = await CourseService.GetCoursesAsync();
-        await ColorBookmarkIfSaved();
+        if (firstRender && !coursesLoaded)
+        {
+            courses = await CourseService.GetCoursesAsync();
+            coursesLoaded = true;
+            await ColorBookmarkIfSaved();
+            firstRender = false;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private void NavigateToCourseDetail(string courseId)

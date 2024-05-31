@@ -64,23 +64,21 @@
 </section>
 
 @code {
-    private static readonly SemaphoreSlim _dbSemaphore = new SemaphoreSlim(1, 1);
     private List<CourseCard>? savedCourses;
     private List<string>? savedCourseIds;
     private bool updatePage = false;
+    public bool firstRender = true;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await _dbSemaphore.WaitAsync();
-        try
+        if (firstRender)
         {
             savedCourseIds = await GetSavedCourseIdsAsync();
             if (savedCourseIds != null && savedCourseIds.Count > 0)
                 await GetCoursesWithGraphQLQuery(savedCourseIds);
-        }
-        finally
-        {
-            _dbSemaphore.Release();
+
+            firstRender = false;
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -157,18 +155,18 @@
                     ImageHeaderUri = course.TryGetProperty("imageHeaderUri", out var imageUriValue) ? imageUriValue.GetString() ?? "" : "",
                     ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() ?? "" : "",
                     Author = course.TryGetProperty("authors", out var authors) && authors.ValueKind == JsonValueKind.Array && authors.GetArrayLength() > 0
-                                    ? authors[0].GetProperty("name").GetString() ?? ""
-                                    : "",
+                                            ? authors[0].GetProperty("name").GetString() ?? ""
+                                            : "",
                     Price = $"{course.GetProperty("prices").GetProperty("currency").GetString()} {course.GetProperty("prices").GetProperty("price").GetDouble()}",
                     DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal() > 0
-                                                                     ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
-                                                                     : 0m,
+                                                                             ? course.GetProperty("prices").GetProperty("price").GetDecimal() - course.GetProperty("prices").GetProperty("discount").GetDecimal()
+                                                                             : 0m,
                     Hours = course.GetProperty("hours").GetString(),
                     LikesInPercent = course.GetProperty("likesInPercent").GetString(),
                     LikesInNumbers = course.GetProperty("likes").GetString(),
                     Categories = course.TryGetProperty("categories", out var categories) && categories.ValueKind == JsonValueKind.Array && categories.GetArrayLength() > 0
-                                    ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
-                                    : new List<string>()
+                                            ? categories.EnumerateArray().Select(cat => cat.GetString()).ToList()!
+                                            : new List<string>()
                 })
               .ToList();
         }
